@@ -30,8 +30,13 @@ public class Scanner {
       }
     }
   }
-  public void removeSpecialCharacters(String[] delim) {
-
+  public String removeSpecialCharacters(String source) {
+    String result = "";
+    for(int i = 0; i < source.length(); i++) {
+      if (source.charAt(i) != ' ' && source.charAt(i) != '\n') {
+        result = result.concat(String.valueOf(source.charAt(i)));
+      }
+    }
+    return result;
   }
-
 }
