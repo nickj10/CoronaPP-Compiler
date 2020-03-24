@@ -1,0 +1,144 @@
+{
+  "words": [
+    {
+      "token": "IF",
+      "lexeme": "if",
+      "description": "Sentencia de decisión para avualarla."
+    },
+    {
+      "token": "ELSE",
+      "lexeme": "else",
+      "description": "Sentencia de decisión para avaluarla y elegir un bloque u otro."
+    },
+    {
+      "token": "WHILE",
+      "lexeme": "while",
+      "description": "Sentencia de bucle que permite ejecutar un bloque de sentencias tantas veces como queramos o tantas veces como se cumpla la condición."
+    },
+    {
+      "token": "INT",
+      "lexeme": "int",
+      "description": "Es un tipo de dato de 32 bits con signo para almacenar valores numéricos. El valor mínimo es -231 y el valor máximo 231-1."
+    },
+    {
+      "token": "BOOL",
+      "lexeme": "bool",
+      "description": "Define tipos de datos booleanos. Es decir, aquellos que tienen un valor de true o false. Ocupa 1 bit de información."
+    },
+    {
+      "token": "INT",
+      "lexeme": "int",
+      "description": "Tipo de dato con valor que no cambia nunca."
+    },
+    {
+      "token": "CHAR",
+      "lexeme": "char",
+      "description": "Es un tipo de dato que representa a un carácter Unicode sencillo de 16 bits."
+    },
+    {
+      "token": "NULL",
+      "lexeme": "null",
+      "description": "Valor que no hace referencia a nada."
+    },
+    {
+      "token": "FLOAT",
+      "lexeme": "float",
+      "description": "Es un tipo dato que almacena números en coma flotante con precisión simple de 32 bits."
+    },
+    {
+      "token": "ARTMTC_MLT",
+      "lexeme": "*",
+      "description": "Operador de multiplicación."
+    },
+    {
+      "token": "ARTMTC_MD",
+      "lexeme": "%",
+      "description": "Operador de resto."
+    },
+    {
+      "token": "ARTMTC_DV",
+      "lexeme": "/",
+      "description": "Operador de división."
+    },
+    {
+      "token": "ARTMTC_SM",
+      "lexeme": "+",
+      "description": "Operador de suma."
+    },
+    {
+      "token": "ARTMTC_RS",
+      "lexeme": "-",
+      "description": "Operador de RESTA."
+    },
+    {
+      "token": "RLTNL_EQ",
+      "lexeme": "==",
+      "description": "Igual a."
+    },
+    {
+      "token": "RLTNL_NTEQ",
+      "lexeme": "!=",
+      "description": "No igual a."
+    },
+    {
+      "token": "LGC_AND",
+      "lexeme": "&&",
+      "description": "Operador condicional AND."
+    },
+    {
+      "token": "LGC_OR",
+      "lexeme": "||",
+      "description": "Operador condicional OR."
+    },
+    {
+       "token": "ASSGN_EQ",
+      "lexeme": "=",
+      "description": "Operador de assignación."
+    },
+    {
+      "token": "DOT_COMA",
+      "lexeme": ";",
+      "description": "Carácter especial que indica en qué momento una instrucción ha terminado."
+    },
+    {
+      "token": "DOT",
+      "lexeme": ".",
+      "description": "Carácter especial usado para una variable de tipo float."
+    },
+    {
+      "token": "PRNTSS_OPEN",
+      "lexeme": "(",
+      "description": "Carácter especial que indica el comienzo de la lista de parámetros que tendrá una función o procedimiento."
+    },
+    {
+      "token": "PRNTSS_CLCSED",
+      "lexeme": ")",
+      "description": "Carácter especial que indica el final de la lista de parámetros que tendrá una función o procedimiento."
+    },
+    {
+      "token": "LNGCMMNT_START",
+      "lexeme": "/$",
+      "description": "Carácter especial que indica el comienzo de un comentario largo."
+    },
+    {
+      "token": "LNGCMMNT_END",
+      "lexeme": "$/",
+      "description": "Carácter especial que indica el final de un comentario largo."
+    },
+    {
+      "token": "SHRTCMMNT",
+      "lexeme": "$$",
+      "description": "Carácter especial que indica el comienzo de un comentario corto de una línea."
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
