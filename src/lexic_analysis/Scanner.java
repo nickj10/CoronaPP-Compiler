@@ -1,10 +1,20 @@
 package lexic_analysis;
 
+import model.CompilerManager;
+
 import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Scanner {
   private static final String PATH="data/source_code.txt";
+  private CompilerManager compilerManager;
   private String sourceCode = "";
+
+  public Scanner () {
+    compilerManager = new CompilerManager();
+  }
+
   /**
    * Reads source code file
    */
@@ -19,16 +29,16 @@ public class Scanner {
       System.out.println("\nError, file can't be found.");
       e.printStackTrace();
     } finally {
-      //x (true) {
         try {
           while ((str = br.readLine())!=null) {
             System.out.println(str);
+            String test = "int";
+            System.out.println("Token is: " + generateToken(test));
             this.sourceCode = this.sourceCode.concat(str);
           }
         } catch (IOException e) {
           e.printStackTrace();
         }
-      //}
     }
   }
 
@@ -45,4 +55,41 @@ public class Scanner {
     }
     return result;
   }
+
+  public void scanSourceCode(String str) {
+    //Patterns
+    String regexIdentifier = "^([a-zA-Z][a-zA-Z]*)$";
+    String regexNumber = "^([0-9]+)$";
+    Pattern patternIdentifier = Pattern.compile(regexIdentifier);
+    Pattern patternNumber = Pattern.compile(regexNumber);
+
+    Matcher matcherIdentifier = patternIdentifier.matcher(str);
+    Matcher matcherNumber = patternNumber.matcher(str);
+
+    if (matcherIdentifier.matches()) {
+      generateToken("IDENTIFIER");
+      return;
+    }
+    if (matcherNumber.matches()) {
+      generateToken("NUMBER");
+      return;
+    }
+    generateToken(str);
+
+  }
+
+  public String generateToken (String str) {
+    String token="";
+    if (!str.equals("IDENTIFIER") || !str.equals("NUMBER")) {
+      token = compilerManager.getWord(str);
+      if (token.equals("")) {
+        //Not found
+      }
+      else {
+        return token;
+      }
+    }
+    return str;
+  }
+
 }
