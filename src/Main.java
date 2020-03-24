@@ -7,6 +7,7 @@ public class Main {
       dictionary.showList();
       Scanner scanner = new Scanner();
       scanner.readSourceCode();
+      scanner.scanSourceCode("a");
 
       String text = scanner.removeSpecialCharacters();
       System.out.println(text);

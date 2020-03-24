@@ -57,6 +57,11 @@ public class CompilerManager {
 
     }
 
+    public String getWord(String key) {
+        Word word = dictionary.get(key);
+        return word.getToken();
+    }
+
     /**
      * Proc that shows all the words existing in the dictionary
      */
