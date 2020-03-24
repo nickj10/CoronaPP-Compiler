@@ -1,0 +1,3 @@
+// Comment here
+int a;
+a = 7;
