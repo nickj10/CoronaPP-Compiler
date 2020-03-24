@@ -8,5 +8,7 @@ public class Main {
       Scanner scanner = new Scanner();
       scanner.readSourceCode();
 
+      String text = scanner.removeSpecialCharacters();
+      System.out.println(text);
   }
 }

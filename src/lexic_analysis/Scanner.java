@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Scanner {
   private static final String PATH="data/source_code.txt";
-
+  private String sourceCode;
   /**
    * Reads source code file
    */
@@ -23,6 +23,7 @@ public class Scanner {
         try {
           if ((str = br.readLine())!=null) {
             System.out.println(str);
+            this.sourceCode = str;
           }
         } catch (IOException e) {
           e.printStackTrace();
@@ -30,11 +31,11 @@ public class Scanner {
       }
     }
   }
-  public String removeSpecialCharacters(String source) {
+  public String removeSpecialCharacters() {
     String result = "";
-    for(int i = 0; i < source.length(); i++) {
-      if (source.charAt(i) != ' ' && source.charAt(i) != '\n') {
-        result = result.concat(String.valueOf(source.charAt(i)));
+    for(int i = 0; i < sourceCode.length(); i++) {
+      if (sourceCode.charAt(i) != ' ' && sourceCode.charAt(i) != '\n') {
+        result = result.concat(String.valueOf(sourceCode.charAt(i)));
       }
     }
     return result;
