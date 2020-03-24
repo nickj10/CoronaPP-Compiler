@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Scanner {
   private static final String PATH="data/source_code.txt";
-  private String sourceCode;
+  private String sourceCode = "";
   /**
    * Reads source code file
    */
@@ -19,18 +19,23 @@ public class Scanner {
       System.out.println("\nError, file can't be found.");
       e.printStackTrace();
     } finally {
-      while (true) {
+      //x (true) {
         try {
-          if ((str = br.readLine())!=null) {
+          while ((str = br.readLine())!=null) {
             System.out.println(str);
-            this.sourceCode = str;
+            this.sourceCode = this.sourceCode.concat(str);
           }
         } catch (IOException e) {
           e.printStackTrace();
         }
-      }
+      //}
     }
   }
+
+  /**
+   * Removes special characters like ' ' and '\n'
+   * @return string without special characters
+   */
   public String removeSpecialCharacters() {
     String result = "";
     for(int i = 0; i < sourceCode.length(); i++) {
