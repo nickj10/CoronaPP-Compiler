@@ -7,11 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Scanner {
-  private static final String PATH="data/source_code.txt";
+  private static final String PATH = "data/source_code.txt";
   private CompilerManager compilerManager;
   private String sourceCode = "";
 
-  public Scanner () {
+  public Scanner() {
     compilerManager = new CompilerManager();
   }
 
@@ -29,29 +29,44 @@ public class Scanner {
       System.out.println("\nError, file can't be found.");
       e.printStackTrace();
     } finally {
-        try {
-          while ((str = br.readLine())!=null) {
-            System.out.println(str);
-            String test = "int";
-            System.out.println("Token is: " + generateToken(test));
-            this.sourceCode = this.sourceCode.concat(str);
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
+      try {
+        while ((str = br.readLine()) != null) {
+          System.out.println(str);
+          String test = "int";
+          System.out.println("Token is: " + generateToken(test));
+          this.sourceCode = this.sourceCode.concat(str);
         }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 
   /**
    * Removes special characters like ' ' and '\n'
+   *
    * @return string without special characters
    */
   public String removeSpecialCharacters() {
     String result = "";
-    for(int i = 0; i < sourceCode.length(); i++) {
+    for (int i = 0; i < sourceCode.length(); i++) {
       if (sourceCode.charAt(i) != ' ' && sourceCode.charAt(i) != '\n') {
         result = result.concat(String.valueOf(sourceCode.charAt(i)));
       }
+    }
+    return result;
+  }
+
+  public String removeComments() {
+    String result = "";
+    int i = 0;
+    while (i <= sourceCode.length()) {
+      if (sourceCode.charAt(i) == '$' && sourceCode.charAt(i + 1) == '$') {
+        while (sourceCode.charAt(i) != '\n') {
+          i++;
+        }
+      }
+      result = result.concat(String.valueOf(sourceCode.charAt(i)));
     }
     return result;
   }
@@ -75,21 +90,18 @@ public class Scanner {
       return;
     }
     generateToken(str);
-
   }
 
-  public String generateToken (String str) {
-    String token="";
+  public String generateToken(String str) {
+    String token = "";
     if (!str.equals("IDENTIFIER") || !str.equals("NUMBER")) {
       token = compilerManager.getWord(str);
       if (token.equals("")) {
         //Not found
-      }
-      else {
+      } else {
         return token;
       }
     }
     return str;
   }
-
 }

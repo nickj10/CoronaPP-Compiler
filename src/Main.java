@@ -9,7 +9,8 @@ public class Main {
       scanner.readSourceCode();
       scanner.scanSourceCode("a");
 
-      String text = scanner.removeSpecialCharacters();
+      String text = scanner.removeComments();
+      String text2 = scanner.removeSpecialCharacters();
       System.out.println(text);
   }
 }
