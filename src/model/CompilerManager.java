@@ -11,12 +11,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class DictionaryManager {
+public class CompilerManager {
     private static final String PATH="data/dictionary.json";
     private Dictionary model;
     private HashMap<String, Word> dictionary;
 
-    public DictionaryManager () {
+    public CompilerManager() {
         dictionary = new HashMap<String, Word>();
         readJSON();
         addToDictionary();
