@@ -22,6 +22,9 @@ public class DictionaryManager {
         addToDictionary();
     }
 
+    /**
+     * Proc that reads the json file containing the dictionary words
+     */
     public void readJSON() {
         model = new Dictionary();
         Gson gson = new Gson();
@@ -43,12 +46,20 @@ public class DictionaryManager {
             }
         }
     }
+
+    /**
+     * Proc that adds the words read from the file to the dictionary
+     */
     public void addToDictionary() {
         for (Word word : model.getWords()) {
             dictionary.put(word.getLexeme(),word);
         }
 
     }
+
+    /**
+     * Proc that shows all the words existing in the dictionary
+     */
     public void showList() {
         Set set = dictionary.entrySet();
         Iterator iterator = set.iterator();
