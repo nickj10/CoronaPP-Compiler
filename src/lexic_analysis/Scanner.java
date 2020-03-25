@@ -20,6 +20,7 @@ public class Scanner {
    */
   public void readSourceCode() {
     File source = new File(PATH);
+    StringBuilder strBuilder = new StringBuilder();
     String str = "";
     BufferedReader br = null;
 
@@ -31,14 +32,12 @@ public class Scanner {
     } finally {
       try {
         while ((str = br.readLine()) != null) {
-          System.out.println(str);
-          String test = "int";
-          System.out.println("Token is: " + generateToken(test));
-          this.sourceCode = this.sourceCode.concat(str);
+          strBuilder.append(str + "\n");
         }
       } catch (IOException e) {
         e.printStackTrace();
       }
+      this.sourceCode = strBuilder.toString();
     }
   }
 
@@ -48,7 +47,8 @@ public class Scanner {
    * @return array of string without special characters
    */
   public String[] removeSpecialCharacters() {
-    return this.sourceCode.split("\\s+|;");
+    this.sourceCode = this.sourceCode.replaceAll("\\r\\n|\\r|\\n|;"," ");
+    return this.sourceCode.split("\\s+");
   }
 
 
