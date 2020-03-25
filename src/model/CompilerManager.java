@@ -57,6 +57,10 @@ public class CompilerManager {
 
     }
 
+    /**
+     * You have been hacked by mushimushibongbong *
+     */
+
     public String getWord(String key) {
         Word word = dictionary.get(key);
         return word.getToken();

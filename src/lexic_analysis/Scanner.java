@@ -43,19 +43,14 @@ public class Scanner {
   }
 
   /**
-   * Removes special characters like ' ' and '\n'
+   * Removes whitespaces and ';' and separates elements into an array
    *
-   * @return string without special characters
+   * @return array of string without special characters
    */
-  public String removeSpecialCharacters() {
-    String result = "";
-    for (int i = 0; i < sourceCode.length(); i++) {
-      if (sourceCode.charAt(i) != ' ' && sourceCode.charAt(i) != '\n') {
-        result = result.concat(String.valueOf(sourceCode.charAt(i)));
-      }
-    }
-    return result;
+  public String[] removeSpecialCharacters() {
+    return this.sourceCode.split("\\s+|;");
   }
+
 
   public String removeComments() {
     String result = "";

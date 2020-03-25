@@ -7,10 +7,10 @@ public class Main {
       dictionary.showList();
       Scanner scanner = new Scanner();
       scanner.readSourceCode();
-      scanner.scanSourceCode("a");
+      //scanner.scanSourceCode("a");
 
-      String text = scanner.removeComments();
-      String text2 = scanner.removeSpecialCharacters();
-      System.out.println(text);
+      //String text = scanner.removeComments();
+      String[] text2 = scanner.removeSpecialCharacters();
+      System.out.println(text2);
   }
 }
