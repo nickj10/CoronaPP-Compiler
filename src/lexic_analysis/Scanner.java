@@ -58,9 +58,19 @@ public class Scanner {
     String result = "";
     int i = 0;
     while (i < sourceCode.length()) {
+      // Remove inline comments
       if (sourceCode.charAt(i) == '$') {
         if (sourceCode.charAt(i + 1) == '$') {
           while (sourceCode.charAt(i) != '\n') {
+            i++;
+          }
+          i++;
+        }
+      }
+      // Remove block comments
+      if (sourceCode.charAt(i) == '/') {
+        if (sourceCode.charAt(i + 1) == '$') {
+          while (sourceCode.charAt(i) != '$' && sourceCode.charAt(i + 1) != '/') {
             i++;
           }
           i++;
