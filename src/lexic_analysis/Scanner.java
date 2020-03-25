@@ -47,23 +47,28 @@ public class Scanner {
    * @return array of string without special characters
    */
   public String[] removeSpecialCharacters() {
-    this.sourceCode = this.sourceCode.replaceAll("\\r\\n|\\r|\\n|;"," ");
+    this.sourceCode = this.sourceCode.replaceAll("\\r\\n|\\r|\\n|;", " ");
     return this.sourceCode.split("\\s+");
   }
 
-
-  public String removeComments() {
+  /**
+   * Removes comments
+   */
+  public void removeComments() {
     String result = "";
     int i = 0;
-    while (i <= sourceCode.length()) {
-      if (sourceCode.charAt(i) == '$' && sourceCode.charAt(i + 1) == '$') {
-        while (sourceCode.charAt(i) != '\n') {
+    while (i < sourceCode.length()) {
+      if (sourceCode.charAt(i) == '$') {
+        if (sourceCode.charAt(i + 1) == '$') {
+          while (sourceCode.charAt(i) != '\n') {
+            i++;
+          }
           i++;
         }
       }
-      result = result.concat(String.valueOf(sourceCode.charAt(i)));
+      result = result.concat(String.valueOf(sourceCode.charAt(i++)));
     }
-    return result;
+    this.sourceCode = result;
   }
 
   public void scanSourceCode(String str) {
