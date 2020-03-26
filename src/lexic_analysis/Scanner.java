@@ -67,18 +67,9 @@ public class Scanner {
           i++;
         }
       }
-      // Remove block comments
-      if (sourceCode.charAt(i) == '/') {
-        if (sourceCode.charAt(i + 1) == '$') {
-          while (sourceCode.charAt(i) != '$' && sourceCode.charAt(i + 1) != '/') {
-            i++;
-          }
-          i++;
-        }
-      }
       result = result.concat(String.valueOf(sourceCode.charAt(i++)));
     }
-    this.sourceCode = result;
+    this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "");
   }
 
   public void scanSourceCode(String str) {

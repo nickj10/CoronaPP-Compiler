@@ -1,3 +1,8 @@
 $$ Comment here
+
+/$
+This is a block
+comment
+$/
 int a;
 a = 7;
