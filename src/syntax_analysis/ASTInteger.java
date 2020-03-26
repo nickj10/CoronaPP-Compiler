@@ -4,13 +4,13 @@ package syntax_analysis;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTInteger extends SimpleNode {
-  public ASTInteger(int id) {
-    super(id);
-  }
+    public ASTInteger(int id) {
+        super(id);
+    }
 
-  public ASTInteger(Parser p, int id) {
-    super(p, id);
-  }
+    public ASTInteger(Parser p, int id) {
+        super(p, id);
+    }
 
 }
 /* JavaCC - OriginalChecksum=dc2a3e4183884044b9a599ef7411003a (do not edit this line) */

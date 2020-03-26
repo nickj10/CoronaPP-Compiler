@@ -8,7 +8,7 @@ PARSER_BEGIN(Parser)
 /**
  * An Arithmetic Grammar.
  */
-import syntax_analysis.Token;public class Parser {
+public class Parser {
 
   /** Main entry point. */
   public static void main(String args[]) {
@@ -17,9 +17,7 @@ import syntax_analysis.Token;public class Parser {
     try {
       ASTStart n = t.Start();
       n.dump("");
-      System.out.println("Thank you.");
     } catch (Exception e) {
-      System.out.println("Oops.");
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
@@ -40,26 +38,14 @@ SKIP :
 
 TOKEN : /* LITERALS */
 {
-  < INTEGER_LITERAL:
-        <DECIMAL_LITERAL> (["l","L"])?
-      | <HEX_LITERAL> (["l","L"])?
-      | <OCTAL_LITERAL> (["l","L"])?
-  >
-|
-  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
-|
-  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
-|
-  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+  < INT : (["0"-"9"])+ >
 }
 
 TOKEN : /* IDENTIFIERS */
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+  < IDENTIFIER: <CHAR> (<CHAR>|<INT>)* >
 |
-  < #LETTER: ["_","a"-"z","A"-"Z"] >
-|
-  < #DIGIT: ["0"-"9"] >
+  < #CHAR: ["_","a"-"z","A"-"Z"] >
 }
 
 /** Main production. */
@@ -112,5 +98,5 @@ void MyID() :
 /** An Integer. */
 void Integer() : {}
 {
-  <INTEGER_LITERAL>
+  <INT>
 }

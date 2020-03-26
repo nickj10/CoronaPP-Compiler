@@ -16,9 +16,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
         try {
             ASTStart n = t.Start();
             n.dump("");
-            System.out.println("Thank you.");
         } catch (Exception e) {
-            System.out.println("Oops.");
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
@@ -33,7 +31,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
         jjtree.openNodeScope(jjtn000);
         try {
             Expression();
-            jj_consume_token(14);
+            jj_consume_token(10);
             jjtree.closeNodeScope(jjtn000, true);
             jjtc000 = false;
             {
@@ -86,8 +84,8 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
             label_1:
             while (true) {
                 switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-                    case 15:
-                    case 16: {
+                    case 11:
+                    case 12: {
                         ;
                         break;
                     }
@@ -96,12 +94,12 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
                         break label_1;
                 }
                 switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-                    case 15: {
-                        jj_consume_token(15);
+                    case 11: {
+                        jj_consume_token(11);
                         break;
                     }
-                    case 16: {
-                        jj_consume_token(16);
+                    case 12: {
+                        jj_consume_token(12);
                         break;
                     }
                     default:
@@ -150,9 +148,9 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
             label_2:
             while (true) {
                 switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-                    case 17:
-                    case 18:
-                    case 19: {
+                    case 13:
+                    case 14:
+                    case 15: {
                         ;
                         break;
                     }
@@ -161,16 +159,16 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
                         break label_2;
                 }
                 switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-                    case 17: {
-                        jj_consume_token(17);
+                    case 13: {
+                        jj_consume_token(13);
                         break;
                     }
-                    case 18: {
-                        jj_consume_token(18);
+                    case 14: {
+                        jj_consume_token(14);
                         break;
                     }
-                    case 19: {
-                        jj_consume_token(19);
+                    case 15: {
+                        jj_consume_token(15);
                         break;
                     }
                     default:
@@ -212,17 +210,17 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
      */
     static final public void UnaryExpression() throws ParseException {
         switch ((jj_ntk == -1) ? jj_ntk_f() : jj_ntk) {
-            case 20: {
-                jj_consume_token(20);
+            case 16: {
+                jj_consume_token(16);
                 Expression();
-                jj_consume_token(21);
+                jj_consume_token(17);
                 break;
             }
             case IDENTIFIER: {
                 MyID();
                 break;
             }
-            case INTEGER_LITERAL: {
+            case INT: {
                 Integer();
                 break;
             }
@@ -261,7 +259,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
         try {
-            jj_consume_token(INTEGER_LITERAL);
+            jj_consume_token(INT);
         } finally {
             if (jjtc000) {
                 jjtree.closeNodeScope(jjtn000, true);
@@ -293,7 +291,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
     }
 
     private static void jj_la1_init_0() {
-        jj_la1_0 = new int[]{0x18000, 0x18000, 0xe0000, 0xe0000, 0x100880,};
+        jj_la1_0 = new int[]{0x1800, 0x1800, 0xe000, 0xe000, 0x10180,};
     }
 
     /**
@@ -466,7 +464,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
      */
     static public ParseException generateParseException() {
         jj_expentries.clear();
-        boolean[] la1tokens = new boolean[22];
+        boolean[] la1tokens = new boolean[18];
         if (jj_kind >= 0) {
             la1tokens[jj_kind] = true;
             jj_kind = -1;
@@ -480,7 +478,7 @@ public class Parser/*@bgen(jjtree)*/ implements ParserTreeConstants, ParserConst
                 }
             }
         }
-        for (int i = 0; i < 22; i++) {
+        for (int i = 0; i < 18; i++) {
             if (la1tokens[i]) {
                 jj_expentry = new int[1];
                 jj_expentry[0] = i;

@@ -4,13 +4,13 @@ package syntax_analysis;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTAdd extends SimpleNode {
-  public ASTAdd(int id) {
-    super(id);
-  }
+    public ASTAdd(int id) {
+        super(id);
+    }
 
-  public ASTAdd(Parser p, int id) {
-    super(p, id);
-  }
+    public ASTAdd(Parser p, int id) {
+        super(p, id);
+    }
 
 }
 /* JavaCC - OriginalChecksum=8b68c9f3ed906a613965906efa2d2f2b (do not edit this line) */

@@ -4,30 +4,30 @@ package syntax_analysis;
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTMyID extends SimpleNode {
-  /**
-   * The string image of the token.
-   */
-  private String name;
+    /**
+     * The string image of the token.
+     */
+    private String name;
 
-  public ASTMyID(int id) {
-    super(id);
-  }
+    public ASTMyID(int id) {
+        super(id);
+    }
 
-  public ASTMyID(Parser p, int id) {
-    super(p, id);
-  }
+    public ASTMyID(Parser p, int id) {
+        super(p, id);
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  @Override
-  public String toString() {
-    return "Identifier: " + name;
-  }
+    @Override
+    public String toString() {
+        return "Identifier: " + name;
+    }
 }
 /* JavaCC - OriginalChecksum=1f3053e762454eb48b5adefe7f2bd3ea (do not edit this line) */
