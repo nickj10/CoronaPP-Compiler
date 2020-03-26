@@ -10,9 +10,14 @@ public class Scanner {
   private static final String PATH = "data/source_code.txt";
   private CompilerManager compilerManager;
   private String sourceCode = "";
+  private String[] words;
 
   public Scanner() {
+
     compilerManager = new CompilerManager();
+    readSourceCode();
+    removeComments();
+    words = removeSpecialCharacters();
   }
 
   /**
@@ -70,9 +75,10 @@ public class Scanner {
       result = result.concat(String.valueOf(sourceCode.charAt(i++)));
     }
     this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "");
+
   }
 
-  public void scanSourceCode(String str) {
+  public String scanSourceCode(String str) {
     //Patterns
     String regexIdentifier = "^([a-zA-Z][a-zA-Z]*)$";
     String regexNumber = "^([0-9]+)$";
@@ -83,26 +89,28 @@ public class Scanner {
     Matcher matcherNumber = patternNumber.matcher(str);
 
     if (matcherIdentifier.matches()) {
-      generateToken("IDENTIFIER");
-      return;
+      return "IDENTIFIER";
     }
     if (matcherNumber.matches()) {
-      generateToken("NUMBER");
-      return;
+      return "NUMBER";
     }
-    generateToken(str);
+    return str;
   }
 
   public String generateToken(String str) {
-    String token = "";
-    if (!str.equals("IDENTIFIER") || !str.equals("NUMBER")) {
-      token = compilerManager.getWord(str);
-      if (token.equals("")) {
-        //Not found
-      } else {
+    //Check if it exists in the dictionary
+    String token = compilerManager.getWord(str);
+    //If not found in the dictionary
+    if (token.equals("")) {
+      token = scanSourceCode(str);
+      if (token.equals("IDENTIFIER") || token.equals("NUMBER")) {
         return token;
       }
     }
-    return str;
+    return token;
+  }
+
+  public String[] getWords () {
+    return words;
   }
 }

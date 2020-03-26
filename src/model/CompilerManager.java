@@ -63,6 +63,9 @@ public class CompilerManager {
 
     public String getWord(String key) {
         Word word = dictionary.get(key);
+        if (word == null) {
+            return "";
+        }
         return word.getToken();
     }
 

@@ -6,11 +6,13 @@ public class Main {
       CompilerManager dictionary = new CompilerManager();
       dictionary.showList();
       Scanner scanner = new Scanner();
-      scanner.readSourceCode();
-      //scanner.scanSourceCode("a");
+      String[] words = scanner.getWords();
+      for (int i = 0; i < words.length; i++) {
+          String token = scanner.generateToken(words[i]);
+          System.out.println(token);
 
-    scanner.removeComments();
-      String[] text2 = scanner.removeSpecialCharacters();
-      System.out.println(text2);
+      }
+
+
   }
 }
