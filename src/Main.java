@@ -3,14 +3,14 @@ import model.CompilerManager;
 
 public class Main {
   public static void main(String[] args) {
-      CompilerManager dictionary = new CompilerManager();
-      dictionary.showList();
-      Scanner scanner = new Scanner();
-      scanner.readSourceCode();
-      //scanner.scanSourceCode("a");
+    CompilerManager dictionary = new CompilerManager();
+    dictionary.showList();
+    Scanner scanner = new Scanner();
+    scanner.readSourceCode();
+    //scanner.scanSourceCode("a");
 
     scanner.removeComments();
-      String[] text2 = scanner.removeSpecialCharacters();
-      System.out.println(text2);
+    String[] text2 = scanner.removeSpecialCharacters();
+    System.out.println(text2);
   }
 }
