@@ -1,6 +1,16 @@
+import lexic_analysis.Scanner;
+import model.CompilerManager;
+
 public class Main {
   public static void main(String[] args) {
-    System.out.println("Hello World");
+      CompilerManager dictionary = new CompilerManager();
+      dictionary.showList();
+      Scanner scanner = new Scanner();
+      String[] words = scanner.generateTokens();
+      for (int i = 0; i < words.length; i++) {
+          System.out.println(words[i]);
+      }
+
 
   }
 }
