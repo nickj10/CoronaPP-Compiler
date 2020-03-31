@@ -10,10 +10,9 @@ public class Main {
       Scanner scanner = new Scanner();
       Parser parser = new Parser();
 
-      String[] words = scanner.generateTokens();
-      //El parser pide uno por uno los tokens
-      for (int i = 0; i < words.length; i++) {
-          parser.getToken(words[i]);
+      scanner.generateTokens();
+      while (scanner.getNextToken() != null) {
+        parser.getToken(scanner.sendNextToken());
       }
   }
 }
