@@ -1,16 +1,18 @@
+import exceptions.ParserException;
 import lexic_analysis.Scanner;
 import model.CompilerManager;
+import syntax.Parser;
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws ParserException {
       CompilerManager dictionary = new CompilerManager();
       dictionary.showList();
       Scanner scanner = new Scanner();
-      String[] words = scanner.generateTokens();
-      for (int i = 0; i < words.length; i++) {
-          System.out.println(words[i]);
+      Parser parser = new Parser();
+
+      scanner.generateTokens();
+      while (scanner.getNextToken() != null) {
+        parser.getToken(scanner.sendNextToken());
       }
-
-
   }
 }

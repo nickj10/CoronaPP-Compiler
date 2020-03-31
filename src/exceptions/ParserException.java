@@ -4,9 +4,9 @@ import syntax.Token;
 
 public class ParserException extends Exception {
   private String message;
-  private Token token;
+  private String token;
 
-  public ParserException(String message, Token token) {
+  public ParserException(String message, String token) {
     super(message);
     this.message = message;
     this.token = token;

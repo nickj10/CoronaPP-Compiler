@@ -1,5 +1,8 @@
 package lexic_analysis;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import model.CompilerManager;
 
 import java.io.*;
@@ -11,6 +14,7 @@ public class Scanner {
   private CompilerManager compilerManager;
   private String sourceCode = "";
   private String[] words;
+  private LinkedList<String> preparedTokens;
 
   public Scanner() {
 
@@ -82,8 +86,22 @@ public class Scanner {
     words = removeSpecialCharacters();
   }
 
-  public String[] generateTokens() {
+  public void generateTokens() {
     scanSourceCode();
-    return words;
+    preparedTokens = new LinkedList<String>(Arrays.asList(words));
   }
+
+  public String getNextToken() {
+    try {
+      return preparedTokens.getFirst();
+    } catch (NoSuchElementException e) {
+      return null;
+    }
+  }
+
+  public String sendNextToken() {
+    return preparedTokens.removeFirst();
+  }
+
+
 }

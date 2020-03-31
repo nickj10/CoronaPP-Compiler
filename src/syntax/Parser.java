@@ -4,47 +4,37 @@ import exceptions.ParserException;
 import java.util.LinkedList;
 
 public class Parser {
-  private LinkedList<Token> tokens;
+  private String[] tokens;
   private Token nextToken;
 
   public Parser() {
-    this.tokens = new LinkedList<Token>();
+    this.nextToken = new Token();
+
   }
 
-  public void parse(LinkedList<Token> tokens) throws ParserException {
-    this.tokens = (LinkedList<Token>) tokens.clone();
-    this.nextToken = this.tokens.getFirst();
-
-    expression();
-
-    // If there is no other symbol left, the next token is EPSILON
+  public void parse(String token) throws ParserException {
+    /* If there is no other symbol left, the next token is EPSILON
     if (nextToken.tokenType != TokenType.EPSILON) {
       throw new ParserException("Unexpected symbol %s found", nextToken);
-    }
+    }*/
   }
 
-  private void expression() {
-    oper_suma();
+  public String getToken (String str) throws ParserException {
+    String token;
+    //Miramos si existe en nuestro diccionario
+    token = nextToken.existsInDictionary(str);
+    //Sino miramos qué patrón sigue
+    if (token.equals("")) {
+      token = nextToken.checkPattern(str);
+      if (token == null) {
+        throw new ParserException("This symbol is not found", str);
+      }
+    }
+    //Añadir a la tabla de símbolos
+    System.out.println(str + " - " + token);
+    return token;
   }
 
-  private void oper_suma() {
-    if (nextToken.tokenType == TokenType.ARITMETIC_SUM || nextToken.tokenType == TokenType.ARITMETIC_RES || nextToken.tokenType == TokenType.NUMBER) {
-      // sum_op -> PLUSMINUS term sum_op
-      nextToken();
-      //term();
-      oper_suma();
-    } else {
-      // sum_op -> EPSILON
-    }
-  }
 
-  private void nextToken() {
-    tokens.pop();
-    // at the end of input we return an epsilon token
-    if (tokens.isEmpty()) {
-      nextToken = new Token(TokenType.EPSILON, "");
-    } else {
-      nextToken = tokens.getFirst();
-    }
-  }
+
 }
