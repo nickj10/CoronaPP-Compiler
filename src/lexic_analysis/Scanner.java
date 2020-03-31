@@ -16,8 +16,6 @@ public class Scanner {
 
     compilerManager = new CompilerManager();
     readSourceCode();
-    removeComments();
-    words = removeSpecialCharacters();
   }
 
   /**
@@ -79,39 +77,13 @@ public class Scanner {
 
   }
 
-  public String scanSourceCode(String str) {
-    //Patterns
-    String regexIdentifier = "^([a-zA-Z][a-zA-Z]*)$";
-    String regexNumber = "^([0-9]+)$";
-    Pattern patternIdentifier = Pattern.compile(regexIdentifier);
-    Pattern patternNumber = Pattern.compile(regexNumber);
-
-    Matcher matcherIdentifier = patternIdentifier.matcher(str);
-    Matcher matcherNumber = patternNumber.matcher(str);
-
-    if (matcherIdentifier.matches()) {
-      return "IDENTIFIER";
-    }
-    if (matcherNumber.matches()) {
-      return "NUMBER";
-    }
-    return str;
+  public void scanSourceCode() {
+    removeComments();
+    words = removeSpecialCharacters();
   }
 
-  public String generateToken(String str) {
-    //Check if it exists in the dictionary
-    String token = compilerManager.getWord(str);
-    //If not found in the dictionary
-    if (token.equals("")) {
-      token = scanSourceCode(str);
-      if (token.equals("IDENTIFIER") || token.equals("NUMBER")) {
-        return token;
-      }
-    }
-    return token;
-  }
-
-  public String[] getWords () {
+  public String[] generateTokens() {
+    scanSourceCode();
     return words;
   }
 }
