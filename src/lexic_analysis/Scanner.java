@@ -73,7 +73,7 @@ public class Scanner {
       result = result.concat(String.valueOf(sourceCode.charAt(i++)));
     }
     // Remove block comments
-    this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "");
+    this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "").trim();
 
   }
 
