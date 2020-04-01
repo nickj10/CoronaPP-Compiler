@@ -1,3 +1,6 @@
+import lexic_analysis.Scanner;
+import model.CompilerManager;
+
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;
 public class Main {
