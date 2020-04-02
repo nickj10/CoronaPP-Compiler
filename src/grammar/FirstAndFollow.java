@@ -132,7 +132,7 @@ public class FirstAndFollow {
 
 	// Delete output file
 	protected static void deleteOutput(String file) {
-		File f = new File("./output/"+file+".out");
+		File f = new File("./out/"+file+".out");
 		if(f.exists()){
 			f.delete();
 		}
@@ -142,11 +142,11 @@ public class FirstAndFollow {
 	// Append to output file
 	protected static void appendToOutput(String file, String str) {
 		try{
-			File f = new File("./output/"+file+".out");
+			File f = new File("./out/"+file+".out");
 			if(!f.exists()){
 				f.createNewFile();
 			}
-			FileWriter fileWritter = new FileWriter("./output/"+file+".out",true);
+			FileWriter fileWritter = new FileWriter("./out/"+file+".out",true);
 			BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
 			bufferWritter.write(str);
 			bufferWritter.close();
