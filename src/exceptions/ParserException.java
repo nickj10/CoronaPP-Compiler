@@ -1,14 +1,12 @@
 package exceptions;
 
-import syntax.Token;
-
 public class ParserException extends Exception {
-  private String message;
-  private String token;
+    private String message;
+    private String token;
 
-  public ParserException(String message, String token) {
-    super(message);
-    this.message = message;
-    this.token = token;
-  }
+    public ParserException(String message, String token) {
+        super(message);
+        this.message = message;
+        this.token = token;
+    }
 }
