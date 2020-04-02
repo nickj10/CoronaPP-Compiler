@@ -7,11 +7,13 @@ public class Main {
   public static void main(String[] args) {
       CompilerManager dictionary = new CompilerManager();
       dictionary.showList();
-      Scanner scanner = new Scanner();
-      String[] words = scanner.generateTokens();
-      for (int i = 0; i < words.length; i++) {
-          System.out.println(words[i]);
-      }
+    Scanner scanner = new Scanner();
+    //Parser parser = new Parser();
+
+    scanner.generateTokens();
+    while (scanner.getNextToken() != null) {
+      //parser.getToken(scanner.sendNextToken());
+    }
 
 
     // Creating a new . Remember, it is a Singleton so you need to call the getInstance() method
