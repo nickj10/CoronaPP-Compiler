@@ -51,13 +51,27 @@ public class Scanner {
    */
   public LinkedList<TokenInfo> removeSpecialCharacters() {
     String[] lines = this.sourceCode.split("\\r\\n|\\r|\\n");
-
+    String scope = "global";
+    int scope_level = 0;
     LinkedList<TokenInfo> tokens = new LinkedList<>();
     for (int i = 0; i < lines.length; i++) {
       System.out.println(lines[i]);
-      String[] lexemes = lines[i].replaceAll("\\r\\n|\\r|\\n|;", " ").split("\\s+|;");
-      for (int j = 0; j < lexemes.length; j++) {
-        tokens.push(new TokenInfo("global", lexemes[j], i));
+      String[] lexemes = lines[i].replaceAll("\\r\\n|\\r|\\n|;", " ").trim().split("\\s+|;");
+      // Check if a new scope is opened
+      if (lines[i].contains("{")) {
+        scope_level++;
+        scope = "local";
+      }
+      // Closing the scope level
+      if (lines[i].contains("}")) {
+        scope_level--;
+        if (scope_level == 0) {
+          scope = "global";
+        }
+      }
+      for (String lexema : lexemes) {
+        tokens.push(new TokenInfo(scope, lexema, i + 1));
+        System.out.println(lexema + " - " + "Scope: " + scope + " Line number: " + (i + 1));
       }
     }
     return tokens;
