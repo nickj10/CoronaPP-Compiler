@@ -1,0 +1,4 @@
+definition - type list ASSIGN_EQ value DOT_COMA
+type - INT
+list - IDENTIFIER
+value - NUMBER

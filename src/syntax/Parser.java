@@ -1,6 +1,8 @@
 package syntax;
 
 import exceptions.ParserException;
+import grammar.Token;
+
 import java.util.LinkedList;
 
 public class Parser {
@@ -19,22 +21,29 @@ public class Parser {
     }*/
   }
 
-  public String getToken (String str) throws ParserException {
-    String token;
+  public Token getToken (String lex) throws ParserException {
+    if (lex.equals("")){
+      return null;
+    }
+    Token token = new Token();
+    token.lexeme = lex;
+
     //Miramos si existe en nuestro diccionario
-    token = nextToken.existsInDictionary(str);
+    token.token = token.existsInDictionary();
+
     //Sino miramos qué patrón sigue
-    if (token.equals("")) {
-      token = nextToken.checkPattern(str);
-      if (token == null) {
-        throw new ParserException("This symbol is not found", str);
+    if (token.token.equals("")) {
+      token = new Token(token.token, lex);
+      if (token.type.equals("ERROR")) {
+        throw new ParserException("This symbol is not found", lex);
       }
+    } else {
+      token = new Token(token.token);
+      token.lexeme = lex;
     }
     //Añadir a la tabla de símbolos
-    System.out.println(str + " - " + token);
+    System.out.println(lex + " - " + token.token);
     return token;
   }
-
-
 
 }
