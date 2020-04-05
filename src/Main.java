@@ -1,4 +1,5 @@
 import lexic_analysis.Scanner;
+import lexic_analysis.TokenInfo;
 import model.CompilerManager;
 
 import SymbolTable.SymbolTable;
@@ -13,6 +14,8 @@ public class Main {
     scanner.generateTokens();
     while (scanner.getNextToken() != null) {
       //parser.getToken(scanner.sendNextToken());
+      TokenInfo tokenInfo = scanner.sendNextToken();
+      System.out.println(tokenInfo.getToken() + " - " + "Scope: " + tokenInfo.getScope() + " Line number: " + tokenInfo.getDeclaredAtLine());
     }
 
 

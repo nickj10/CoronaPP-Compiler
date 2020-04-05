@@ -70,8 +70,16 @@ public class Scanner {
         }
       }
       for (String lexema : lexemes) {
+        if (lexema.contains("(")) {
+          lexema = lexema.substring(1);
+          tokens.push(new TokenInfo(scope, "(", i + 1));
+        } else {
+          if (lexema.contains(")")) {
+            lexema = lexema.substring(0, lexema.length() - 1);
+            tokens.push(new TokenInfo(scope, ")", i + 1));
+          }
+        }
         tokens.push(new TokenInfo(scope, lexema, i + 1));
-        System.out.println(lexema + " - " + "Scope: " + scope + " Line number: " + (i + 1));
       }
     }
     return tokens;
