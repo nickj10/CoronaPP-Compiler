@@ -8,4 +8,9 @@ public class IntermediateCodeFlow {
   public IntermediateCodeFlow() {
     this.tacCodes = new ArrayList<IntermediateCode>();
   }
+
+  public void addNewIC(IntermediateCode ic) {
+    tacCodes.add(ic);
+  }
+  
 }
