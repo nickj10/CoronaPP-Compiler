@@ -13,8 +13,8 @@ public class Scanner {
   private static final String PATH = "data/source_code.txt";
   private CompilerManager compilerManager;
   private String sourceCode = "";
+  private LinkedList<TokenInfo> preparedTokens;
   private String[] words;
-  private LinkedList<String> preparedTokens;
 
   public Scanner() {
 
@@ -53,9 +53,40 @@ public class Scanner {
    *
    * @return array of string without special characters
    */
-  public String[] removeSpecialCharacters() {
-    this.sourceCode = this.sourceCode.replaceAll("\\r\\n|\\r|\\n|;", " ");
-    return this.sourceCode.split("\\s+");
+  public LinkedList<TokenInfo> removeSpecialCharacters() {
+    String[] lines = this.sourceCode.split("\\r\\n|\\r|\\n");
+    String scope = "global";
+    int scope_level = 0;
+    LinkedList<TokenInfo> tokens = new LinkedList<>();
+    for (int i = 0; i < lines.length; i++) {
+      System.out.println(lines[i]);
+      String[] lexemes = lines[i].replaceAll("\\r\\n|\\r|\\n|;", " ").trim().split("\\s+|;");
+      // Check if a new scope is opened
+      if (lines[i].contains("{")) {
+        scope_level++;
+        scope = "local";
+      }
+      // Closing the scope level
+      if (lines[i].contains("}")) {
+        scope_level--;
+        if (scope_level == 0) {
+          scope = "global";
+        }
+      }
+      for (String lexema : lexemes) {
+        if (lexema.contains("(")) {
+          lexema = lexema.substring(1);
+          tokens.push(new TokenInfo(scope, "(", i + 1));
+        } else {
+          if (lexema.contains(")")) {
+            lexema = lexema.substring(0, lexema.length() - 1);
+            tokens.push(new TokenInfo(scope, ")", i + 1));
+          }
+        }
+        tokens.push(new TokenInfo(scope, lexema, i + 1));
+      }
+    }
+    return tokens;
   }
 
   /**
@@ -77,31 +108,29 @@ public class Scanner {
       result = result.concat(String.valueOf(sourceCode.charAt(i++)));
     }
     // Remove block comments
-    this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "");
+    this.sourceCode = result.replaceAll("\\/\\$[\\s\\S]*?\\$\\/", "").trim();
 
   }
 
   public void scanSourceCode() {
     removeComments();
-    words = removeSpecialCharacters();
+    preparedTokens = removeSpecialCharacters();
   }
 
-  public void generateTokens() {
+  public String[] generateTokens() {
     scanSourceCode();
-    preparedTokens = new LinkedList<String>(Arrays.asList(words));
   }
 
-  public String getNextToken() {
+  public TokenInfo getNextToken() {
     try {
-      return preparedTokens.getFirst();
+      return preparedTokens.getLast();
     } catch (NoSuchElementException e) {
       return null;
     }
   }
 
-  public String sendNextToken() {
-    return preparedTokens.removeFirst();
+  public TokenInfo sendNextToken() {
+    return preparedTokens.removeLast();
+    preparedTokens = new LinkedList<String>(Arrays.asList(words));
   }
-
-
 }

@@ -6,3 +6,6 @@ comment
 $/
 int a;
 a = 7;
+if (a == 0) {
+  a = 8;
+}
