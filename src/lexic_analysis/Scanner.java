@@ -56,7 +56,7 @@ public class Scanner {
     LinkedList<TokenInfo> tokens = new LinkedList<>();
     for (int i = 0; i < lines.length; i++) {
       System.out.println(lines[i]);
-      String[] lexemes = lines[i].replaceAll("\\r\\n|\\r|\\n|;", " ").trim().split("\\s+|;");
+      String[] lexemes = lines[i].replaceAll("\\r\\n|\\r|\\n", " ").trim().split("\\s+");
       // Check if a new scope is opened
       if (lines[i].contains("{")) {
         scope_level++;
@@ -72,14 +72,20 @@ public class Scanner {
       for (String lexema : lexemes) {
         if (lexema.contains("(")) {
           lexema = lexema.substring(1);
+          tokens.push(new TokenInfo(scope, lexema, i + 1));
           tokens.push(new TokenInfo(scope, "(", i + 1));
-        } else {
-          if (lexema.contains(")")) {
+        } else if (lexema.contains(")")) {
             lexema = lexema.substring(0, lexema.length() - 1);
+            tokens.push(new TokenInfo(scope, lexema, i + 1));
             tokens.push(new TokenInfo(scope, ")", i + 1));
-          }
         }
-        tokens.push(new TokenInfo(scope, lexema, i + 1));
+        if (lexema.contains(";")) {
+          lexema = lexema.substring(0, lexema.length() - 1);
+          tokens.push(new TokenInfo(scope, lexema, i + 1));
+          tokens.push(new TokenInfo(scope, ";", i + 1));
+        } else {
+          tokens.push(new TokenInfo(scope, lexema, i + 1));
+        }
       }
     }
     return tokens;
