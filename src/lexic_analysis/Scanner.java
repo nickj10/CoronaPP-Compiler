@@ -117,7 +117,7 @@ public class Scanner {
     preparedTokens = removeSpecialCharacters();
   }
 
-  public String[] generateTokens() {
+  public void generateTokens() {
     scanSourceCode();
   }
 
@@ -131,6 +131,5 @@ public class Scanner {
 
   public TokenInfo sendNextToken() {
     return preparedTokens.removeLast();
-    preparedTokens = new LinkedList<String>(Arrays.asList(words));
   }
 }
