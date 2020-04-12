@@ -1,28 +1,30 @@
 package lexic_analysis;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import model.CompilerManager;
 
 import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Scanner {
-  private static final String PATH = "data/source_code.txt";
-  private CompilerManager compilerManager;
+  private String file;
   private String sourceCode = "";
   private LinkedList<TokenInfo> preparedTokens;
+  private String[] words;
 
-  public Scanner() {
-
-    compilerManager = new CompilerManager();
+  public Scanner (String file) {
+    this.file = file;
     readSourceCode();
+    generateTokens();
   }
 
   /**
    * Reads source code file
    */
   public void readSourceCode() {
-    File source = new File(PATH);
+    File source = new File(file);
     StringBuilder strBuilder = new StringBuilder();
     String str = "";
     BufferedReader br = null;
@@ -72,18 +74,25 @@ public class Scanner {
       for (String lexema : lexemes) {
         if (lexema.contains("(")) {
           lexema = lexema.substring(1);
-          tokens.push(new TokenInfo(scope, "(", i + 1));
-          tokens.push(new TokenInfo(scope, lexema, i + 1));
+          tokens.push(new TokenInfo("(", "", "",scope, i+1, 0));
+          tokens.push(new TokenInfo(lexema, "", "", scope, i + 1,0));
+          //tokens.push(new TokenInfo(scope, "(", i + 1));
+          //tokens.push(new TokenInfo(scope, lexema, i + 1));
         } else if (lexema.contains(")")) {
             lexema = lexema.substring(0, lexema.length() - 1);
-            tokens.push(new TokenInfo(scope, lexema, i + 1));
-            tokens.push(new TokenInfo(scope, ")", i + 1));
+          tokens.push(new TokenInfo(lexema, "", "", scope, i + 1,0));
+          tokens.push(new TokenInfo(")", "",  "",scope, i+1, 0));
+          //tokens.push(new TokenInfo(scope, lexema, i + 1));
+          //tokens.push(new TokenInfo(scope, ")", i + 1));
         } else if (lexema.contains(";")) {
           lexema = lexema.substring(0, lexema.length() - 1);
-          tokens.push(new TokenInfo(scope, lexema, i + 1));
-          tokens.push(new TokenInfo(scope, ";", i + 1));
+          tokens.push(new TokenInfo(lexema, "", "", scope, i + 1,0));
+          tokens.push(new TokenInfo(";", "", "",scope, i+1, 0));
+          //tokens.push(new TokenInfo(scope, lexema, i + 1));
+          //tokens.push(new TokenInfo(scope, ";", i + 1));
         } else {
-          tokens.push(new TokenInfo(scope, lexema, i + 1));
+          tokens.push(new TokenInfo(lexema, "",  "", scope, i + 1,0));
+          //tokens.push(new TokenInfo(scope, lexema, i + 1));
         }
       }
     }
