@@ -1,85 +1,48 @@
 package model;
 
+import SymbolTable.*;
 import com.google.gson.Gson;
+import syntatic_analysis.FirstAndFollow;
+import syntatic_analysis.Parser;
+import syntatic_analysis.Token;
+import lexic_analysis.Scanner;
+import lexic_analysis.TokenInfo;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 public class CompilerManager {
-    private static final String PATH="data/dictionary.json";
-    private Dictionary model;
-    private HashMap<String, Word> dictionary;
+    private static String sourceFile;
+    private static String dictionaryFile;
+    private static String grammarFile;
+    private static Scanner scanner;
+    private static Parser parser;
+    private SymbolTable symbolTable;
 
-    public CompilerManager() {
-        dictionary = new HashMap<String, Word>();
-        readJSON();
-        addToDictionary();
+    public CompilerManager(String sourceFile, String grammarFile, String dictionaryFile) {
+        this.sourceFile = sourceFile;
+        this.grammarFile = grammarFile;
+        this.dictionaryFile = dictionaryFile;
+        scanner = new Scanner(sourceFile);
+        parser = new Parser(grammarFile, dictionaryFile);
+        symbolTable = SymbolTable.getInstance();
     }
 
-    /**
-     * Proc that reads the json file containing the dictionary words
-     */
-    public void readJSON() {
-        model = new Dictionary();
-        Gson gson = new Gson();
-        BufferedReader br = null;
-
-        try {
-            br = new BufferedReader(new FileReader(PATH));
-            model = gson.fromJson(br, Dictionary.class);
-        }catch (FileNotFoundException e) {
-            System.out.println("\nError, file can't be found.");
-            e.printStackTrace();
-        }finally {
-            if (br!=null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    public void compile() {
+        while (scanner.getNextToken() != null) {
+            TokenInfo tokenInfo = scanner.sendNextToken();
+            if (parser.consultDictionary(tokenInfo.getId()) != null) {
+                tokenInfo.setToken(parser.consultDictionary(tokenInfo.getId()));
+                Token token = new Token(tokenInfo.getToken());
+                symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
             }
-        }
-    }
-
-    /**
-     * Proc that adds the words read from the file to the dictionary
-     */
-    public void addToDictionary() {
-        for (Word word : model.getWords()) {
-            dictionary.put(word.getLexeme(),word);
-        }
-
-    }
-
-    /**
-     * You have been hacked by mushimushibongbong *
-     */
-
-    public String getWord(String key) {
-        Word word = dictionary.get(key);
-        if (word == null) {
-            return "";
-        }
-        return word.getToken();
-    }
-
-    /**
-     * Proc that shows all the words existing in the dictionary
-     */
-    public void showList() {
-        Set set = dictionary.entrySet();
-        Iterator iterator = set.iterator();
-        while(iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            System.out.print("Key is: "+ entry.getKey() + " - Token is: ");
-            Word value = (Word) entry.getValue();
-            System.out.println(value.getToken());
+            else {
+                Token token = new Token("", tokenInfo.getId());
+                symbolTable.addSymbol(new Symbol(tokenInfo.getId(), token.token, tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+            }
         }
     }
 }

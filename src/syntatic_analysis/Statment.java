@@ -1,7 +1,4 @@
-package grammar;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+package syntatic_analysis;
 
 public class Statment {
 

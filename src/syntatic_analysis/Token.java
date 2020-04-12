@@ -1,6 +1,4 @@
-package grammar;
-
-import model.CompilerManager;
+package syntatic_analysis;
 
 import java.util.regex.Pattern;
 
@@ -84,13 +82,13 @@ public class Token {
         }
     }
 
-    public String existsInDictionary() {
+    /*public String existsInDictionary() {
         CompilerManager manager = new CompilerManager();
         if (manager.getWord(lexeme) != null) {
             return manager.getWord(lexeme);
         }
         return null;
-    }
+    }*/
 
     // Print Oneline View
     public void oneline() {
