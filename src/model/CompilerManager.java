@@ -44,5 +44,7 @@ public class CompilerManager {
                 symbolTable.addSymbol(new Symbol(tokenInfo.getId(), token.token, tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
             }
         }
+        //TEST
+        System.out.println(symbolTable.toString());
     }
 }
