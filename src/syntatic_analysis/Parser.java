@@ -1,39 +1,48 @@
 package syntatic_analysis;
 
+import com.google.gson.Gson;
+import model.Dictionary;
+import model.Word;
+
 import java.io.*;
+import java.util.HashMap;
 
 public class Parser {
     private static Boolean DEBUG = true;
+    private HashMap<String, Word> dictionary;
     private static FirstAndFollow firstAndFollow;
      private static Grammar grammar;
-     private static String file;
+    private  String grammarFile;
+    private  String dictionaryFile;
 
-     public Parser (String file) {
-         this.file = file;
+     public Parser (String grammarFile, String dictionaryFile) {
+         this.grammarFile = grammarFile;
+         this.dictionaryFile = dictionaryFile;
+         dictionary = myDictionary();
          initGrammar();
          startFirstFollow();
      }
 
      public void initGrammar() {
          // Get Raw Token Array
-         String[] rawTokens = getInput(file).split("\\s+");
+         String[] rawTokens = getInput(grammarFile).split("\\s+");
          // Init Token Array
          Token[] tokens = new Token[rawTokens.length];
 
          // Delete output file if exists
-         deleteOutput(file);
-         deleteOutput(file + ".DEBUG");
+         deleteOutput(grammarFile);
+         deleteOutput(grammarFile + ".DEBUG");
 
          // DEBUG Section
          if (DEBUG) {
              // INPUT
              System.out.println("== INPUT ==");
-             appendToOutput(file + ".DEBUG", "== INPUT ==\n");
-             System.out.println(getInput(file));
-             appendToOutput(file + ".DEBUG", getInput(file) + "\n");
+             appendToOutput(grammarFile + ".DEBUG", "== INPUT ==\n");
+             System.out.println(getInput(grammarFile));
+             appendToOutput(grammarFile + ".DEBUG", getInput(grammarFile) + "\n");
              // TOKEN
              System.out.println("== TOKENS ==");
-             appendToOutput(file + ".DEBUG", "== TOKENS ==\n");
+             appendToOutput(grammarFile + ".DEBUG", "== TOKENS ==\n");
          }
          //Create Tokens Array (For Each Token in Raw Token Array DO:)
          int count = 0;
@@ -47,7 +56,7 @@ public class Parser {
                  // Console Output
                  token.oneline();
                  // File Output
-                 appendToOutput(file + ".DEBUG", token.token + " " + token.message + "\n");
+                 appendToOutput(grammarFile + ".DEBUG", token.token + " " + token.message + "\n");
              }
              // Increment Count
              count++;
@@ -56,23 +65,23 @@ public class Parser {
          // DEBUG Section
          if (DEBUG) {
              System.out.println("== GRAMMAR ==");
-             appendToOutput(file + ".DEBUG", "== GRAMMAR ==\n");
+             appendToOutput(grammarFile + ".DEBUG", "== GRAMMAR ==\n");
          }
 
          // Init Grammar Array
          grammar = new Grammar(tokens);
          if (grammar.type == "ERROR") {
              System.out.println(grammar.message);
-             appendToOutput(file, grammar.message);
+             appendToOutput(grammarFile, grammar.message);
              if (DEBUG) {
-                 appendToOutput(file + ".DEBUG", grammar.message);
+                 appendToOutput(grammarFile + ".DEBUG", grammar.message);
              }
              return;
          } else {
              System.out.print(grammar.toString());
              // DEBUG Section
              if (DEBUG) {
-                 appendToOutput(file + ".DEBUG", grammar.toString());
+                 appendToOutput(grammarFile + ".DEBUG", grammar.toString());
              }
          }
      }
@@ -80,7 +89,7 @@ public class Parser {
      public void startFirstFollow() {
          if (DEBUG) {
              System.out.println("== FIRST ==");
-             appendToOutput(file + ".DEBUG", "== FIRST ==\n");
+             appendToOutput(grammarFile + ".DEBUG", "== FIRST ==\n");
          }
          // First Sets
          for (Token nonTerminal : grammar.nonTerminals) {
@@ -96,18 +105,18 @@ public class Parser {
                  firstString = firstString.replace(", }", "}");
                  // DEBUG Section
                  if (DEBUG) {
-                     appendToOutput(file + ".DEBUG", firstString + "\n");
+                     appendToOutput(grammarFile + ".DEBUG", firstString + "\n");
                  }
                  // Output First Set
                  System.out.println(firstString);
-                 appendToOutput(file, firstString + "\n");
+                 appendToOutput(grammarFile, firstString + "\n");
              }
          }
 
          // DEBUG Section
          if (DEBUG) {
              System.out.println("== FOLLOW ==");
-             appendToOutput(file + ".DEBUG", "== FOLLOW ==\n");
+             appendToOutput(grammarFile + ".DEBUG", "== FOLLOW ==\n");
          }
          // FOLLOW Sets
          for (Token nonTerminal : grammar.nonTerminals) {
@@ -123,16 +132,60 @@ public class Parser {
                  followString = followString.replace(", }", "}");
                  // DEBUG Section
                  if (DEBUG) {
-                     appendToOutput(file + ".DEBUG", followString + "\n");
+                     appendToOutput(grammarFile + ".DEBUG", followString + "\n");
                  }
                  // Output First Set
                  System.out.println(followString);
-                 appendToOutput(file, followString + "\n");
+                 appendToOutput(grammarFile, followString + "\n");
              }
          }
 
      }
 
+    /**
+     * Reads the .json file and adds words to dictionary
+     * @return list of words of the dictionary
+     */
+    public HashMap<String, Word> myDictionary() {
+        Gson gson = new Gson();
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(dictionaryFile));
+            Dictionary dictionary = gson.fromJson(br, Dictionary.class);
+            return addToDictionary(dictionary);
+        }catch (FileNotFoundException e) {
+            System.out.println("\nError, file can't be found.");
+            e.printStackTrace();
+        }finally {
+            if (br!=null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Proc that adds the words read from the file to the dictionary
+     */
+    public HashMap<String, Word> addToDictionary(Dictionary dictionary) {
+        HashMap<String,Word> list = new HashMap<>();
+        for (Word word : dictionary.getWords()) {
+            list.put(word.getLexeme(),word);
+        }
+        return list;
+    }
+
+    public String consultDictionary (String key) {
+        Word word = dictionary.get(key);
+        if (word != null) {
+            return word.getToken();
+        }
+        return null;
+    }
     // Append to output file
     protected static void appendToOutput(String file, String str) {
         try {
