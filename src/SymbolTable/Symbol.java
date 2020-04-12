@@ -8,7 +8,9 @@ import com.google.gson.annotations.Expose;
 public class Symbol {
     // Parameters
      private String id,
+                    token,
                     type,
+                    grammar,
                     scope;
      private int    declaredAtLine,
                     dataSize;
@@ -23,9 +25,11 @@ public class Symbol {
         childTable = null;
     }
 
-    public Symbol(String id, String type, String scope, int declaredAtLine, int dataSize) {
+    public Symbol(String id, String token, String type, String grammar, String scope, int declaredAtLine, int dataSize) {
         this.id = id;
+        this.token = token;
         this.type = type;
+        this.grammar = grammar;
         this.scope = scope;
         this.declaredAtLine = declaredAtLine;
         this.dataSize = dataSize;

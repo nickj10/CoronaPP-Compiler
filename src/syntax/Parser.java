@@ -29,7 +29,7 @@ public class Parser {
     token.lexeme = lex;
 
     //Miramos si existe en nuestro diccionario
-    token.token = token.existsInDictionary();
+    //token.token = token.existsInDictionary();
 
     //Sino miramos qué patrón sigue
     if (token.token.equals("")) {

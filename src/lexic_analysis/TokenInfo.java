@@ -1,14 +1,50 @@
 package lexic_analysis;
 
 public class TokenInfo {
+  private String id;
+  private String type;
   private String scope;
   private String token;
   private int declaredAtLine;
+  private int dataSize;
 
   public TokenInfo(String scope, String token, int declaredAtLine) {
     this.scope = scope;
     this.token = token;
     this.declaredAtLine = declaredAtLine;
+  }
+
+  public TokenInfo (String id, String token, String type, String scope, int declaredAtLine, int dataSize) {
+    this.id = id;
+    this.token = token;
+    this.type = type;
+    this.scope = scope;
+    this.declaredAtLine = declaredAtLine;
+    this.dataSize = dataSize;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public int getDataSize() {
+    return dataSize;
+  }
+
+  public void setDataSize(int dataSize) {
+    this.dataSize = dataSize;
   }
 
   public String getScope() {

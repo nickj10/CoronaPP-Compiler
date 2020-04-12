@@ -1,25 +1,18 @@
+import grammar.FirstAndFollow;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
 import model.CompilerManager;
-import syntax.Parser;
-
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;
+
 public class Main {
   public static void main(String[] args) {
-      CompilerManager dictionary = new CompilerManager();
-      dictionary.showList();
-    Scanner scanner = new Scanner();
-    //Parser parser = new Parser();
+    String sourceFile = args[0];
+    String dictionaryFile = args[1];
+    CompilerManager compilerManager = new CompilerManager(sourceFile, dictionaryFile);
+    compilerManager.compile();
 
-    scanner.generateTokens();
-    while (scanner.getNextToken() != null) {
-      //parser.getToken(scanner.sendNextToken());
-      TokenInfo tokenInfo = scanner.sendNextToken();
-      System.out.println(tokenInfo.getToken() + " - " + "Scope: " + tokenInfo.getScope() + " Line number: " + tokenInfo.getDeclaredAtLine());
-    }
-
-
+    // TEST
     // Creating a new . Remember, it is a Singleton so you need to call the getInstance() method
     SymbolTable mytable = SymbolTable.getInstance();
     // Creating some symbols from the following snipet:
@@ -29,10 +22,10 @@ public class Main {
         int b = 8   $ line 2
       }             $ line 3
      */
-    Symbol _a = new Symbol("a", "int", "global", 0, 4);
-    Symbol _if1 = new Symbol("if1", "if-statement", "global", 1, 0);
+    Symbol _a = new Symbol("a", "INT", "", "int", "global", 0, 4);
+    Symbol _if1 = new Symbol("if1", "IF","", "if-statement", "global", 1, 0);
     _if1.setChildTable();  // Setting a child table to store the scope of the if statement
-    Symbol _b = new Symbol("b", "int", "local", 2, 4);
+    Symbol _b = new Symbol("b", "IDENTIFIER", "", "int", "local", 2, 4);
     _if1.getChildTable().addSymbol(_b); // Adding the variable(s) inside the if statement
     _b.setParentTable(mytable); // Setting the parent tables of the variables inside the if statement
                                 // in this case is just the root table: 'mytable'
