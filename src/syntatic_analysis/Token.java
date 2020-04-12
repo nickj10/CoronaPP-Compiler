@@ -1,6 +1,4 @@
-package grammar;
-
-import model.CompilerManager;
+package syntatic_analysis;
 
 import java.util.regex.Pattern;
 

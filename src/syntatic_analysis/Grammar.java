@@ -1,7 +1,6 @@
-package grammar;
+package syntatic_analysis;
 
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class Grammar {
 

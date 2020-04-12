@@ -1,9 +1,7 @@
 package syntax;
 
 import exceptions.ParserException;
-import grammar.Token;
-
-import java.util.LinkedList;
+import syntatic_analysis.Token;
 
 public class Parser {
   private String[] tokens;

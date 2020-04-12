@@ -1,4 +1,4 @@
-package grammar;
+package syntatic_analysis;
 
 import java.io.*;
 

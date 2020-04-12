@@ -1,6 +1,3 @@
-import grammar.FirstAndFollow;
-import lexic_analysis.Scanner;
-import lexic_analysis.TokenInfo;
 import model.CompilerManager;
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;
@@ -8,8 +5,10 @@ import SymbolTable.Symbol;
 public class Main {
   public static void main(String[] args) {
     String sourceFile = args[0];
-    String dictionaryFile = args[1];
-    CompilerManager compilerManager = new CompilerManager(sourceFile, dictionaryFile);
+    String grammarFile = args[1];
+    String dictionaryFile = args[2];
+
+    CompilerManager compilerManager = new CompilerManager(sourceFile, grammarFile, dictionaryFile);
     compilerManager.compile();
 
     // TEST
@@ -22,10 +21,10 @@ public class Main {
         int b = 8   $ line 2
       }             $ line 3
      */
-    Symbol _a = new Symbol("a", "INT", "", "int", "global", 0, 4);
-    Symbol _if1 = new Symbol("if1", "IF","", "if-statement", "global", 1, 0);
+    Symbol _a = new Symbol("a", "INT", "int", "global", 0, 4);
+    Symbol _if1 = new Symbol("if1", "IF", "if-statement", "global", 1, 0);
     _if1.setChildTable();  // Setting a child table to store the scope of the if statement
-    Symbol _b = new Symbol("b", "IDENTIFIER", "", "int", "local", 2, 4);
+    Symbol _b = new Symbol("b", "IDENTIFIER", "int", "local", 2, 4);
     _if1.getChildTable().addSymbol(_b); // Adding the variable(s) inside the if statement
     _b.setParentTable(mytable); // Setting the parent tables of the variables inside the if statement
                                 // in this case is just the root table: 'mytable'
