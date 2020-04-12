@@ -1,5 +1,7 @@
 package lexic_analysis;
 
+import syntatic_analysis.Token;
+
 public class TokenInfo {
   private String id;
   private String type;
@@ -22,6 +24,8 @@ public class TokenInfo {
     this.declaredAtLine = declaredAtLine;
     this.dataSize = dataSize;
   }
+
+  public TokenInfo () { }
 
   public String getId() {
     return id;

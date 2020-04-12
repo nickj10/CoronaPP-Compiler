@@ -6,4 +6,8 @@ public class ASTree {
   public ASTree(ASTNode baseNode) {
     this.baseNode = baseNode;
   }
+
+  public ASTNode getBaseNode() {
+    return baseNode;
+  }
 }

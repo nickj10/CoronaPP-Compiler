@@ -2,9 +2,7 @@ package model;
 
 import SymbolTable.*;
 import com.google.gson.Gson;
-import syntatic_analysis.FirstAndFollow;
-import syntatic_analysis.Parser;
-import syntatic_analysis.Token;
+import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
 
@@ -32,6 +30,7 @@ public class CompilerManager {
     }
 
     public void compile() {
+        int count = 0;
         while (scanner.getNextToken() != null) {
             TokenInfo tokenInfo = scanner.sendNextToken();
             if (parser.consultDictionary(tokenInfo.getId()) != null) {
@@ -41,7 +40,11 @@ public class CompilerManager {
             }
             else {
                 Token token = new Token("", tokenInfo.getId());
-                symbolTable.addSymbol(new Symbol(tokenInfo.getId(), token.token, tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                tokenInfo.setToken(token.token);
+                symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+            }
+            if (!tokenInfo.getToken().equals("DOT_COMA")) {
+                parser.buildTree(tokenInfo);
             }
         }
         //TEST

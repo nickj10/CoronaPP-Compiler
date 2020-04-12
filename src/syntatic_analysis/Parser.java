@@ -1,6 +1,7 @@
 package syntatic_analysis;
 
 import com.google.gson.Gson;
+import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
 
@@ -14,6 +15,8 @@ public class Parser {
      private static Grammar grammar;
     private  String grammarFile;
     private  String dictionaryFile;
+    private  ASTree asTree;
+    private int count;
 
      public Parser (String grammarFile, String dictionaryFile) {
          this.grammarFile = grammarFile;
@@ -21,6 +24,7 @@ public class Parser {
          dictionary = myDictionary();
          initGrammar();
          startFirstFollow();
+         count = 0;
      }
 
      public void initGrammar() {
@@ -142,6 +146,32 @@ public class Parser {
 
      }
 
+     public void buildTree(TokenInfo token) {
+         count++;
+         TokenInfo token1 = null;
+         TokenInfo token2 = null;
+         TokenInfo token3 = null;
+         if (count == 1) {  token1 = token; }
+         if (count == 2) {  token2 = token; }
+         if (count == 3) {
+             token3 = token;
+             ASTNode left = new ASTNode(null, token1, null);
+             ASTNode right = new ASTNode(null, token3, null);
+             ASTNode node = new ASTNode(left, token2, right);
+             asTree = new ASTree(node);
+         }
+         if (count > 3) {
+             //Problem here
+             if (asTree.getBaseNode().left.left == null) {
+                 asTree.getBaseNode().left.left = new ASTNode(null,token,null);
+             }
+             if (asTree.getBaseNode().left.left != null && asTree.getBaseNode().left.right == null) {
+                 asTree.getBaseNode().left.right = new ASTNode(null,token,null);
+             }
+
+         }
+
+     }
     /**
      * Reads the .json file and adds words to dictionary
      * @return list of words of the dictionary
