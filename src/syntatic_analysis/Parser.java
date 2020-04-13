@@ -152,6 +152,18 @@ public class Parser {
      public ASTree getBuiltTree() {
          return asTree;
      }
+
+     public boolean validateTreeConstruction (String token) {
+         if (asTree.getRoot() == null && token.equals("ASSGN_EQ")) {
+             return true;
+         }
+         if (asTree.getRoot() != null && !token.equals("ASSGN_EQ")) {
+             if (token.equals("IDENTIFIER") || token.equals("NUMBER") || token.contains("ARTMTC")) {
+                 return true;
+             }
+         }
+         return false;
+     }
     /**
      * Reads the .json file and adds words to dictionary
      * @return list of words of the dictionary

@@ -41,4 +41,8 @@ public class ASTree {
     root.token = newToken;
     return root;
   }
+
+  public ASTNode getRoot() {
+    return root;
+  }
 }

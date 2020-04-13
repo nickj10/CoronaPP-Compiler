@@ -30,7 +30,8 @@ public class CompilerManager {
     }
 
     public void compile() {
-        int count = 0;
+        boolean init = false;
+        TokenInfo tmp = null;
         while (scanner.getNextToken() != null) {
             TokenInfo tokenInfo = scanner.sendNextToken();
             if (parser.consultDictionary(tokenInfo.getId()) != null) {
@@ -43,10 +44,16 @@ public class CompilerManager {
                 tokenInfo.setToken(token.token);
                 symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
             }
-            //Builds ASTree for the expression
-            if (!tokenInfo.getToken().equals("DOT_COMA")) {
+            //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
+            if (tokenInfo.getToken().equals("ASSGN_EQ")) {
+                parser.buildTree(tokenInfo);
+                parser.buildTree(tmp);
+
+            }
+            if (parser.validateTreeConstruction(tokenInfo.getToken())) {
                 parser.buildTree(tokenInfo);
             }
+            tmp = tokenInfo;
         }
         //TEST
         ASTree tree = parser.getBuiltTree();
