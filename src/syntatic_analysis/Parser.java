@@ -24,7 +24,7 @@ public class Parser {
          dictionary = myDictionary();
          initGrammar();
          startFirstFollow();
-         count = 0;
+         asTree = new ASTree();
      }
 
      public void initGrammar() {
@@ -147,7 +147,8 @@ public class Parser {
      }
 
      public void buildTree(TokenInfo token) {
-         count++;
+         asTree.insert(token);
+         /*count++;
          TokenInfo token1 = null;
          TokenInfo token2 = null;
          TokenInfo token3 = null;
@@ -169,7 +170,7 @@ public class Parser {
                  asTree.getBaseNode().left.right = new ASTNode(null,token,null);
              }
 
-         }
+         }*/
 
      }
     /**

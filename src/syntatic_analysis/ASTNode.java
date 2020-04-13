@@ -7,10 +7,10 @@ public class ASTNode {
   TokenInfo token;
   ASTNode right;
 
-  public ASTNode(ASTNode left, TokenInfo token, ASTNode right) {
-    this.left = left;
+  public ASTNode(TokenInfo token) {
     this.token = token;
-    this.right = right;
+    this.left = null;
+    this.right = null;
   }
 
   public ASTNode getLeft() {
