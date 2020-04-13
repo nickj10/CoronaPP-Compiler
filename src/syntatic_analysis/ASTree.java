@@ -15,26 +15,34 @@ public class ASTree {
 
   private ASTNode insertChild (ASTNode root, TokenInfo token) {
     if (root == null || !root.token.getToken().equals("ASSGN_EQ")) {
-      if (token.getToken().equals("ASSGN_EQ")) {
+      // If token is = then assign it to the root
+      if (token.getToken().equals("ASSGN_EQ") && root != null) {
         root.left = new ASTNode(root.token);
         root.token = token;
+        return root;
+      } else if (root != null) {
+        if (root.left == null) {
+          return pushToLeftChild(root, token);
+        } else {
+          root.right = new ASTNode(token);
+        }
+      } else {
+        return new ASTNode(token);
       }
-      else {
-        root = new ASTNode(token);
-      }
-      return root;
-    }
-    if (root.left == null) {
+    } else if (root.left == null) {
       root.left = insertChild(root.left, token);
-    }
-    else {
-      if (root.right == null) {
+    } else {
         root.right = insertChild(root.right, token);
-      }
     }
+
     return root;
   }
 
+  private ASTNode pushToLeftChild(ASTNode root, TokenInfo newToken) {
+    root.left = new ASTNode(root.token);
+    root.token = newToken;
+    return root;
+  }
 
 
 }
