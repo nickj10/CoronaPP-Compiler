@@ -149,6 +149,9 @@ public class Parser {
      public void buildTree(TokenInfo token) {
          asTree.insert(token);
      }
+     public ASTree getBuiltTree() {
+         return asTree;
+     }
     /**
      * Reads the .json file and adds words to dictionary
      * @return list of words of the dictionary

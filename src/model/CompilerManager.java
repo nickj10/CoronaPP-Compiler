@@ -43,11 +43,13 @@ public class CompilerManager {
                 tokenInfo.setToken(token.token);
                 symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
             }
+            //Builds ASTree for the expression
             if (!tokenInfo.getToken().equals("DOT_COMA")) {
                 parser.buildTree(tokenInfo);
             }
         }
         //TEST
+        ASTree tree = parser.getBuiltTree();
         System.out.println(symbolTable.toString());
     }
 }

@@ -41,6 +41,4 @@ public class ASTree {
     root.token = newToken;
     return root;
   }
-
-
 }
