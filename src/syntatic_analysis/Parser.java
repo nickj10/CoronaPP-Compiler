@@ -148,30 +148,6 @@ public class Parser {
 
      public void buildTree(TokenInfo token) {
          asTree.insert(token);
-         /*count++;
-         TokenInfo token1 = null;
-         TokenInfo token2 = null;
-         TokenInfo token3 = null;
-         if (count == 1) {  token1 = token; }
-         if (count == 2) {  token2 = token; }
-         if (count == 3) {
-             token3 = token;
-             ASTNode left = new ASTNode(null, token1, null);
-             ASTNode right = new ASTNode(null, token3, null);
-             ASTNode node = new ASTNode(left, token2, right);
-             asTree = new ASTree(node);
-         }
-         if (count > 3) {
-             //Problem here
-             if (asTree.getBaseNode().left.left == null) {
-                 asTree.getBaseNode().left.left = new ASTNode(null,token,null);
-             }
-             if (asTree.getBaseNode().left.left != null && asTree.getBaseNode().left.right == null) {
-                 asTree.getBaseNode().left.right = new ASTNode(null,token,null);
-             }
-
-         }*/
-
      }
     /**
      * Reads the .json file and adds words to dictionary
