@@ -1,6 +1,7 @@
 package syntatic_analysis;
 
 import com.google.gson.Gson;
+import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
 
@@ -14,6 +15,8 @@ public class Parser {
      private static Grammar grammar;
     private  String grammarFile;
     private  String dictionaryFile;
+    private  ASTree asTree;
+    private int count;
 
      public Parser (String grammarFile, String dictionaryFile) {
          this.grammarFile = grammarFile;
@@ -21,6 +24,7 @@ public class Parser {
          dictionary = myDictionary();
          initGrammar();
          startFirstFollow();
+         asTree = new ASTree();
      }
 
      public void initGrammar() {
@@ -142,6 +146,24 @@ public class Parser {
 
      }
 
+     public void buildTree(TokenInfo token) {
+         asTree.insert(token);
+     }
+     public ASTree getBuiltTree() {
+         return asTree;
+     }
+
+     public boolean validateTreeConstruction (String token) {
+         if (asTree.getRoot() == null && token.equals("ASSGN_EQ")) {
+             return true;
+         }
+         if (asTree.getRoot() != null && !token.equals("ASSGN_EQ")) {
+             if (token.equals("IDENTIFIER") || token.equals("NUMBER") || token.contains("ARTMTC")) {
+                 return true;
+             }
+         }
+         return false;
+     }
     /**
      * Reads the .json file and adds words to dictionary
      * @return list of words of the dictionary

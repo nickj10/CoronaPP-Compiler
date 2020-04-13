@@ -2,9 +2,7 @@ package model;
 
 import SymbolTable.*;
 import com.google.gson.Gson;
-import syntatic_analysis.FirstAndFollow;
-import syntatic_analysis.Parser;
-import syntatic_analysis.Token;
+import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
 
@@ -32,6 +30,8 @@ public class CompilerManager {
     }
 
     public void compile() {
+        boolean init = false;
+        TokenInfo tmp = null;
         while (scanner.getNextToken() != null) {
             TokenInfo tokenInfo = scanner.sendNextToken();
             if (parser.consultDictionary(tokenInfo.getId()) != null) {
@@ -41,8 +41,22 @@ public class CompilerManager {
             }
             else {
                 Token token = new Token("", tokenInfo.getId());
-                symbolTable.addSymbol(new Symbol(tokenInfo.getId(), token.token, tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                tokenInfo.setToken(token.token);
+                symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
             }
+            //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
+            if (tokenInfo.getToken().equals("ASSGN_EQ")) {
+                parser.buildTree(tokenInfo);
+                parser.buildTree(tmp);
+
+            }
+            if (parser.validateTreeConstruction(tokenInfo.getToken())) {
+                parser.buildTree(tokenInfo);
+            }
+            tmp = tokenInfo;
         }
+        //TEST
+        ASTree tree = parser.getBuiltTree();
+        System.out.println(symbolTable.toString());
     }
 }
