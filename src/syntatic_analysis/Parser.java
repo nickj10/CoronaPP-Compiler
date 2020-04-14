@@ -16,7 +16,6 @@ public class Parser {
     private  String grammarFile;
     private  String dictionaryFile;
     private  ASTree asTree;
-    private int count;
 
      public Parser (String grammarFile, String dictionaryFile) {
          this.grammarFile = grammarFile;

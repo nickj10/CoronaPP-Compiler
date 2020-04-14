@@ -30,7 +30,6 @@ public class CompilerManager {
     }
 
     public void compile() {
-        boolean init = false;
         TokenInfo tmp = null;
         while (scanner.getNextToken() != null) {
             TokenInfo tokenInfo = scanner.sendNextToken();
