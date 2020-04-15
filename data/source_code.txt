@@ -4,7 +4,5 @@ $$ Comment here
 This is a block
 comment
 $/
-int a;
-int b;
-int c;
-c = a + b;
+int b = a;
+int echo = 123;
