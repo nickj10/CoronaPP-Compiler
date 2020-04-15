@@ -2,6 +2,7 @@ package model;
 
 import SymbolTable.*;
 import com.google.gson.Gson;
+import semantic_analysis.SemanticAnalysis;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -16,6 +17,7 @@ public class CompilerManager {
     private static Scanner scanner;
     private static Parser parser;
     private SymbolTable symbolTable;
+    private static SemanticAnalysis semanticAnalysis;
 
     public CompilerManager(String sourceFile, String grammarFile, String dictionaryFile) {
         this.sourceFile = sourceFile;
@@ -24,6 +26,7 @@ public class CompilerManager {
         scanner = new Scanner(sourceFile);
         parser = new Parser(grammarFile, dictionaryFile);
         symbolTable = SymbolTable.getInstance();
+        semanticAnalysis = new SemanticAnalysis();
     }
 
     public void compile() {
@@ -71,6 +74,7 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
+            semanticAnalysis.visitAST(tree);
             tokensInfo.clear();
         }
     }
