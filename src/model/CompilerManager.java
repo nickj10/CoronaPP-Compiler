@@ -74,7 +74,7 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.visitAST(tree);
+            semanticAnalysis.analyze(tree);
             tokensInfo.clear();
         }
     }

@@ -1,6 +1,7 @@
 package semantic_analysis;
 
 import lexic_analysis.TokenInfo;
+import syntatic_analysis.ASTNode;
 import syntatic_analysis.ASTree;
 
 import java.util.ArrayList;
@@ -12,11 +13,7 @@ public class SemanticAnalysis {
         tokenInfos = new ArrayList<>();
     }
 
-    /**
-     * Visits nodes of the AST
-     * @param tree the tree
-     */
-    public void visitAST (ASTree tree) {
+    public void analyze (ASTree tree) {
         System.out.println("Semantic Analysis");
         tokenInfos = tree.visitAST(tree.getRoot());
     }
