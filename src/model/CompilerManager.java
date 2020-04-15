@@ -60,6 +60,11 @@ public class CompilerManager {
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
                 for(TokenInfo tokenInfo : tokensInfo){
+                    //TODO: Add type to token addTypeToVariable()
+                    String type = parser.addTypeToVariable(tokenInfo, tmp);
+                    if (type != null) {
+                        tokenInfo.setType(type);
+                    }
                     symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
                     //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
                     if (tokenInfo.getToken().equals("ASSGN_EQ")) {
