@@ -1,24 +1,21 @@
 package syntatic_analysis;
 
-
 import com.google.gson.Gson;
+import java.util.ArrayList;
 import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Parser {
     private static Boolean DEBUG = true;
     private HashMap<String, Word> dictionary;
-    private static FirstAndFollow firstAndFollow;
     private static Grammar grammar;
     private String grammarFile;
     private String dictionaryFile;
     private ASTree asTree;
-    private int count;
 
     String[][] table = {
 

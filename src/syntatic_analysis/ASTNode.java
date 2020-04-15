@@ -3,9 +3,9 @@ package syntatic_analysis;
 import lexic_analysis.TokenInfo;
 
 public class ASTNode {
-  ASTNode left;
-  TokenInfo token;
-  ASTNode right;
+  private ASTNode left;
+  private TokenInfo token;
+  private ASTNode right;
 
   public ASTNode(TokenInfo token) {
     this.token = token;

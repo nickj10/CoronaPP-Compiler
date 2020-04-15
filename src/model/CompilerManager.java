@@ -27,7 +27,6 @@ public class CompilerManager {
     }
 
     public void compile() {
-        boolean init = false;
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
