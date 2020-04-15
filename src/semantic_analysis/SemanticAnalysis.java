@@ -16,6 +16,7 @@ public class SemanticAnalysis {
     public void analyze (ASTree tree) {
         System.out.println("Semantic Analysis");
         tokenInfos = tree.visitAST(tree.getRoot());
+        //TODO: Check semantically
     }
 
 
