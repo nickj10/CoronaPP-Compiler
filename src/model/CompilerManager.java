@@ -73,12 +73,5 @@ public class CompilerManager {
             ASTree tree = parser.getBuiltTree();
             tokensInfo.clear();
         }
-
-        //TEST
-
-
-
     }
-
-
 }
