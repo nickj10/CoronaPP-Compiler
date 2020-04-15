@@ -46,17 +46,6 @@ public class CompilerManager {
                     tokensInfo.get(counter).setToken(token.token);
 
                 }
-                //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
-                if (tokensInfo.get(counter).getToken().equals("ASSGN_EQ")) {
-                    parser.buildTree(tokensInfo.get(counter));
-                    parser.buildTree(tmp);
-
-                }
-                if (parser.validateTreeConstruction(tokensInfo.get(counter).getToken())) {
-                    parser.buildTree(tokensInfo.get(counter));
-                }
-                tmp = tokensInfo.get(counter);
-
 
                 counter++;
                 //Lectura siguiente token
@@ -69,16 +58,24 @@ public class CompilerManager {
             if(parser.checkGrammar(tokensInfo)){
                 for(TokenInfo tokenInfo : tokensInfo){
                     symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                    //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
+                    if (tokenInfo.getToken().equals("ASSGN_EQ")) {
+                        parser.buildTree(tokenInfo);
+                        parser.buildTree(tmp);
+
+                    }
+                    if (parser.validateTreeConstruction(tokenInfo.getToken())) {
+                        parser.buildTree(tokenInfo);
+                    }
+                    tmp = tokenInfo;
                 }
             }
+            ASTree tree = parser.getBuiltTree();
             tokensInfo.clear();
         }
 
         //TEST
-        //ASTree tree = parser.getBuiltTree();
-        //System.out.println(symbolTable.toString());
 
-        //SEPARA
 
 
     }
