@@ -19,6 +19,12 @@ public class CompilerManager {
     private static Parser parser;
     private SymbolTable symbolTable;
 
+    // Empty constructor
+    public CompilerManager(){
+        symbolTable = SymbolTable.getInstance();
+    }
+
+
     public CompilerManager(String sourceFile, String grammarFile, String dictionaryFile) {
         this.sourceFile = sourceFile;
         this.grammarFile = grammarFile;
@@ -75,5 +81,50 @@ public class CompilerManager {
             ASTree tree = parser.getBuiltTree();
             tokensInfo.clear();
         }
+    }
+
+
+    public static String getSourceFile() {
+        return sourceFile;
+    }
+
+    public static void setSourceFile(String sourceFile) {
+        CompilerManager.sourceFile = sourceFile;
+    }
+
+    public static String getDictionaryFile() {
+        return dictionaryFile;
+    }
+
+    public static void setDictionaryFile(String dictionaryFile) {
+        CompilerManager.dictionaryFile = dictionaryFile;
+    }
+
+    public static String getGrammarFile() {
+        return grammarFile;
+    }
+
+    public static void setGrammarFile(String grammarFile) {
+        CompilerManager.grammarFile = grammarFile;
+    }
+
+    public static Scanner getScanner() {
+        return scanner;
+    }
+
+    public static void setScanner(Scanner scanner) {
+        CompilerManager.scanner = scanner;
+    }
+
+    public static Parser getParser() {
+        return parser;
+    }
+
+    public static void setParser(Parser parser) {
+        CompilerManager.parser = parser;
+    }
+
+    public Table getSymbolTable() {
+        return symbolTable;
     }
 }
