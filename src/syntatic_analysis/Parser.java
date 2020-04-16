@@ -290,7 +290,7 @@ public class Parser {
         if (consultDictionary(token.getId()) == null) {
             //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
             Token aux = new Token("",token.getId());
-            if ((aux.token.equals("IDENTIFIER") || aux.token.equals("NUMBER")) && tmp.getToken().equals("INT")) {
+            if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
                 return "INT";
             }
             else {
