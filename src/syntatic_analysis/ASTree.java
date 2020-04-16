@@ -2,11 +2,15 @@ package syntatic_analysis;
 
 import lexic_analysis.TokenInfo;
 
+import java.util.ArrayList;
+
 public class ASTree {
   private ASTNode root;
+  private ArrayList<TokenInfo> tokensInfo;
 
   public ASTree () {
     root = null;
+    tokensInfo = new ArrayList();
   }
 
   public void insert(TokenInfo token) {
@@ -42,6 +46,26 @@ public class ASTree {
     return root;
   }
 
+  /**
+   * Inorder Trasversal of the tree
+   * @param node root node
+   */
+  public ArrayList<TokenInfo> visitAST (ASTNode node) {
+    if (node == null) {
+      return null;
+    }
+    //Inorder
+    visitAST(node.getRight());
+    tokensInfo.add(node.getToken());
+    System.out.println(node.getToken().getId());
+    visitAST(node.getLeft());
+    return tokensInfo;
+  }
+
+  public ASTNode clear () {
+    root = null;
+    return root;
+  }
   public ASTNode getRoot() {
     return root;
   }
