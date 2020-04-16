@@ -56,7 +56,6 @@ public class ASTree {
     }
     //Inorder
     visitAST(node.getRight());
-    System.out.println(node.getToken().getToken() + node.getToken().getId());
     tokensInfo.add(node.getToken());
     visitAST(node.getLeft());
     return tokensInfo;
