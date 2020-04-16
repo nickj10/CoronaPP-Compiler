@@ -8,7 +8,7 @@ public class Token {
     private static final Pattern VALID_TOKEN = Pattern.compile("^[a-zA-Z0-9_\\{\\}\\[\\]\\-\\|]*$");
     private static final Pattern ASSIGNMENT_TOKEN = Pattern.compile("^\\-$");
     private static final Pattern PIPE_TOKEN = Pattern.compile("^\\|$");
-    private static final Pattern TERMINAL_TOKEN = Pattern.compile("^(NUMBER|IDENTIFIER|ARITMETIC_MULT|ARITMETIC_MOD|ARITMETIC_DIV|ARITMETIC_SUM|ARITMETIC_RES|ASSGN_EQ|LOGIC_OR|LOGIC_AND|RELATIONAL_NOTEQ|RELATIONAL_EQ|IF|ELSE|WHILE|INT|BOOL|CONST|CHAR|NULL|RETURN|FLOAT|DOT_COMA|DOT|PARENT_OPEN|PARENT_CLOSED)$");
+    private static final Pattern TERMINAL_TOKEN = Pattern.compile("^(EPSILON|NUMBER|IDENTIFIER|ARITMETIC_MULT|ARITMETIC_MOD|ARITMETIC_DIV|ARITMETIC_SUM|ARITMETIC_RES|ASSGN_EQ|LOGIC_OR|LOGIC_AND|RELATIONAL_NOTEQ|RELATIONAL_EQ|IF|ELSE|WHILE|INT|BOOL|CONST|CHAR|NULL|RETURN|FLOAT|DOT_COMA|DOT|PARENT_OPEN|PARENT_CLOSED)$");
     private static final Pattern NONTERMINAL_TOKEN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]*$");
     private static final Pattern IDENTIFIER = Pattern.compile("^([a-zA-Z]*)$");
     private static final Pattern NUMBER = Pattern.compile("^([0-9]+)$");

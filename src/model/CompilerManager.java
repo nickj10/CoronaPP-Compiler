@@ -4,6 +4,9 @@ import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.SemanticException;
 import semantic_analysis.SemanticAnalysis;
+import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
+import exceptions.SemanticException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -30,7 +33,7 @@ public class CompilerManager {
         semanticAnalysis = new SemanticAnalysis();
     }
 
-    public void compile() throws SemanticException {
+    public void compile() throws FirstAndFollowException, GrammarException, SemanticException {
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
@@ -54,14 +57,13 @@ public class CompilerManager {
                 counter++;
                 //Lectura siguiente token
                 tokensInfo.add(scanner.sendNextToken());
-            } while (tokensInfo.get(tokensInfo.size() - 1).getId() != ";");
+            } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(";"));
 
-            tokensInfo.get(tokensInfo.size()-1).setToken("DOT_COMA");
+            tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
 
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
                 for(TokenInfo tokenInfo : tokensInfo){
-                    //TODO: Add type to token addTypeToVariable()
                     String type = parser.addTypeToVariable(tokenInfo, tmp);
                     if (type != null) {
                         tokenInfo.setType(type);

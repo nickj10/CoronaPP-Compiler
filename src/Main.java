@@ -1,3 +1,5 @@
+import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
 import exceptions.SemanticException;
 import model.CompilerManager;
 import SymbolTable.SymbolTable;
@@ -9,12 +11,12 @@ public class Main {
     String grammarFile = args[1];
     String dictionaryFile = args[2];
 
-    CompilerManager compilerManager = new CompilerManager(sourceFile, grammarFile, dictionaryFile);
-    try {
-      compilerManager.compile();
-    } catch (SemanticException e) {
-      e.printStackTrace();
-    }
+        CompilerManager compilerManager = new CompilerManager(sourceFile, grammarFile, dictionaryFile);
+        try {
+            compilerManager.compile();
+        } catch (FirstAndFollowException | GrammarException | SemanticException e) {
+            e.printStackTrace();
+        }
 
     // TEST
     // Creating a new . Remember, it is a Singleton so you need to call the getInstance() method
