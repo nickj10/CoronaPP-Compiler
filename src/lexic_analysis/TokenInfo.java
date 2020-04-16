@@ -1,5 +1,9 @@
 package lexic_analysis;
 
+import syntatic_analysis.Token;
+
+import java.util.ArrayList;
+
 public class TokenInfo {
   private String id;
   private String type;
@@ -22,6 +26,8 @@ public class TokenInfo {
     this.declaredAtLine = declaredAtLine;
     this.dataSize = dataSize;
   }
+
+  public TokenInfo () { }
 
   public String getId() {
     return id;
@@ -69,5 +75,18 @@ public class TokenInfo {
 
   public void setDeclaredAtLine(int declaredAtLine) {
     this.declaredAtLine = declaredAtLine;
+  }
+
+  @Override
+  public String toString() {
+    return id;
+  }
+
+  public static String arrayToString(ArrayList<TokenInfo> tokenInfos) {
+    StringBuilder str = new StringBuilder();
+    for (TokenInfo t: tokenInfos){
+      str.append(t.toString()).append(" ");
+    }
+    return str.toString();
   }
 }

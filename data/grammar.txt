@@ -1,4 +1,9 @@
-definition - type list ASSGN_EQ value DOT_COMA
-type - INT
-list - IDENTIFIER
+E - A | D
+A - tipo F C
+C - B | EPSILON
+B - F | value
+tipo - INT
+F - IDENTIFIER
 value - NUMBER
+D - F G F
+G - ARITMETIC_SUM | ARITMETIC_RES
