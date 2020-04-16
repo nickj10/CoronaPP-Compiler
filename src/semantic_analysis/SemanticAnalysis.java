@@ -23,10 +23,13 @@ public class SemanticAnalysis {
         for (int i = 0; i < tokenInfos.size(); i++) {
             //If it's an operator
             if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                //Check left operand and right operand type
-                if (tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
-                    throw new SemanticException("Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
+                //Check left operand and right operand type (if they have a type only)
+                if (!tokenInfos.get(i - 1).getType().equals("") && !tokenInfos.get(i + 1).getType().equals("")) {
+                    if (!tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
+                        throw new SemanticException("Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
+                    }
                 }
+
             }
         }
     }
