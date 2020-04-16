@@ -4,5 +4,8 @@ $$ Comment here
 This is a block
 comment
 $/
-int b = a;
+int a;
+int b;
 int echo = 123;
+a = 4 - 3;
+b = a + echo;
