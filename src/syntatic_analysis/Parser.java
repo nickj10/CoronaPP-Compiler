@@ -1,7 +1,11 @@
 package syntatic_analysis;
 
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
+
+import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
 import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
@@ -169,7 +173,7 @@ public class Parser {
 
     }
 
-    public boolean checkGrammar(ArrayList<TokenInfo> tokenInfos) {
+    public boolean checkGrammar(ArrayList<TokenInfo> tokenInfos) throws FirstAndFollowException, GrammarException {
 
         int inputCounter = 0;
         stack.clear();
@@ -194,14 +198,14 @@ public class Parser {
                 int column = getTermIndex(token);
                 String rule = table[row][column];
                 if (rule == null) {
+                    //TODO: Specify where the error came from more accurately.
+                    throw new FirstAndFollowException(TokenInfo.arrayToString(tokenInfos));
                     //error("There is no Rule by this , Non-Terminal("+top+") ,Terminal("+token+") ");
                 } else {
 
                     String[] newRules = rule.split(" ");
                     for (int i = newRules.length - 1; i >= 0; i--) {
-
                         stack.add(String.valueOf(newRules[i]));
-
                     }
                 }
 
@@ -214,12 +218,12 @@ public class Parser {
                     inputCounter++;
                     token = String.valueOf(tokenInfos.get(inputCounter).getToken());
                 } else {
-
                     //No coinciden, error
-                    System.out.println("Fallo en el token: " + token);
+                    throw new GrammarException(tokenInfos.get(inputCounter).toString());
                 }
             } else {
                 //No está en la gramática
+                throw new GrammarException(top);
                 //System.out.println("error, no está contemplado por el parser (no en la gramática)");
             }
             if (token.equals("DOT_COMA")) { //expresión acabada
