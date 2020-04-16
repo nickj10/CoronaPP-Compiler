@@ -3,6 +3,7 @@ package model;
 import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -27,7 +28,7 @@ public class CompilerManager {
         symbolTable = SymbolTable.getInstance();
     }
 
-    public void compile() throws FirstAndFollowException {
+    public void compile() throws FirstAndFollowException, GrammarException {
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
@@ -51,14 +52,14 @@ public class CompilerManager {
                 counter++;
                 //Lectura siguiente token
                 tokensInfo.add(scanner.sendNextToken());
-            } while (tokensInfo.get(tokensInfo.size() - 1).getId() != ";");
+            } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(";"));
 
-            tokensInfo.get(tokensInfo.size()-1).setToken("DOT_COMA");
+            tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
 
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
-            if(parser.checkGrammar(tokensInfo)){
-                for(TokenInfo tokenInfo : tokensInfo){
-                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+            if (parser.checkGrammar(tokensInfo)) {
+                for (TokenInfo tokenInfo : tokensInfo) {
+                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(), tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
                     //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
                     if (tokenInfo.getToken().equals("ASSGN_EQ")) {
                         parser.buildTree(tokenInfo);
