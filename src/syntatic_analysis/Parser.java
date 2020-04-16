@@ -2,6 +2,9 @@ package syntatic_analysis;
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
+
+import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
 import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
@@ -169,7 +172,7 @@ public class Parser {
 
     }
 
-    public boolean checkGrammar(ArrayList<TokenInfo> tokenInfos) {
+    public boolean checkGrammar(ArrayList<TokenInfo> tokenInfos) throws FirstAndFollowException {
 
         int inputCounter = 0;
         stack.clear();
@@ -194,6 +197,7 @@ public class Parser {
                 int column = getTermIndex(token);
                 String rule = table[row][column];
                 if (rule == null) {
+                    throw new FirstAndFollowException(TokenInfo.arrayToString(tokenInfos));
                     //error("There is no Rule by this , Non-Terminal("+top+") ,Terminal("+token+") ");
                 } else {
 
@@ -214,7 +218,6 @@ public class Parser {
                     inputCounter++;
                     token = String.valueOf(tokenInfos.get(inputCounter).getToken());
                 } else {
-
                     //No coinciden, error
                     System.out.println("Fallo en el token: " + token);
                 }
