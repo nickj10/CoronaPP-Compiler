@@ -8,4 +8,9 @@ public class IntermediateCode {
     this.label = label;
     this.tac = tac;
   }
+
+  public IntermediateCode(ThreeAddrCode tac) {
+    this.label = Label.generateNewLabel();
+    this.tac = tac;
+  }
 }
