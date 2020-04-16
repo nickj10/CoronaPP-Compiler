@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Set;
 
 public class Table {
     private Hashtable<Integer, Symbol> table;
@@ -20,7 +21,7 @@ public class Table {
 
     // Methods:
     private Boolean exists(int id){
-        return table.contains(id);
+        return table.containsKey(id);
     }
 
     public Boolean checkIfExists(Symbol s){
@@ -29,6 +30,39 @@ public class Table {
 
     public Boolean checkIfExists(String s){
         return exists(hashf(s));
+    }
+
+    public Boolean alreadyExists(String s){
+        if(checkIfExists(s))
+            return true;
+
+        Table parent = getParentTable();
+        if(parent == null)
+            return false;
+
+        return parent.alreadyExists(s);
+    }
+
+    public Boolean alreadyExists(Symbol symbol){
+        String s = symbol.getId();
+        if(checkIfExists(s))
+            return true;
+
+        Table parent = getParentTable();
+        if(parent == null)
+            return false;
+
+        return parent.alreadyExists(s);
+    }
+
+    public Table getParentTable(){
+      Set<Integer> keys = table.keySet();
+
+      for(Integer key : keys)
+          if(table.get(key).hasParentTable())
+              return table.get(key).getParentTable();
+
+      return null;
     }
 
     public void addSymbol(Symbol s){
