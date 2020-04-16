@@ -20,7 +20,6 @@ public class SemanticAnalysis {
     public void analyze (ASTree tree) throws SemanticException {
         System.out.println("Semantic Analysis");
         tokenInfos = tree.visitAST(tree.getRoot());
-        //TODO: Check semantically
         for (int i = 0; i < tokenInfos.size(); i++) {
             //If it's an operator
             if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
