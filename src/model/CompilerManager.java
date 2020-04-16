@@ -2,6 +2,7 @@ package model;
 
 import SymbolTable.*;
 import com.google.gson.Gson;
+import exceptions.SemanticException;
 import semantic_analysis.SemanticAnalysis;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
@@ -79,7 +80,11 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.analyze(tree);
+            try {
+                semanticAnalysis.analyze(tree);
+            } catch (SemanticException e) {
+                e.printStackTrace();
+            }
             tokensInfo.clear();
         }
     }
