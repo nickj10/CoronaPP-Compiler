@@ -2,6 +2,7 @@ package model;
 
 import SymbolTable.*;
 import com.google.gson.Gson;
+import exceptions.FirstAndFollowException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -26,7 +27,7 @@ public class CompilerManager {
         symbolTable = SymbolTable.getInstance();
     }
 
-    public void compile() {
+    public void compile() throws FirstAndFollowException {
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
