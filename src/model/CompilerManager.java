@@ -64,7 +64,7 @@ public class CompilerManager {
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
                 for(TokenInfo tokenInfo : tokensInfo){
-                    String type = parser.addTypeToVariable(tokenInfo, tmp);
+                    String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable);
                     if (type != null) {
                         tokenInfo.setType(type);
                     }
@@ -83,6 +83,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
+            tree.clear();
             tokensInfo.clear();
         }
     }

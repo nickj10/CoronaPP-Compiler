@@ -57,10 +57,15 @@ public class ASTree {
     //Inorder
     visitAST(node.getRight());
     tokensInfo.add(node.getToken());
+    System.out.println(node.getToken().getId());
     visitAST(node.getLeft());
     return tokensInfo;
   }
 
+  public ASTNode clear () {
+    root = null;
+    return root;
+  }
   public ASTNode getRoot() {
     return root;
   }

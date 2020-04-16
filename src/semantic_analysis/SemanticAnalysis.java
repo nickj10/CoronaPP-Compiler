@@ -32,6 +32,7 @@ public class SemanticAnalysis {
 
                 }
             }
+            tokenInfos.clear();
         }
     }
 

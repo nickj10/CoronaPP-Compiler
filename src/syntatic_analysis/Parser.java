@@ -1,5 +1,6 @@
 package syntatic_analysis;
 
+import SymbolTable.SymbolTable;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -293,20 +294,23 @@ public class Parser {
         return -1;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp) {
-        //Checks if it's a terminal existing in the dictionary
-        if (consultDictionary(token.getId()) == null) {
-            //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-            Token aux = new Token("",token.getId());
-            if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
-                return "INT";
-            }
-            else {
-                //TODO: Error Handling, if something wasn't declared
-                System.out.println("Variable " + token.getId() + " wasn't declared.");
-                return null;
+    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+        //If it's not in the symbol table
+        if (table.getSymbol(token.getId()) == null) {
+            if (consultDictionary(token.getId()) == null) {
+                //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
+                Token aux = new Token("",token.getId());
+                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                    return "INT";
+                }
             }
         }
+        else {
+            if (token.getToken().equals("IDENTIFIER")) {
+                return table.getSymbol(token.getId()).getType();
+            }
+        }
+
         return null;
     }
 
