@@ -4,7 +4,6 @@ import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
-import semantic_analysis.SemanticAnalysis;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -19,7 +18,12 @@ public class CompilerManager {
     private static Scanner scanner;
     private static Parser parser;
     private SymbolTable symbolTable;
-    private static SemanticAnalysis semanticAnalysis;
+
+    // Empty constructor
+    public CompilerManager(){
+        symbolTable = SymbolTable.getInstance();
+    }
+
 
     public CompilerManager(String sourceFile, String grammarFile, String dictionaryFile) {
         this.sourceFile = sourceFile;
@@ -28,13 +32,6 @@ public class CompilerManager {
         scanner = new Scanner(sourceFile);
         parser = new Parser(grammarFile, dictionaryFile);
         symbolTable = SymbolTable.getInstance();
-        semanticAnalysis = new SemanticAnalysis();
-    }
-
-    // Empty constructor
-    public CompilerManager(){
-        symbolTable = SymbolTable.getInstance();
-        semanticAnalysis = new SemanticAnalysis();
     }
 
     public void compile() throws FirstAndFollowException, GrammarException {
@@ -82,10 +79,10 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.analyze(tree);
             tokensInfo.clear();
         }
     }
+
 
     public static String getSourceFile() {
         return sourceFile;
@@ -130,5 +127,4 @@ public class CompilerManager {
     public Table getSymbolTable() {
         return symbolTable;
     }
-
 }
