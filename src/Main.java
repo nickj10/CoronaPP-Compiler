@@ -1,5 +1,6 @@
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
+import exceptions.SemanticException;
 import model.CompilerManager;
 
 public class Main {
@@ -11,9 +12,8 @@ public class Main {
         CompilerManager compilerManager = new CompilerManager(sourceFile, grammarFile, dictionaryFile);
         try {
             compilerManager.compile();
-        } catch (FirstAndFollowException | GrammarException e) {
+        } catch (FirstAndFollowException | GrammarException | SemanticException e) {
             e.printStackTrace();
         }
-
     }
 }
