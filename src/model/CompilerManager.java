@@ -30,7 +30,7 @@ public class CompilerManager {
         semanticAnalysis = new SemanticAnalysis();
     }
 
-    public void compile() {
+    public void compile() throws SemanticException {
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
@@ -80,11 +80,7 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
-            try {
-                semanticAnalysis.analyze(tree);
-            } catch (SemanticException e) {
-                e.printStackTrace();
-            }
+            semanticAnalysis.analyze(tree);
             tokensInfo.clear();
         }
     }

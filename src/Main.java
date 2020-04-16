@@ -1,3 +1,4 @@
+import exceptions.SemanticException;
 import model.CompilerManager;
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;
@@ -9,7 +10,11 @@ public class Main {
     String dictionaryFile = args[2];
 
     CompilerManager compilerManager = new CompilerManager(sourceFile, grammarFile, dictionaryFile);
-    compilerManager.compile();
+    try {
+      compilerManager.compile();
+    } catch (SemanticException e) {
+      e.printStackTrace();
+    }
 
     // TEST
     // Creating a new . Remember, it is a Singleton so you need to call the getInstance() method
