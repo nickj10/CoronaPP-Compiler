@@ -3,6 +3,7 @@ package intermediate;
 public class Label {
   private static int counter = 0;
   private int id;
+  private String operand;
 
   public Label(int id) {
     this.id = id;
@@ -13,6 +14,14 @@ public class Label {
   }
 
   public String generateStringLabel() {
-   return "L" + this.id;
+    return "L" + this.id;
+  }
+
+  public String getOperand() {
+    return operand;
+  }
+
+  public void setOperand(String operand) {
+    this.operand = operand;
   }
 }
