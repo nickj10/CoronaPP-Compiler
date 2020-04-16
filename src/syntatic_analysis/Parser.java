@@ -23,23 +23,31 @@ public class Parser {
 
     String[][] table = {
 
-            {null, "A DOT_COMA", null, null, null}
+            {"D", "A", null, null, null, null, null, null}
             ,
-            {null, "TIPO F ASSGN_EQ B", null, null, null}
+            {null, "TIPO F C", null, null, null, null, null, null}
             ,
-            {null, "INT", null, null, null}
+            {null, "INT", null, null, null, null, null, null}
             ,
 
-            {"IDENTIFIER", null, null, null, null}
+            {"IDENTIFIER", null, null, null, null, null, null, null}
             ,
-            {null, null, "NUMBER", null, null}
+            {null, null, "NUMBER", null, null, null, null, null}
             ,
-            {"F", null, "VALUE", null, null}
+            {"F", null, "VALUE", null, null, null, null, null} ,
+
+            {null, null, null, null, "ASSGN_EQ B", null, null, ""}
+            ,
+            {"F ASSGN_EQ G", null, null, null, null, null, null, null}
+            ,
+            {"B H B", null, "B H B", null, null, null, null, null}
+            ,
+            {null, null, null, null, null, "ARTMTC_SM", "ARTMTC_RS", null}
 
     };
 
-    String[] noTerminals = {"E", "A", "TIPO", "F", "VALUE", "B"};
-    String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ"};
+    String[] noTerminals = {"E", "A", "TIPO", "F", "VALUE", "B", "C", "D", "G", "H"};
+    String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ", "ARTMTC_SM", "ARTMTC_RS", "#"};
 
     //Pila
     ArrayList<String> stack = new ArrayList<>();
@@ -179,7 +187,7 @@ public class Parser {
         stack.clear();
 
         stack.add(tokenInfos.get(0).getToken() + "");
-        stack.add("A");
+        stack.add("E");
 
         //Cogemos el primer token que nos pasa el scanner
         String token = String.valueOf(tokenInfos.get(inputCounter).getToken());
