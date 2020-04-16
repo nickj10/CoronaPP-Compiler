@@ -5,11 +5,11 @@ import SymbolTable.Symbol;
 public class SymbolTableTest {
 
     public static void main(String[] args) {
-        System.out.print("Building Symbol table with the following code snippet: " +
+        System.out.print("Building Symbol table with the following code snippet: \n" +
                 "          int a = 10;   $ line 0\n"+
                 "          if(a > 9){    $ line 1\n"+
                 "            int b = 8   $ line 2\n"+
-                "          }             $ line 3");
+                "          }             $ line 3\n");
 
         // TEST
         // Creating a new SymbolTable. Remember, it is a Singleton so you need to call the getInstance() method
@@ -36,5 +36,13 @@ public class SymbolTableTest {
         // Printing to check everything's perfect
         System.out.println(mytable.toString());
 
+        System.out.println("Trying to store variable \"" + _a.getId() + "\"");
+        // checking if variable exists to whether or not store it (hint: It already exists in this example)
+        if(!mytable.alreadyExists(_a)) {
+            System.out.println("Variable \"" + _a.getId() + "\" NOT inside the table. Storing it...");
+            mytable.addSymbol(_a);
+        }else {
+            System.out.println("ERROR: Variable \"" + _a.getId() + "\" ALREADY inside the table, ignoring...");
+        }
     }
 }

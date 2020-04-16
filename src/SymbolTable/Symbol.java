@@ -112,6 +112,8 @@ public class Symbol {
     public void setChildTable(Table childTable) {
         this.childTable = childTable;
     }
+
+    public Boolean hasParentTable(){ return this.parentTable != null; }
 }
 
 
