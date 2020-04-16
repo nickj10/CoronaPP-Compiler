@@ -1,5 +1,4 @@
 import exceptions.FirstAndFollowException;
-import exceptions.GrammarException;
 import model.CompilerManager;
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;

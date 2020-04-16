@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 import exceptions.FirstAndFollowException;
-import exceptions.GrammarException;
 import lexic_analysis.TokenInfo;
 import model.Dictionary;
 import model.Word;
