@@ -4,6 +4,7 @@ import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
+import semantic_analysis.SemanticAnalysis;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -18,6 +19,7 @@ public class CompilerManager {
     private static Scanner scanner;
     private static Parser parser;
     private SymbolTable symbolTable;
+    private static SemanticAnalysis semanticAnalysis;
 
     public CompilerManager(String sourceFile, String grammarFile, String dictionaryFile) {
         this.sourceFile = sourceFile;
@@ -26,6 +28,13 @@ public class CompilerManager {
         scanner = new Scanner(sourceFile);
         parser = new Parser(grammarFile, dictionaryFile);
         symbolTable = SymbolTable.getInstance();
+        semanticAnalysis = new SemanticAnalysis();
+    }
+
+    // Empty constructor
+    public CompilerManager(){
+        symbolTable = SymbolTable.getInstance();
+        semanticAnalysis = new SemanticAnalysis();
     }
 
     public void compile() throws FirstAndFollowException, GrammarException {
@@ -73,7 +82,53 @@ public class CompilerManager {
                 }
             }
             ASTree tree = parser.getBuiltTree();
+            semanticAnalysis.analyze(tree);
             tokensInfo.clear();
         }
     }
+
+    public static String getSourceFile() {
+        return sourceFile;
+    }
+
+    public static void setSourceFile(String sourceFile) {
+        CompilerManager.sourceFile = sourceFile;
+    }
+
+    public static String getDictionaryFile() {
+        return dictionaryFile;
+    }
+
+    public static void setDictionaryFile(String dictionaryFile) {
+        CompilerManager.dictionaryFile = dictionaryFile;
+    }
+
+    public static String getGrammarFile() {
+        return grammarFile;
+    }
+
+    public static void setGrammarFile(String grammarFile) {
+        CompilerManager.grammarFile = grammarFile;
+    }
+
+    public static Scanner getScanner() {
+        return scanner;
+    }
+
+    public static void setScanner(Scanner scanner) {
+        CompilerManager.scanner = scanner;
+    }
+
+    public static Parser getParser() {
+        return parser;
+    }
+
+    public static void setParser(Parser parser) {
+        CompilerManager.parser = parser;
+    }
+
+    public Table getSymbolTable() {
+        return symbolTable;
+    }
+
 }
