@@ -3,7 +3,6 @@ package model;
 import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.FirstAndFollowException;
-import exceptions.GrammarException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
