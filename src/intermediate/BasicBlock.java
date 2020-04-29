@@ -6,7 +6,7 @@ import java.util.List;
 public class BasicBlock {
   private IntermediateCode entryPoint;
   private IntermediateCode exitPoint;
-  private List<IntermediateCode> instructions;
+  private LinkedList<IntermediateCode> instructions;
 
   public BasicBlock(IntermediateCode entry, IntermediateCode exit) {
     entryPoint = entry;
@@ -22,4 +22,23 @@ public class BasicBlock {
     this.instructions = instructions;
   }
 
+  public IntermediateCode getNextInstruction() {
+    return instructions.getFirst();
+  }
+
+  public IntermediateCode getEntryPoint() {
+    return entryPoint;
+  }
+
+  public void setEntryPoint(IntermediateCode entryPoint) {
+    this.entryPoint = entryPoint;
+  }
+
+  public IntermediateCode getExitPoint() {
+    return exitPoint;
+  }
+
+  public void setExitPoint(IntermediateCode exitPoint) {
+    this.exitPoint = exitPoint;
+  }
 }
