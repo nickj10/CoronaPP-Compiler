@@ -12,5 +12,13 @@ public class IntermediateCodeFlow {
   public void addNewIC(IntermediateCode ic) {
     tacCodes.add(ic);
   }
+
+  @Override
+  public String toString() {
+    return "IntermediateCodeFlow {" + "\n" +
+            "TAC Codes {" + "\n" +
+            "    " + tacCodes + "\n" +
+            '}';
+  }
   
 }

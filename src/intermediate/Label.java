@@ -24,4 +24,9 @@ public class Label {
   public void setOperand(String operand) {
     this.operand = operand;
   }
+
+  @Override
+  public String toString() {
+    return "ID: " + id + " OP: " + operand;
+  }
 }

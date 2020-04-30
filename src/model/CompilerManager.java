@@ -95,6 +95,7 @@ public class CompilerManager {
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
             syntaxTreeToTAC(tree, icFlow);
+            System.out.println(icFlow);
             tree.clear();
             tokensInfo.clear();
         }
