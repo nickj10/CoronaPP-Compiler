@@ -3,6 +3,7 @@ package model;
 import SymbolTable.*;
 import com.google.gson.Gson;
 import exceptions.SemanticException;
+import intermediate.IntermediateCodeFlow;
 import semantic_analysis.SemanticAnalysis;
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
@@ -10,9 +11,12 @@ import exceptions.SemanticException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
+import intermediate.ThreeAddrCode;
 
 import java.io.*;
 import java.util.*;
+
+import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
 
 public class CompilerManager {
     private static String sourceFile;
@@ -44,7 +48,7 @@ public class CompilerManager {
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
-
+        IntermediateCodeFlow icFlow = new IntermediateCodeFlow();
 
         while (scanner.getNextToken() != null) {
             counter = 0;
@@ -90,6 +94,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
+            syntaxTreeToTAC(tree, icFlow);
             tree.clear();
             tokensInfo.clear();
         }
