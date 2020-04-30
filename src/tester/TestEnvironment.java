@@ -1,5 +1,8 @@
 package tester;
 
+import exceptions.FirstAndFollowException;
+import exceptions.GrammarException;
+import exceptions.SemanticException;
 import lexic_analysis.Scanner;
 import model.CompilerManager;
 import syntatic_analysis.Grammar;
@@ -48,9 +51,9 @@ public class TestEnvironment {
         try {
             compilerManager.compile();
             System.out.println("Compiled!\n\n");
-        }catch(Exception e){
+        } catch (FirstAndFollowException | GrammarException | SemanticException e) {
             System.out.println("Compilation Failed!");
-            System.out.println("ERROR:" + e.getMessage());
+            e.printStackTrace();
             return;
         }
 

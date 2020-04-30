@@ -26,6 +26,7 @@ public class CompilerManager {
     // Empty constructor
     public CompilerManager(){
         symbolTable = SymbolTable.getInstance();
+        semanticAnalysis = new SemanticAnalysis();
     }
 
 
