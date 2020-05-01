@@ -3,21 +3,21 @@ package intermediate;
 import java.util.ArrayList;
 
 public class IntermediateCodeFlow {
-  private ArrayList<IntermediateCode> tacCodes;
+  private ArrayList<BasicBlock> basicBlocks;
 
   public IntermediateCodeFlow() {
-    this.tacCodes = new ArrayList<IntermediateCode>();
+    this.basicBlocks = new ArrayList<BasicBlock>();
   }
 
-  public void addNewIC(IntermediateCode ic) {
-    tacCodes.add(ic);
+  public void addNewIC(BasicBlock bb) {
+    basicBlocks.add(bb);
   }
 
   @Override
   public String toString() {
     return "IntermediateCodeFlow {" + "\n" +
-            "TAC Codes {" + "\n" +
-            "    " + tacCodes + "\n" +
+            "Basic Blocks {" + "\n" +
+            "    " + basicBlocks + "\n" +
             '}';
   }
   
