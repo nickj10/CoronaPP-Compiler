@@ -8,24 +8,31 @@ import com.google.gson.annotations.Expose;
 public class Symbol {
     // Parameters
      private String id,
+                    lexema,
                     token,
                     type,
                     scope;
      private int    declaredAtLine,
-                    dataSize;
+                    dataSize,
+                    stackPointer; // Position in memory stack used in MIPS (known as sp).
      private transient Table parentTable;
      private Table  childTable;
 
      private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    // Methods
+    // Constructor
     public Symbol() {
         parentTable = null;
         childTable = null;
     }
 
-    public Symbol(String id, String token, String type, String scope, int declaredAtLine, int dataSize) {
-        this.id = id;
+    public Symbol(String lexema) {
+        this.lexema = lexema;
+    }
+
+    public Symbol(String lexema, String token, String type, String scope, int declaredAtLine, int dataSize) {
+        this.id = String.format("%s%d", lexema, declaredAtLine);
+        this.lexema = lexema;
         this.token = token;
         this.type = type;
         this.scope = scope;
@@ -57,6 +64,14 @@ public class Symbol {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getLexema() {
+        return lexema;
+    }
+
+    public void setLexema(String lexema) {
+        this.lexema = lexema;
     }
 
     public String getType() {
