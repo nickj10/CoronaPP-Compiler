@@ -69,7 +69,8 @@ public class Table {
         table.put(hashf(s.getId()), s);
     }
 
-    public Symbol getSymbol(String id){
+    public Symbol getSymbol(String id, int tableId){
+        // TODO: Implement tableId for each internal table
         return table.get(hashf(id));
     }
 

@@ -79,7 +79,8 @@ public class CompilerManager {
                     if (type != null) {
                         tokenInfo.setType(type);
                     }
-                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),
+                        tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
                     //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
                     if (tokenInfo.getToken().equals("ASSGN_EQ")) {
                         parser.buildTree(tokenInfo);
@@ -94,7 +95,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
-            syntaxTreeToTAC(tree, icFlow);
+            syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
             tree.clear();
             tokensInfo.clear();
