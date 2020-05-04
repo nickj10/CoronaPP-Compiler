@@ -3,23 +3,84 @@ package SymbolTable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
 
 public class Table {
     private Hashtable<Integer, Symbol> table;
+    private transient int framePointer;
+    private transient Stack<Symbol> scopeStack;   // Stack to keep control of the scopes (parent and child tables)
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public Table(Hashtable<Integer, Symbol> table) {
+    public Table(Hashtable<Integer, Symbol> table, int framePointer_) {
         this.table = table;
+        framePointer = framePointer_;
+        scopeStack = new Stack<Symbol>();
     }
 
     public Table(){
         this.table = new Hashtable<Integer, Symbol>();
+        framePointer = 0;
+        scopeStack = new Stack<Symbol>();
     }
 
     // Methods:
+    private void addToScope(Symbol s){
+        Symbol innerScope = scopeStack.peek(); // Getting the last scope
+        innerScope.getChildTable().addSymbol(s); // Adding the variable(s) inside the internal scope (child scope)
+        s.setParentTable(getPreviousScopeTable()); // Setting the parent table
+    }
+
+    /**
+     * Method to check whether or not the Symbol s needs to be inserted into current scope using the scopeStack.
+     * IE: local variables inside if statements.
+     * @param s: Symbol to be checked
+     * @return True if the symbol has been inserted into current scope
+     *         False if the symbol wasn't inserted (global variables or not inner scope available)
+     */
+    private Boolean checkScope(Symbol s){
+        if(s.getScope().equals("global") || scopeStack.empty())
+            return false;
+
+        addToScope(s);
+        return true;
+    }
+
+    /**
+     * Method to get the previous scope (not the current one, which can be obtained by using peek() or pop() in scopeStack
+     * @return the previous scope. (null if current one is the main table)
+     */
+    private Table getPreviousScopeTable(){
+        int scopeSize = scopeStack.size();
+        if(scopeSize == 0){
+            return null;
+        }else if(scopeSize == 1){
+            return this;
+        }else{
+            return scopeStack.elementAt(scopeSize -1).getChildTable();
+        }
+    }
+
+
+    /**
+     * Method to check whether or not the symbol opens (create) a new scope (new block). IE: if, while statements
+     * @param s: Symbol
+     * @return True if a new scope has been created and pushed into the scopeStack
+     *         False if not scope has been created
+     */
+    private Boolean isNewScope(Symbol s){
+        if(s.getId().equals("if")){ // Checking keyword to see if inner scope is needed
+            s.setId(String.format("%s%d",s.getId(), s.getDeclaredAtLine())); // Setting a properly ID to avoid collisions
+            s.setChildTable();
+            return true;
+        }else if(s.getId().equals("while")){
+            s.setId(String.format("%s%d",s.getId(), s.getDeclaredAtLine())); // Setting a properly ID to avoid collisions
+            s.setChildTable();
+            return true;
+        }
+
+        return false;
+    }
+
     private Boolean exists(int id){
         return table.containsKey(id);
     }
@@ -56,23 +117,81 @@ public class Table {
     }
 
     public Table getParentTable(){
-      Set<Integer> keys = table.keySet();
+        Set<Integer> keys = table.keySet();
 
-      for(Integer key : keys)
-          if(table.get(key).hasParentTable())
-              return table.get(key).getParentTable();
+        for(Integer key : keys)
+            if(table.get(key).hasParentTable())
+                return table.get(key).getParentTable();
 
-      return null;
+        return null;
     }
 
-    public void addSymbol(Symbol s){
-        table.put(hashf(s.getId()), s);
+    public ArrayList<Table> getChildTables(){
+        Set<Integer> keys = table.keySet();
+        ArrayList<Table> childTables = new ArrayList<Table>(null);
+        for(Integer key : keys)
+            if(table.get(key).hasChildTable())
+                childTables.add( table.get(key).getChildTable() );
+
+        return childTables;
     }
 
-    public Symbol getSymbol(String id, int tableId){
-        // TODO: Implement tableId for each internal table
+    private Symbol getCurrentScopeSymbol(){
+        if(scopeStack.empty())
+            return null;
+        return scopeStack.peek();
+    }
+
+    /**
+     * Adds a symbol into the table and returns the name of the symbol which contains this table
+     * (useful for inner scopes)
+     * @param s: Symbol to be added to the respective table container
+     * @return Name of the symbol which contains the table (also known as "tableId")
+     */
+    public String addSymbol(Symbol s){
+        Boolean newScope = isNewScope(s);
+        Symbol currentScopeSymbol = getCurrentScopeSymbol();
+
+        if(!checkScope(s))
+            table.put(hashf(s.getId()), s);
+
+        if(newScope)
+            scopeStack.push(s);
+
+        if(currentScopeSymbol == null)
+            return null;
+
+        return currentScopeSymbol.getId();
+    }
+
+    public Symbol getSymbol(String id, String tableId){
+        if(this.getSymbol(tableId) != null){
+            return this.getSymbol(tableId).getChildTable().getSymbol(id);
+        }
+
+        ArrayList<Table> childTables = getChildTables();
+
+        if(childTables.isEmpty())
+            return null;
+
+        for( Table table : childTables) {
+            Symbol found = table.getSymbol(id, tableId);
+            if(found != null)
+                return found;
+        }
+
+        return null;
+    }
+
+    public Symbol getSymbol(String id){
         return table.get(hashf(id));
     }
+
+    // Deprecated
+    /*
+    public Symbol getSymbol(String id, int tableid){
+        return table.get(hashf(id));
+    }*/
 
     public Symbol removeSymbol(String id){
         return table.remove(hashf(id));
@@ -89,19 +208,14 @@ public class Table {
 
     @Override
     public String toString() {
-
-        /*Enumeration enu = table.elements();
-        String str = new String();
-        str = "Table{\n";
-        str += "\t" + enu.nextElement().toString();
-
-        while (enu.hasMoreElements()) {
-            str += ",\n";
-            str += "\t" + enu.nextElement().toString();
-        }
-        str += "\n}";
-        return str;*/
-
         return gson.toJson(this);
+    }
+
+    public int getFramePointer() {
+        return framePointer;
+    }
+
+    public void setFramePointer(int framePointer) {
+        this.framePointer = framePointer;
     }
 }

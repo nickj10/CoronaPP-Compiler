@@ -66,7 +66,7 @@ public abstract class ThreeAddrCode {
                 tac1 = new AssignmentTAC(arg1, null, op, testLabel);
             }
 
-            icFlow.addNewIC(new IntermediateCode(tac1));
+            icFlow.addNewIC(new BasicBlock(new IntermediateCode(tac1)));
 
         }
     }

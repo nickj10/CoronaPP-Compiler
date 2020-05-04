@@ -7,23 +7,24 @@ import com.google.gson.annotations.Expose;
 /*  Class to store all the information for the symbols stored inside the symbol table */
 public class Symbol {
     // Parameters
-     private String id,
-                    lexema,
-                    token,
-                    type,
-                    scope;
-     private int    declaredAtLine,
-                    dataSize,
-                    stackPointer; // Position in memory stack used in MIPS (known as sp).
-     private transient Table parentTable;
-     private Table  childTable;
+    private String id,
+            lexema,
+            token,
+            type,
+            scope;
+    private int    declaredAtLine,
+            dataSize,
+            stackPointer; // Position in memory stack used in MIPS (known as sp).
+    private transient Table parentTable;
+    private Table  childTable;
 
-     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     // Constructor
     public Symbol() {
         parentTable = null;
         childTable = null;
+        this.stackPointer = -1;
     }
 
     public Symbol(String lexema) {
@@ -31,7 +32,7 @@ public class Symbol {
     }
 
     public Symbol(String lexema, String token, String type, String scope, int declaredAtLine, int dataSize) {
-        this.id = String.format("%s%d", lexema, declaredAtLine);
+        this.id = lexema;
         this.lexema = lexema;
         this.token = token;
         this.type = type;
@@ -40,6 +41,7 @@ public class Symbol {
         this.dataSize = dataSize;
         parentTable = null;
         childTable = null;
+        this.stackPointer = -1;
     }
 
     @Override
@@ -124,11 +126,22 @@ public class Symbol {
         this.childTable = new Table();
     }
 
+    public int getStackPointer() {
+        return stackPointer;
+    }
+
+    public void setStackPointer(int stackPointer) {
+        this.stackPointer = stackPointer;
+    }
+
     public void setChildTable(Table childTable) {
         this.childTable = childTable;
     }
 
     public Boolean hasParentTable(){ return this.parentTable != null; }
+
+    public Boolean hasChildTable(){ return this.childTable != null; }
+
 }
 
 
