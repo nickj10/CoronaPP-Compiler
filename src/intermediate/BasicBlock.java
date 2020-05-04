@@ -16,13 +16,12 @@ public class BasicBlock {
   /**
    *
    * @param entry first instruccion in the basic block
-   * @param exit indicates if it's the next block or if it's the last one
    */
-  public BasicBlock(IntermediateCode entry, IntermediateCode exit) {
+  public BasicBlock(IntermediateCode entry) {
     basicBlockId = String.format("BB%d", counter++);
     entryPoint = entry;
-    exitPoint = exit;
     instructions = new LinkedList<>();
+    instructions.add(entry);
   }
 
   public void addInstruction(IntermediateCode intermediateCode) {
