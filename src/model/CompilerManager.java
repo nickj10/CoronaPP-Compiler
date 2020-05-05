@@ -80,7 +80,7 @@ public class CompilerManager {
             if (lastCharExpression.equals(";")){
                 tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
             }else {
-                tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLCSED");
+                tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLOSED");
             }
 
 
