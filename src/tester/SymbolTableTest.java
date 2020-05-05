@@ -22,15 +22,16 @@ public class SymbolTableTest {
           }             $ line 3
          */
         Symbol _a = new Symbol("a", "INT", "int", "global", 0, 4);
-        Symbol _if1 = new Symbol("if1", "IF", "if-statement", "global", 1, 0);
-        _if1.setChildTable();  // Setting a child table to store the scope of the if statement
+        Symbol _if1 = new Symbol("if", "IF", "if-statement", "global", 1, 0);
         Symbol _b = new Symbol("b", "IDENTIFIER", "int", "local", 2, 4);
-        _if1.getChildTable().addSymbol(_b); // Adding the variable(s) inside the if statement
-        _b.setParentTable(mytable); // Setting the parent tables of the variables inside the if statement
-        // in this case is just the root table: 'mytable'
-        // Adding the rest of the symbols to 'mytable'
+        Symbol _if2 = new Symbol("if", "IF", "if-statement", "local", 3, 0);
+        Symbol _c = new Symbol("c", "IDENTIFIER", "int", "local", 4, 4);
+
         mytable.addSymbol(_a);
         mytable.addSymbol(_if1);
+        mytable.addSymbol(_b);
+        mytable.addSymbol(_if2);
+        mytable.addSymbol(_c);
 
         System.out.println("Done!");
         // Printing to check everything's perfect
@@ -44,5 +45,13 @@ public class SymbolTableTest {
         }else {
             System.out.println("ERROR: Variable \"" + _a.getId() + "\" ALREADY inside the table, ignoring...");
         }
+
+        System.out.println("Looking for variable 'b' inside the first if-statement (if1)");
+        Symbol found_b = mytable.getSymbol("b", "if1");
+        found_b.setStackPointer(24);
+        System.out.println("Symbol b: " + found_b.toString());
+        System.out.println("Changing stack pointer in symbol found b to 24 \n Table with changes in b:");
+        System.out.println(mytable.toString());
+
     }
 }
