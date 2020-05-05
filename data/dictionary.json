@@ -111,8 +111,18 @@
       "description": "Carácter especial que indica el comienzo de la lista de parámetros que tendrá una función o procedimiento."
     },
     {
-      "token": "PRNTSS_CLCSED",
+      "token": "PRNTSS_CLOSED",
       "lexeme": ")",
+      "description": "Carácter especial que indica el final de la lista de parámetros que tendrá una función o procedimiento."
+    },
+    {
+      "token": "COR_OPEN",
+      "lexeme": "{",
+      "description": "Carácter especial que indica el comienzo de la lista de parámetros que tendrá una función o procedimiento."
+    },
+    {
+      "token": "COR_CLOSED",
+      "lexeme": "}",
       "description": "Carácter especial que indica el final de la lista de parámetros que tendrá una función o procedimiento."
     },
     {

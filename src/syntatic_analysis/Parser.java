@@ -23,32 +23,50 @@ public class Parser {
     private ASTree asTree;
 
     String[][] table = {
+            {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null}
+            ,
+            {"D", "DECLARACION", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            ,
+            {null, null, null, null, null, null, null, null, null, "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", null, null, null, null, null, null, null}
+            ,
+            {null, "TIPO F C", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            ,
+            {null, "INT", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
 
-            {"D", "A", null, null, null, null, null, null}
+
             ,
-            {null, "TIPO F C", null, null, null, null, null, null}
+            {"IDENTIFIER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, "INT", null, null, null, null, null, null}
+            {null, null, "NUMBER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            ,
+            {"F", null, "VALUE", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            ,
+            {null, null, null, null, null, "ASSGN_EQ B", null, null, null, null, null, null, null, null, null, null, null, ""}
+            ,
+            {"F ASSGN_EQ G", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
 
-            {"IDENTIFIER", null, null, null, null, null, null, null}
-            ,
-            {null, null, "NUMBER", null, null, null, null, null}
-            ,
-            {"F", null, "VALUE", null, null, null, null, null} ,
 
-            {null, null, null, null, "ASSGN_EQ B", null, null, ""}
+            {"B OPERATOR B", null, "B OPERATOR B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {"F ASSGN_EQ G", null, null, null, null, null, null, null}
+            {null, null, null, null, null, "ARTMTC_SM", "ARTMTC_RS", "ARTMTC_MLT", "ARTMTC_DV", null, null, null, null, null, null, null, null, null}
             ,
-            {"B H B", null, "B H B", null, null, null, null, null}
+            {null, null, null, null, null, null, null, null, null, "IF", "WHILE", null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, "ARTMTC_SM", "ARTMTC_RS", null}
+            {"B RLTNL B", null, "B RLTNL B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            ,
+            {null, null, null, null, null, null, null, null, null, null, null, "RLTNL_EQ", "RLTNL_NTEQ", null, null, null, null, null}
+
+
 
     };
 
-    String[] noTerminals = {"E", "A", "TIPO", "F", "VALUE", "B", "C", "D", "G", "H"};
-    String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ", "ARTMTC_SM", "ARTMTC_RS", "#"};
+    String[] noTerminals = {"S", "EXPRESSION","SENTENCIA", "DECLARACION","TIPO",
+            "F", "VALUE", "B", "C", "D",
+            "G", "OPERATOR", "TIPO_SENTENCIA", "CONDITIONAL_EXPRESSION", "RLTNL"};
+    String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ", "ARTMTC_SM",
+            "ARTMTC_RS","ARTMTC_MLT", "ARTMTC_DV", "IF", "WHILE", "RLTNL_EQ",
+            "RLTNL_NTEQ", "PRNTSS_OPEN", "PRNTSS_CLOSED", "COR_OPEN", "COR_CLOSED" ,"#"};
 
     //Pila
     ArrayList<String> stack = new ArrayList<>();
@@ -188,7 +206,7 @@ public class Parser {
         stack.clear();
 
         stack.add(tokenInfos.get(0).getToken() + "");
-        stack.add("E");
+        stack.add("S");
 
         //Cogemos el primer token que nos pasa el scanner
         String token = String.valueOf(tokenInfos.get(inputCounter).getToken());

@@ -52,8 +52,14 @@ public class CompilerManager {
 
         while (scanner.getNextToken() != null) {
             counter = 0;
+            String lastCharExpression;
             //Prelectura
             tokensInfo.add(scanner.sendNextToken());
+            if (tokensInfo.get(0).getId().equals("if") || tokensInfo.get(0).getId().equals("while")){
+                lastCharExpression = "}";
+            } else {
+                lastCharExpression = ";";
+            }
             do {
                 if (parser.consultDictionary(tokensInfo.get(counter).getId()) != null) {
                     tokensInfo.get(counter).setToken(parser.consultDictionary(tokensInfo.get(counter).getId()));
@@ -68,9 +74,15 @@ public class CompilerManager {
                 counter++;
                 //Lectura siguiente token
                 tokensInfo.add(scanner.sendNextToken());
-            } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(";"));
+            } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(lastCharExpression));
 
-            tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
+            //Ponemos el token del ultimo caracter ya que no entra en el bucle
+            if (lastCharExpression.equals(";")){
+                tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
+            }else {
+                tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLCSED");
+            }
+
 
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
@@ -95,7 +107,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
-            syntaxTreeToTAC(tree, icFlow, symbolTable);
+            //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
             tree.clear();
             tokensInfo.clear();
