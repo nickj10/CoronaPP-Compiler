@@ -106,7 +106,7 @@ public class CompilerManager {
                             parser.buildTree(tokenInfo);
                         }
                     }
-                    //We use this flag to know if we're going to deal with a WHILE block, that's why we're adding the tokens inside of the list
+                    //We use this flag to know if we're going to deal with a WHILE/IF block, that's why we're adding the tokens inside of the list
                     if (flag) {
                         tmpList.add(tokenInfo);
                     }
