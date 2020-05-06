@@ -1,0 +1,8 @@
+$$ Source code 2
+
+/$
+This is the test 2
+$/
+int a;
+int echo = 123;
+a = 3 + echo;
