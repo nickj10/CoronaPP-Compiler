@@ -1,4 +1,5 @@
-$$ Source code 4
+$$ Code not tested, probably won't work
+$$ Our grammar doesn't like int echo = a;
 
 /$
 This is the test 4

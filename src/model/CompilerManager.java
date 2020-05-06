@@ -86,6 +86,8 @@ public class CompilerManager {
 
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
+                ArrayList<TokenInfo> tmpList = new ArrayList<>();
+                boolean flag = false;
                 for(TokenInfo tokenInfo : tokensInfo){
                     String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable);
                     if (type != null) {
@@ -93,20 +95,43 @@ public class CompilerManager {
                     }
                     symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),
                         tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
-                    //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
-                    if (tokenInfo.getToken().equals("ASSGN_EQ")) {
-                        parser.buildTree(tokenInfo);
-                        parser.buildTree(tmp);
+                    //If its dealing with no loops or ifs, just normal expressions
+                    if (!flag) {
+                        if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ")) {
+                            parser.buildTree(tokenInfo);
+                            parser.buildTree(tmp);
 
+                        }
+                        if (parser.validateTreeConstruction(tokenInfo.getToken())) {
+                            parser.buildTree(tokenInfo);
+                        }
                     }
-                    if (parser.validateTreeConstruction(tokenInfo.getToken())) {
-                        parser.buildTree(tokenInfo);
+                    //We use this flag to know if we're going to deal with a WHILE block, that's why we're adding the tokens inside of the list
+                    if (flag) {
+                        tmpList.add(tokenInfo);
                     }
+                    if (tokenInfo.getToken().equals("WHILE") || tokenInfo.getToken().equals("IF")) {
+                        tmpList.add(tokenInfo);
+                        flag = true;
+                    }
+                    if (tokenInfo.getToken().equals("COR_CLOSED")) {
+                        flag = false;
+                        parser.buildWhileIfTree(tmpList);
+                    }
+
                     tmp = tokenInfo;
                 }
             }
+            //If there's a constructed tree, analyze it
             ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.analyze(tree);
+            //This array returns WHILE block in the form of trees
+            ArrayList<ASTree> trees = parser.getBuiltWhileIfTree();
+            if (tree.getRoot() != null) {
+                semanticAnalysis.analyze(tree);
+            }
+            if (trees != null) {
+                //TODO: SemanticAnalysis
+            }
             //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
             tree.clear();

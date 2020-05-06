@@ -21,6 +21,7 @@ public class Parser {
     private String grammarFile;
     private String dictionaryFile;
     private ASTree asTree;
+    private ArrayList<ASTree> asTrees;
 
     String[][] table = {
             {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null}
@@ -79,6 +80,7 @@ public class Parser {
         initGrammar();
         startFirstFollow();
         asTree = new ASTree();
+        asTrees = new ArrayList<>();
     }
 
     public void initGrammar() {
@@ -340,8 +342,46 @@ public class Parser {
         return asTree;
     }
 
+    public void buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
+        TokenInfo tmp = new TokenInfo();
+        ASTree tree = new ASTree();
+        for (TokenInfo t : tokenInfos) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ")) {
+                tree.insert(t);
+                tree.insert(tmp);
+            }
+            if (validateWhileTreeConstruction(t.getToken(), tree)) {
+                tree.insert(t);
+            }
+            if (t.getToken().equals("WHILE") || t.getToken().equals("IF")) {
+                tree.insert(t);
+                asTrees.add(tree);
+                tree = new ASTree();
+            }
+            if (t.getToken().equals("PRNTSS_CLOSED") || t.getToken().equals("DOT_COMA")) {
+                asTrees.add(tree);
+                tree = new ASTree();
+            }
+            tmp = t;
+        }
+    }
+
+    public ArrayList<ASTree> getBuiltWhileIfTree () { return asTrees;}
+
+    public boolean validateWhileTreeConstruction (String token, ASTree tree) {
+        if (tree.getRoot() == null && (token.equals("ASSGN_EQ"))) {
+            return true;
+        }
+        if (tree.getRoot() != null && !token.equals("ASSGN_EQ")) {
+            if (token.equals("IDENTIFIER") || token.equals("NUMBER") || token.contains("ARTMTC")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean validateTreeConstruction(String token) {
-        if (asTree.getRoot() == null && token.equals("ASSGN_EQ")) {
+        if (asTree.getRoot() == null && (token.equals("ASSGN_EQ"))) {
             return true;
         }
         if (asTree.getRoot() != null && !token.equals("ASSGN_EQ")) {
@@ -350,6 +390,14 @@ public class Parser {
             }
         }
         return false;
+    }
+
+    public void addToAsTrees(ASTree tree) {
+        asTrees.add(tree);
+    }
+
+    public ArrayList getAsTrees () {
+        return this.asTrees;
     }
 
     /**
