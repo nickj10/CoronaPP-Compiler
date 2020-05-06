@@ -7,7 +7,7 @@ public class TokenInfo {
   private String type;
   private String scope;
   private String token;
-  private int tableId;
+  private String tableId;
   private int declaredAtLine;
   private int dataSize;
 
@@ -76,11 +76,11 @@ public class TokenInfo {
     this.declaredAtLine = declaredAtLine;
   }
 
-  public int getTableId() {
+  public String getTableId() {
     return tableId;
   }
 
-  public void setTableId(int tableId) {
+  public void setTableId(String tableId) {
     this.tableId = tableId;
   }
 
