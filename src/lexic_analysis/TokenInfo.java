@@ -1,7 +1,5 @@
 package lexic_analysis;
 
-import syntatic_analysis.Token;
-
 import java.util.ArrayList;
 
 public class TokenInfo {
@@ -9,6 +7,7 @@ public class TokenInfo {
   private String type;
   private String scope;
   private String token;
+  private String tableId;
   private int declaredAtLine;
   private int dataSize;
 
@@ -75,6 +74,14 @@ public class TokenInfo {
 
   public void setDeclaredAtLine(int declaredAtLine) {
     this.declaredAtLine = declaredAtLine;
+  }
+
+  public String getTableId() {
+    return tableId;
+  }
+
+  public void setTableId(String tableId) {
+    this.tableId = tableId;
   }
 
   @Override
