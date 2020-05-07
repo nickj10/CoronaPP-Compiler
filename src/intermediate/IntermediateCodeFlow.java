@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import lexic_analysis.TokenInfo;
 import syntatic_analysis.ASTNode;
 import syntatic_analysis.ASTree;
-import syntatic_analysis.Token;
 
+/**
+ * Defines the flow of basic blocks
+ */
 public class IntermediateCodeFlow {
   private ArrayList<BasicBlock> basicBlocks;
 
@@ -31,6 +33,13 @@ public class IntermediateCodeFlow {
             '}';
   }
 
+  /**
+   * Translates AST to TACs and BasicBlocks
+   * @deprecated hardcoded way of translating a single instruction to TAC
+   * @param tree AST to be transalted
+   * @param icFlow intermediate code flow that contains a list of intermediate codes and TACs
+   * @param symbolTable symbol table
+   */
   public static void syntaxTreeToTAC(ASTree tree, IntermediateCodeFlow icFlow, SymbolTable symbolTable) {
     //Empieza en 1 porque empezamos a partir del =
     int nAddress = 1;
@@ -82,6 +91,12 @@ public class IntermediateCodeFlow {
     }
   }
 
+  /**
+   * Translates AST to TACs and BasicBlocks
+   * @param current current node to be evaluated in the AST. Initial valuee is the AST root node.
+   * @param basicBlock new basic block to store the intermediate code and TACs
+   * @param tokens list of tokens to be converted into Symbols
+   */
   public void syntaxTreeToTAC(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
     if(current.getRight() != null) {
       syntaxTreeToTAC(current.getLeft(), basicBlock, tokens);
@@ -120,7 +135,7 @@ public class IntermediateCodeFlow {
     Symbol arg1 = tokenInfoToSymbol(tokens.get(2));
     Label label = Label.generateNewLabel();
 
-    // IF instructions
+    // Create TACs depending on its type
     if (op.getType().equals("IF")) {
       tac = new ConditionalTAC(arg1, arg2, op, label);
     } else if (op.getType().equals("WHILE")) {
