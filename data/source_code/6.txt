@@ -1,11 +1,6 @@
 $$ This code was tested
-
-/$
-This is the test 5
-$/
 int a;
 int b;
 int echo;
-echo = 123;
 a = 4 - 3;
 b = a + echo;

@@ -149,6 +149,12 @@ public class Table {
      * @return Name of the symbol which contains the table (also known as "tableId")
      */
     public String addSymbol(Symbol s){
+        if(s.getLexema().equals("{"))
+            return null;
+        else if(s.getLexema().equals("}"))
+            scopeStack.pop();
+
+
         Boolean newScope = isNewScope(s);
         Symbol currentScopeSymbol = getCurrentScopeSymbol();
 
