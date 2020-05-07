@@ -74,7 +74,8 @@ public class SemanticAnalysis {
                             }
                         }
                     }
-                    break;
+                     System.out.println("Semantically Validated");
+                     break;
             }
 
     }
