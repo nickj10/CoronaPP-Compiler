@@ -108,17 +108,20 @@ public class IntermediateCodeFlow {
     // Check if we already have three tokens
     if (tokens.size() == 3) {
       IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens));
-      // If it's the first instruction in the block, we set it as entry point
-      if (basicBlock.getInstructions().isEmpty()) {
+
+      if (isSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
+        this.basicBlocks.add(basicBlock);
       } else {
         basicBlock.addInstruction(intermediateCode);
       }
     } else {
       tokens.add(current.getToken());
     }
+  }
 
-    // TODO: Add BasicBlock to IntermediateCodeFlow object
+  private boolean isSpecialCase(IntermediateCode intermediateCode) {
+    return intermediateCode.getTac() instanceof ConditionalTAC || intermediateCode.getTac() instanceof WhileLoopTAC;
   }
 
   /**

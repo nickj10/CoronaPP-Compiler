@@ -14,6 +14,14 @@ public class IntermediateCode {
         this.tac = tac;
     }
 
+    public Label getLabel() {
+        return label;
+    }
+
+    public ThreeAddrCode getTac() {
+        return tac;
+    }
+
     @Override
     public String toString() {
         return "{" + "\n" +
