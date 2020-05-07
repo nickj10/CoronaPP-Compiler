@@ -17,8 +17,8 @@ if (a > 0) {
    i = a;
 }
 while (i < a) {
-    t = j + n;
+    t = m + n;
     n = m;
-    m = y
+    m = t;
     i = i + 1;
 }
