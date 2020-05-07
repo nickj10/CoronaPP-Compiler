@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import lexic_analysis.TokenInfo;
 import syntatic_analysis.ASTNode;
 import syntatic_analysis.ASTree;
+import syntatic_analysis.Token;
 
 public class IntermediateCodeFlow {
   private ArrayList<BasicBlock> basicBlocks;
@@ -61,7 +62,7 @@ public class IntermediateCodeFlow {
       node = tree.getRoot();
 
       Label testLabel = Label.generateNewLabel();
-      testLabel.setOperand(node.getLeft().getToken().getId());
+      testLabel.setOperand(tokenInfoToSymbol(node.getLeft().getToken()));
 
       ThreeAddrCode tac1;
 
@@ -81,17 +82,74 @@ public class IntermediateCodeFlow {
     }
   }
 
-  public void syntaxTreeToTAC(ASTNode current) {
+  public void syntaxTreeToTAC(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
     if(current.getRight() != null) {
-      syntaxTreeToTAC(current.getLeft());
+      syntaxTreeToTAC(current.getLeft(), basicBlock, tokens);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC(current.getRight());
+      syntaxTreeToTAC(current.getRight(), basicBlock, tokens);
     }
-    TokenInfo currentNode = current.getToken();
-    if (currentNode.getToken().equals("IDENTIFIER") || currentNode.getToken().equals("NUMBER")) {
 
+    // Check if we already have three tokens
+    if (tokens.size() == 3) {
+      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens));
+      // If it's the first instruction in the block, we set it as entry point
+      if (basicBlock.getInstructions().isEmpty()) {
+        basicBlock.setEntryPoint(intermediateCode);
+      } else {
+        basicBlock.addInstruction(intermediateCode);
+      }
+    } else {
+      tokens.add(current.getToken());
     }
+
+    //TokenInfo currentNode = current.getToken();
+    //if (currentNode.getToken().equals("IDENTIFIER") || currentNode.getToken().equals("NUMBER")) {
+    //
+    //}
+  }
+
+  /**
+   * Generates the Three Address Code according to type
+   * @param tokens list of tokens to analyze
+   * @return generated TAC
+   */
+  private ThreeAddrCode generateTAC(ArrayList<TokenInfo> tokens) {
+    ThreeAddrCode tac = null;
+
+    // Retrieve all the tokens to be added to TAC
+    Symbol op = tokenInfoToSymbol(tokens.get(0));
+    Symbol arg2 = tokenInfoToSymbol(tokens.get(1));
+    Symbol arg1 = tokenInfoToSymbol(tokens.get(2));
+    Label label = Label.generateNewLabel();
+
+    // IF instructions
+    if (op.getType().equals("IF")){
+      tac = new ConditionalTAC(arg1, arg2, op, label);
+      // TODO: WHILE TAC
+
+      // TODO: COPY TAC
+    } else {
+      tac = new AssignmentTAC(arg1, arg2, op, label);
+    }
+
+    return tac;
+  }
+
+  /**
+   * Map TokenInfo object to Symbol object
+   * @param token TokenInfo object that we want to map
+   * @return Symbol object
+   */
+  private static Symbol tokenInfoToSymbol(TokenInfo token) {
+    Symbol symbol = new Symbol();
+    symbol.setId(String.format("%s%d", token.getId(), token.getDeclaredAtLine()));
+    symbol.setLexema(token.getId());
+    symbol.setType(token.getType());
+    symbol.setScope(token.getScope());
+    symbol.setDeclaredAtLine(token.getDeclaredAtLine());
+    symbol.setDataSize(token.getDataSize());
+    return symbol;
   }
   
 }

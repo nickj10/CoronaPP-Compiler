@@ -103,7 +103,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
-            icFlow.syntaxTreeToTAC(tree.getRoot());
+            icFlow.syntaxTreeToTAC(tree.getRoot(), new BasicBlock(), new ArrayList<>());
             System.out.println(icFlow);
 
             // Iterate over the list of basic blocks -> MIPS
