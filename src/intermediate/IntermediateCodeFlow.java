@@ -103,10 +103,7 @@ public class IntermediateCodeFlow {
       tokens.add(current.getToken());
     }
 
-    //TokenInfo currentNode = current.getToken();
-    //if (currentNode.getToken().equals("IDENTIFIER") || currentNode.getToken().equals("NUMBER")) {
-    //
-    //}
+    // TODO: Add BasicBlock to IntermediateCodeFlow object
   }
 
   /**
