@@ -37,9 +37,9 @@ public class CodeGenerator {
         Symbol result = tac.getResult().getOperand();
 
         if(tac instanceof AssignmentTAC)
-            addOperation(arg1, arg2, op, result);
+            addOperation(arg1, arg2, op, result);   // result = arg1 [op] arg2
         if(tac instanceof CopyTAC)
-            add
+            addCopy(arg1, arg2);                    // arg2 = arg1
         // TODO: Do the other functions (copy, conditional, goto, etc)
     }
 
@@ -84,7 +84,12 @@ public class CodeGenerator {
      */
     }
 
+    private void addCopy(Symbol arg1, Symbol arg2){
+        int reg = loadToRegister(arg1);
+        loadWord(reg, arg1);
 
+        saveWord(reg, arg2);
+    }
     // These functions works as above but instead of Symbols they used "labels" or literal numbers
     /*
     public int addInstr(Symbol arg1, Symbol arg2, char instr, String label){
