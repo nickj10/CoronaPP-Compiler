@@ -1,8 +1,8 @@
 package model;
 
 import SymbolTable.*;
-import com.google.gson.Gson;
 import exceptions.SemanticException;
+import intermediate.BasicBlock;
 import intermediate.IntermediateCodeFlow;
 import semantic_analysis.SemanticAnalysis;
 import exceptions.FirstAndFollowException;
@@ -11,9 +11,7 @@ import exceptions.SemanticException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
-import intermediate.ThreeAddrCode;
 
-import java.io.*;
 import java.util.*;
 
 import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
@@ -107,8 +105,15 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
-            //syntaxTreeToTAC(tree, icFlow, symbolTable);
+            syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
+
+            // Iterate over the list of basic blocks -> MIPS
+            for(BasicBlock bb : icFlow.getBasicBlocks()) {
+                //addInstr(bb.getNextInstruction())
+                //endBlock();
+            }
+
             tree.clear();
             tokensInfo.clear();
         }

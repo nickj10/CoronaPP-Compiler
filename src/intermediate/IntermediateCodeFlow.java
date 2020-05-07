@@ -13,6 +13,10 @@ public class IntermediateCodeFlow {
     basicBlocks.add(bb);
   }
 
+  public ArrayList<BasicBlock> getBasicBlocks() {
+    return basicBlocks;
+  }
+
   @Override
   public String toString() {
     return "IntermediateCodeFlow {" + "\n" +
