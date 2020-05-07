@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Table {
     private Hashtable<Integer, Symbol> table;
     private transient int framePointer;
     private transient Stack<Symbol> scopeStack;   // Stack to keep control of the scopes (parent and child tables)
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Pattern EXCLUDE_LEXEMAS = Pattern.compile("(\\+|\\*|\\-|;|\\{|\\}|\\/)");
+
 
     public Table(Hashtable<Integer, Symbol> table, int framePointer_) {
         this.table = table;
@@ -149,11 +152,12 @@ public class Table {
      * @return Name of the symbol which contains the table (also known as "tableId")
      */
     public String addSymbol(Symbol s){
-        if(s.getLexema().equals("{"))
+        if (EXCLUDE_LEXEMAS.matcher(s.getLexema()).matches()) {
+            if(s.getLexema().equals("}")) {
+                scopeStack.pop();
+            }
             return null;
-        else if(s.getLexema().equals("}"))
-            scopeStack.pop();
-
+        }
 
         Boolean newScope = isNewScope(s);
         Symbol currentScopeSymbol = getCurrentScopeSymbol();
