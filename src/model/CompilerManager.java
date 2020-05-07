@@ -14,8 +14,6 @@ import lexic_analysis.TokenInfo;
 
 import java.util.*;
 
-import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
-
 public class CompilerManager {
     private static String sourceFile;
     private static String dictionaryFile;
@@ -105,7 +103,7 @@ public class CompilerManager {
             }
             ASTree tree = parser.getBuiltTree();
             semanticAnalysis.analyze(tree);
-            syntaxTreeToTAC(tree, icFlow, symbolTable);
+            icFlow.syntaxTreeToTAC(tree.getRoot());
             System.out.println(icFlow);
 
             // Iterate over the list of basic blocks -> MIPS
