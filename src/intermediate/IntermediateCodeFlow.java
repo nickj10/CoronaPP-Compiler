@@ -112,7 +112,7 @@ public class IntermediateCodeFlow {
    * @return generated TAC
    */
   private ThreeAddrCode generateTAC(ArrayList<TokenInfo> tokens) {
-    ThreeAddrCode tac = null;
+    ThreeAddrCode tac;
 
     // Retrieve all the tokens to be added to TAC
     Symbol op = tokenInfoToSymbol(tokens.get(0));
@@ -121,11 +121,10 @@ public class IntermediateCodeFlow {
     Label label = Label.generateNewLabel();
 
     // IF instructions
-    if (op.getType().equals("IF")){
+    if (op.getType().equals("IF")) {
       tac = new ConditionalTAC(arg1, arg2, op, label);
-      // TODO: WHILE TAC
-
-      // TODO: COPY TAC
+    } else if (op.getType().equals("WHILE")) {
+      tac = new WhileLoopTAC(arg1, arg2, op, label);
     } else {
       tac = new AssignmentTAC(arg1, arg2, op, label);
     }
