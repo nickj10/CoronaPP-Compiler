@@ -127,10 +127,10 @@ public class CompilerManager {
             //This array returns WHILE block in the form of trees
             ArrayList<ASTree> trees = parser.getBuiltWhileIfTree();
             if (tree.getRoot() != null) {
-                semanticAnalysis.analyze(tree);
+                semanticAnalysis.analyze(tree, null, symbolTable, 1);
             }
             if (trees != null) {
-                //TODO: SemanticAnalysis
+                semanticAnalysis.analyze(null, trees, symbolTable, 2);
             }
             //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
