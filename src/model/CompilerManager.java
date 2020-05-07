@@ -28,7 +28,7 @@ public class CompilerManager {
     private static SemanticAnalysis semanticAnalysis;
 
     // Empty constructor
-    public CompilerManager(){
+    public CompilerManager() {
         symbolTable = SymbolTable.getInstance();
         semanticAnalysis = new SemanticAnalysis();
     }
@@ -55,7 +55,7 @@ public class CompilerManager {
             String lastCharExpression;
             //Prelectura
             tokensInfo.add(scanner.sendNextToken());
-            if (tokensInfo.get(0).getId().equals("if") || tokensInfo.get(0).getId().equals("while")){
+            if (tokensInfo.get(0).getId().equals("if") || tokensInfo.get(0).getId().equals("while")) {
                 lastCharExpression = "}";
             } else {
                 lastCharExpression = ";";
@@ -77,24 +77,25 @@ public class CompilerManager {
             } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(lastCharExpression));
 
             //Ponemos el token del ultimo caracter ya que no entra en el bucle
-            if (lastCharExpression.equals(";")){
+            if (lastCharExpression.equals(";")) {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
-            }else {
+            } else {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLOSED");
             }
 
 
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
-            if(parser.checkGrammar(tokensInfo)){
+            if (parser.checkGrammar(tokensInfo)) {
                 ArrayList<TokenInfo> tmpList = new ArrayList<>();
                 boolean flag = false;
-                for(TokenInfo tokenInfo : tokensInfo){
+                for (TokenInfo tokenInfo : tokensInfo) {
                     String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable);
                     if (type != null) {
                         tokenInfo.setType(type);
                     }
-                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),
-                        tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                    String tableId = symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(),
+                            tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                    tokenInfo.setTableId(tableId);
                     //If its dealing with no loops or ifs, just normal expressions
                     if (!flag) {
                         if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ")) {
