@@ -315,79 +315,56 @@ public class Parser {
         return -1;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
-        if (tableId == null) {
-            if (table.getSymbol(token.getId()) == null) {
-                //If it's not in the symbol table
-                if (consultDictionary(token.getId()) == null) {
-                    //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-                    Token aux = new Token("",token.getId());
-                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
-                        return "INT";
-                    }
-                }
-            }
-            else {
-                if (token.getToken().equals("IDENTIFIER")) {
-                    return table.getSymbol(token.getId()).getType();
-                }
-            }
-        }
-        else {
-            if (table.getSymbol(token.getId(), tableId) == null) {
-                if (consultDictionary(token.getId()) == null) {
-                    Token aux = new Token("",token.getId());
-                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
-                       // if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER") || aux.token.equals("IDENTIFIER")) {
-                        return "INT";
-                    }
-                    //TEST
-                    if (table.getSymbol(token.getId()) == null) {
-                        //If it's not in the symbol table
-                        if (consultDictionary(token.getId()) == null) {
-                            //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-                            Token aux2 = new Token("",token.getId());
-                            if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
-                                return "INT";
-                            }
-                        }
-                    }
-                    else {
-                        if (token.getToken().equals("IDENTIFIER")) {
-                            return table.getSymbol(token.getId()).getType();
-                        }
-                    }
-
-                }
-            }
-            else {
-                if (token.getToken().equals("IDENTIFIER"))
-                {
-                    return table.getSymbol(token.getId(),tableId).getType();
-                }
-            }
-        }
-        return null;
-    }
-
-    public String addTypeToVariable_org (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+    private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
-        if (table.getSymbol(token.getId()) == null) {
+        if (table.getSymbol(token.getId()) == null){
             if (consultDictionary(token.getId()) == null) {
-                //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-                Token aux = new Token("",token.getId());
-                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                //If it wasn't a terminal, it checks if it's a var and tmp was a terminal, which means it is declared
+                Token aux = new Token ("", token.getId());
+                if (aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT") || aux.token.equals("NUMBER")) {
                     return "INT";
                 }
             }
         }
         else {
+            //If it's in the symbol table, we get its type
             if (token.getToken().equals("IDENTIFIER")) {
                 return table.getSymbol(token.getId()).getType();
             }
         }
-
         return null;
+    }
+
+    private String getTypeOfLocalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        Token aux;
+        if (table.getSymbol(token.getId(), tableId) == null) {
+            if (consultDictionary(token.getId()) == null) {
+                aux = new Token("", token.getId());
+                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                    return "INT";
+                }
+                //When we have two declared global variables in a condition we have to check their types in the general table
+                return getTypeOfGlobalVariable(token, tmp, table);
+            }
+        }
+        else {
+            if (token.getToken().equals("IDENTIFIER"))
+            {
+                return table.getSymbol(token.getId(),tableId).getType();
+            }
+        }
+        return null;
+    }
+
+    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        String type = null;
+        if (tableId == null) {
+            type = getTypeOfGlobalVariable(token, tmp, table);
+        }
+        else {
+            type = getTypeOfLocalVariable(token, tmp, table, tableId);
+        }
+        return type;
     }
 
     public void buildTree(TokenInfo token) {
@@ -423,11 +400,6 @@ public class Parser {
     }
 
     public ArrayList<ASTree> getBuiltWhileIfTree () {
-        /*for (ASTree trees : asTrees) {
-            if (trees.getRoot() == null) {
-                asTrees.remove(trees);
-            }
-        }*/
         return asTrees;
     }
 
