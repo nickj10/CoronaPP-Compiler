@@ -37,12 +37,7 @@ public class SemanticAnalysis {
                      }
                      //Check if expression types are correct.
                      if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                         //Check left operand and right operand type (if they have a type only)
-                         if (!tokenInfos.get(i - 1).getType().equals("") && !tokenInfos.get(i + 1).getType().equals("")) {
-                             if (!tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
-                                 throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
-                             }
-                         }
+                         checkLeftRightOperandTypes(tokenInfos.get(i-1), tokenInfos.get(i+1));
                      }
                  }
                  tokenInfos.clear();
@@ -64,22 +59,31 @@ public class SemanticAnalysis {
                                     }
                                     //Check if expression types are correct.
                                     if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                                        //Check left operand and right operand type (if they have a type only)
-                                        if (!tokenInfos.get(i - 1).getType().equals("") && !tokenInfos.get(i + 1).getType().equals("")) {
-                                            if (!tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
-                                                throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
-                                            }
-                                        }
+                                        checkLeftRightOperandTypes(tokenInfos.get(i-1), tokenInfos.get(i+1));
                                     }
                                 }
                             }
                         }
 
                     }
-                     tokenInfos.clear();
-                     System.out.println("Semantically Validated");
+                    tokenInfos.clear();
+                    System.out.println("Semantically Validated");
                     break;
             }
+    }
+
+    /**
+     * Checks left operand and right operand type (if they have a type only)
+     * @param tokenLeft
+     * @param tokenRight
+     * @throws SemanticException
+     */
+    private void checkLeftRightOperandTypes (TokenInfo tokenLeft, TokenInfo tokenRight) throws SemanticException {
+        if (!tokenLeft.getType().equals("") && !tokenRight.getType().equals("")) {
+            if (!tokenLeft.getType().equals(tokenRight.getType())) {
+                throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenLeft.getId() + " is " + tokenLeft.getType() + " and " + tokenRight.getId() + " is " + tokenRight.getType());
+            }
+        }
     }
 
     /**
@@ -109,8 +113,11 @@ public class SemanticAnalysis {
         return false;
     }
 
-
-
+    /**
+     * Checks if it's a terminal
+     * @param token
+     * @return true if it's a terminal
+     */
     private boolean isATerminal (String token) {
         if (token.equals("IDENTIFIER") || token.equals("WHILE") || token.equals("IF")) {
             return true;
