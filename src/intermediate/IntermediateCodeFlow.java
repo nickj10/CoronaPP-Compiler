@@ -109,6 +109,9 @@ public class IntermediateCodeFlow {
     if (tokens.size() == 3) {
       IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens));
 
+      // Flush token array
+      tokens.clear();
+
       if (isSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
         this.basicBlocks.add(basicBlock);
