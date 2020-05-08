@@ -341,6 +341,23 @@ public class Parser {
                        // if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER") || aux.token.equals("IDENTIFIER")) {
                         return "INT";
                     }
+                    //TEST
+                    if (table.getSymbol(token.getId()) == null) {
+                        //If it's not in the symbol table
+                        if (consultDictionary(token.getId()) == null) {
+                            //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
+                            Token aux2 = new Token("",token.getId());
+                            if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                                return "INT";
+                            }
+                        }
+                    }
+                    else {
+                        if (token.getToken().equals("IDENTIFIER")) {
+                            return table.getSymbol(token.getId()).getType();
+                        }
+                    }
+
                 }
             }
             else {
