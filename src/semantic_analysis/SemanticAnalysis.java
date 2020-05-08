@@ -87,7 +87,7 @@ public class SemanticAnalysis {
     }
 
     /**
-     * Checks if a variable was declared in global scopes
+     * Checks if a variable was declared in global/local scopes
      * @param tokenInfo
      * @return true if it was declared
      */
