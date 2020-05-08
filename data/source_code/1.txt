@@ -1,2 +1,5 @@
 int a;
 int b;
+while (a != 0) {
+    b = 1;
+}

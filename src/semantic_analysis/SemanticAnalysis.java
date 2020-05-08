@@ -54,7 +54,6 @@ public class SemanticAnalysis {
                     for (int h = 0; h < trees.size(); h++) {
                         tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
                         for (int i = 0; i < tokenInfos.size(); i++) {
-                            //If it's a while or if we don't have to check that symbol table.
                             if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
                                 if (isATerminal(tokenInfos.get(i).getToken())) {
                                     if (!isDeclared(tokenInfos.get(i))) {
@@ -78,8 +77,13 @@ public class SemanticAnalysis {
                      System.out.println("Semantically Validated");
                     break;
             }
-
     }
+
+    /**
+     * Checks if a variable was declared in global scopes
+     * @param tokenInfo
+     * @return true if it was declared
+     */
     private boolean isDeclared(TokenInfo tokenInfo) {
         if (!tokenInfo.getType().equals("")) {
             if (symbolTable.getSymbol(tokenInfo.getId()) != null) {
@@ -88,6 +92,8 @@ public class SemanticAnalysis {
         }
         return false;
     }
+
+
 
     private boolean isATerminal (String token) {
         if (token.equals("IDENTIFIER") || token.equals("WHILE") || token.equals("IF")) {

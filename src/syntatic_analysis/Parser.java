@@ -346,7 +346,7 @@ public class Parser {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
         for (TokenInfo t : tokenInfos) {
-            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ")) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ")) {
                 tree.insert(t);
                 tree.insert(tmp);
             }

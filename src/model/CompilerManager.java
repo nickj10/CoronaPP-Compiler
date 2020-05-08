@@ -98,7 +98,7 @@ public class CompilerManager {
                     tokenInfo.setTableId(tableId);
                     //If its dealing with no loops or ifs, just normal expressions
                     if (!flag) {
-                        if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ")) {
+                        if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ") || tokenInfo.getToken().equals("RLTNL_NTEQ") ) {
                             parser.buildTree(tokenInfo);
                             parser.buildTree(tmp);
 
@@ -130,12 +130,13 @@ public class CompilerManager {
             if (tree.getRoot() != null) {
                 semanticAnalysis.analyze(tree, null, symbolTable, 1);
             }
-            if (trees != null) {
+            if (trees.size() > 0) {
                 semanticAnalysis.analyze(null, trees, symbolTable, 2);
             }
             //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
             tree.clear();
+            trees.clear();
             tokensInfo.clear();
         }
     }
