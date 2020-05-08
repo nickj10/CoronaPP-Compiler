@@ -52,8 +52,8 @@ public class SemanticAnalysis {
                      //Case for whiles and ifs
                     //Iterate the arrayList of ASTree
                     for (int h = 0; h < trees.size(); h++) {
-                        if (trees.get(h).visitAST(trees.get(h).getRoot()) != null) {
-                            tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
+                        tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
+                        if (tokenInfos != null) {
                             for (int i = 0; i < tokenInfos.size(); i++) {
                                 if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
                                     if (isATerminal(tokenInfos.get(i).getToken())) {
@@ -74,6 +74,7 @@ public class SemanticAnalysis {
                                 }
                             }
                         }
+
                     }
                      tokenInfos.clear();
                      System.out.println("Semantically Validated");
@@ -96,6 +97,13 @@ public class SemanticAnalysis {
             }
             if (symbolTable.getSymbol(tokenInfo.getId(), tokenInfo.getTableId()) != null) {
                 return true;
+            }
+        }
+        else {
+            if (tokenInfo.getTableId() != null) {
+                if (symbolTable.getSymbol(tokenInfo.getId()) != null) {
+                    return true;
+                }
             }
         }
         return false;

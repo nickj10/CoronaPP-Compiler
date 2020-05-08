@@ -337,7 +337,8 @@ public class Parser {
             if (table.getSymbol(token.getId(), tableId) == null) {
                 if (consultDictionary(token.getId()) == null) {
                     Token aux = new Token("",token.getId());
-                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER") || aux.token.equals("IDENTIFIER")) {
+                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                       // if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER") || aux.token.equals("IDENTIFIER")) {
                         return "INT";
                     }
                 }
@@ -405,6 +406,11 @@ public class Parser {
     }
 
     public ArrayList<ASTree> getBuiltWhileIfTree () {
+        /*for (ASTree trees : asTrees) {
+            if (trees.getRoot() == null) {
+                asTrees.remove(trees);
+            }
+        }*/
         return asTrees;
     }
 
