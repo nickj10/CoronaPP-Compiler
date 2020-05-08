@@ -15,10 +15,12 @@ import intermediate.ThreeAddrCode;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
 
 public class CompilerManager {
+    private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|OP_LESS_OR_EQ)$");
     private static String sourceFile;
     private static String dictionaryFile;
     private static String grammarFile;
@@ -45,6 +47,7 @@ public class CompilerManager {
     }
 
     public void compile() throws FirstAndFollowException, GrammarException, SemanticException {
+        String tableId = null;
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
@@ -89,13 +92,15 @@ public class CompilerManager {
                 ArrayList<TokenInfo> tmpList = new ArrayList<>();
                 boolean flag = false;
                 for (TokenInfo tokenInfo : tokensInfo) {
-                    String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable);
-                    if (type != null) {
-                        tokenInfo.setType(type);
+                    if (!UNWANTED_TOKEN_TYPES.matcher(tokenInfo.getToken()).matches()) {
+                        String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable, tableId);
+                        if (type != null) {
+                            tokenInfo.setType(type);
+                        }
+                        tableId = symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(),
+                                tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                        tokenInfo.setTableId(tableId);
                     }
-                    String tableId = symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(),
-                            tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
-                    tokenInfo.setTableId(tableId);
                     //If its dealing with no loops or ifs, just normal expressions
                     if (!flag) {
                         if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ") || tokenInfo.getToken().equals("RLTNL_NTEQ") ) {

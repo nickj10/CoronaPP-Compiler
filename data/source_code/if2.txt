@@ -1,3 +1,5 @@
+$$Code tested, it won't work.
+$$We don't control in the symbol table if we have more than two if's, the idname can be ambiguous
 int a;
 int b;
 b = 0;

@@ -12,6 +12,7 @@ import model.Dictionary;
 import model.Word;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Parser {
@@ -314,7 +315,44 @@ public class Parser {
         return -1;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        if (tableId == null) {
+            if (table.getSymbol(token.getId()) == null) {
+                //If it's not in the symbol table
+                if (consultDictionary(token.getId()) == null) {
+                    //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
+                    Token aux = new Token("",token.getId());
+                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                        return "INT";
+                    }
+                }
+            }
+            else {
+                if (token.getToken().equals("IDENTIFIER")) {
+                    return table.getSymbol(token.getId()).getType();
+                }
+            }
+        }
+        else {
+            if (table.getSymbol(token.getId(), tableId) == null) {
+                if (consultDictionary(token.getId()) == null) {
+                    Token aux = new Token("",token.getId());
+                    if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER") || aux.token.equals("IDENTIFIER")) {
+                        return "INT";
+                    }
+                }
+            }
+            else {
+                if (token.getToken().equals("IDENTIFIER"))
+                {
+                    return table.getSymbol(token.getId(),tableId).getType();
+                }
+            }
+        }
+        return null;
+    }
+
+    public String addTypeToVariable_org (TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
         if (table.getSymbol(token.getId()) == null) {
             if (consultDictionary(token.getId()) == null) {
@@ -366,7 +404,9 @@ public class Parser {
         }
     }
 
-    public ArrayList<ASTree> getBuiltWhileIfTree () { return asTrees;}
+    public ArrayList<ASTree> getBuiltWhileIfTree () {
+        return asTrees;
+    }
 
     public boolean validateWhileTreeConstruction (String token, ASTree tree) {
         if (tree.getRoot() == null && (token.equals("ASSGN_EQ"))) {

@@ -52,21 +52,23 @@ public class SemanticAnalysis {
                      //Case for whiles and ifs
                     //Iterate the arrayList of ASTree
                     for (int h = 0; h < trees.size(); h++) {
-                        tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
-                        for (int i = 0; i < tokenInfos.size(); i++) {
-                            if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
-                                if (isATerminal(tokenInfos.get(i).getToken())) {
-                                    if (!isDeclared(tokenInfos.get(i))) {
-                                        declarationCorrect = false;
-                                        throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
+                        if (trees.get(h).visitAST(trees.get(h).getRoot()) != null) {
+                            tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
+                            for (int i = 0; i < tokenInfos.size(); i++) {
+                                if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
+                                    if (isATerminal(tokenInfos.get(i).getToken())) {
+                                        if (!isDeclared(tokenInfos.get(i))) {
+                                            declarationCorrect = false;
+                                            throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
+                                        }
                                     }
-                                }
-                                //Check if expression types are correct.
-                                if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                                    //Check left operand and right operand type (if they have a type only)
-                                    if (!tokenInfos.get(i - 1).getType().equals("") && !tokenInfos.get(i + 1).getType().equals("")) {
-                                        if (!tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
-                                            throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
+                                    //Check if expression types are correct.
+                                    if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
+                                        //Check left operand and right operand type (if they have a type only)
+                                        if (!tokenInfos.get(i - 1).getType().equals("") && !tokenInfos.get(i + 1).getType().equals("")) {
+                                            if (!tokenInfos.get(i - 1).getType().equals(tokenInfos.get(i + 1).getType())) {
+                                                throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenInfos.get(i-1).getId() + " is " + tokenInfos.get(i-1).getType() + " and " + tokenInfos.get(i+1).getId() + " is " + tokenInfos.get(i+1).getType());
+                                            }
                                         }
                                     }
                                 }
@@ -86,7 +88,13 @@ public class SemanticAnalysis {
      */
     private boolean isDeclared(TokenInfo tokenInfo) {
         if (!tokenInfo.getType().equals("")) {
-            if (symbolTable.getSymbol(tokenInfo.getId()) != null) {
+            if (tokenInfo.getTableId() == null) {
+                //Checks global declarations
+                if (symbolTable.getSymbol(tokenInfo.getId()) != null) {
+                    return true;
+                }
+            }
+            if (symbolTable.getSymbol(tokenInfo.getId(), tokenInfo.getTableId()) != null) {
                 return true;
             }
         }

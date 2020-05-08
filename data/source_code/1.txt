@@ -1,5 +1,5 @@
 int a;
-int b;
 while (a != 0) {
+    int b;
     b = 1;
 }

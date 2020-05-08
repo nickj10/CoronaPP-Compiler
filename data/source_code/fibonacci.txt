@@ -1,0 +1,16 @@
+int count;
+int a;
+int b;
+int i;
+count = 7;
+a = 0;
+b = 1;
+i = 1;
+$$Fibonacci Series of 7 numbers
+while (i == count) {
+    int prev;
+    prev = a + b;
+    a = b;
+    b = prev;
+    i = i + 1;
+}
