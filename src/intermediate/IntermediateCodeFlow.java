@@ -97,21 +97,24 @@ public class IntermediateCodeFlow {
     int numTrees = trees.size();
     while (i < numTrees) {
       ArrayList<ASTree> blockTrees = trees.get(i);
-        BasicBlock basicBlock = new BasicBlock();
+      BasicBlock basicBlock = new BasicBlock();
       for (ASTree tree : blockTrees) {
-          if (isNodeSpecialCase(tree.getRoot())) {
-              // Get the condition for IF and WHILE
-              syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>());
-
-              // Convert the rest of the tree to TACs and add it to the Basic Block
-              syntaxTreeToTAC_I(tree.getRoot().getRight(), basicBlock, new ArrayList<>());
-          } else {
-              // Convert the tree directly to TACs
-              syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>());
+        if (isNodeSpecialCase(tree.getRoot())) {
+          // Get the condition for IF and WHILE
+          if (tree.getRoot().getToken().getToken().equals("IF")) {
+            syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "IF");
+          } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
+            syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "WHILE");
           }
+          // Convert the rest of the tree to TACs and add it to the Basic Block
+          syntaxTreeToTAC_I(tree.getRoot().getRight(), basicBlock, new ArrayList<>(), null);
+        } else {
+          // Convert the tree directly to TACs
+          syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
+        }
 
-          // Add this new basic block to the intermediate code flow
-          this.basicBlocks.add(basicBlock);
+        // Add this new basic block to the intermediate code flow
+        this.basicBlocks.add(basicBlock);
       }
       i++;
     }
@@ -124,21 +127,23 @@ public class IntermediateCodeFlow {
    * @param basicBlock new basic block to store the intermediate code and TACs
    * @param tokens     list of tokens to be converted into Symbols
    */
-  private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
+  private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfoLabels> tokens,
+      String blockType) {
     // Visits each node in postorder
-      if (current.getRight() != null) {
-      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens);
+    if (current.getRight() != null) {
+      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens);
+      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType);
     }
 
     // Check if we already have three tokens
     if (tokens.size() == 3) {
-      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens));
+      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType));
 
       // Flush token array
       tokens.clear();
+      tokens.add(new TokenInfoLabels(intermediateCode.getLabel(), null));
 
       if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
@@ -147,7 +152,7 @@ public class IntermediateCodeFlow {
         basicBlock.addInstruction(intermediateCode);
       }
     } else {
-      tokens.add(current.getToken());
+      tokens.add(new TokenInfoLabels(null, current.getToken()));
     }
   }
 
@@ -171,20 +176,22 @@ public class IntermediateCodeFlow {
    * @param tokens list of tokens to analyze
    * @return generated TAC
    */
-  private ThreeAddrCode generateTAC(ArrayList<TokenInfo> tokens) {
-    ThreeAddrCode tac;
+  private ThreeAddrCode generateTAC(ArrayList<TokenInfoLabels> tokens, String blockType) {
+    ThreeAddrCode tac = null;
 
     // Retrieve all the tokens to be added to TAC
-    Symbol op = tokenInfoToSymbol(tokens.get(0));
-    Symbol arg2 = tokenInfoToSymbol(tokens.get(1));
-    Symbol arg1 = tokenInfoToSymbol(tokens.get(2));
+    Symbol op = tokenInfoToSymbol(tokens.get(0).getTokenInfo());
+    Symbol arg2 = tokenInfoToSymbol(tokens.get(1).getTokenInfo());
+    Symbol arg1 = tokenInfoToSymbol(tokens.get(2).getTokenInfo());
     Label label = Label.generateNewLabel();
 
     // Create TACs depending on its type
-    if (op.getType().equals("IF")) {
-      tac = new ConditionalTAC(arg1, arg2, op, label);
-    } else if (op.getType().equals("WHILE")) {
-      tac = new WhileLoopTAC(arg1, arg2, op, label);
+    if (blockType != null) {
+      if (blockType.equals("IF")) {
+        tac = new ConditionalTAC(arg1, arg2, op, label);
+      } else if (blockType.equals("WHILE")) {
+        tac = new WhileLoopTAC(arg1, arg2, op, label);
+      }
     } else {
       tac = new AssignmentTAC(arg1, arg2, op, label);
     }
@@ -202,6 +209,7 @@ public class IntermediateCodeFlow {
     Symbol symbol = new Symbol();
     symbol.setId(String.format("%s%d", token.getId(), token.getDeclaredAtLine()));
     symbol.setLexema(token.getId());
+    symbol.setToken(token.getToken());
     symbol.setType(token.getType());
     symbol.setScope(token.getScope());
     symbol.setDeclaredAtLine(token.getDeclaredAtLine());
