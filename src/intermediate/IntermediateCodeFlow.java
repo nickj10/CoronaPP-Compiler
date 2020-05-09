@@ -28,17 +28,18 @@ public class IntermediateCodeFlow {
   @Override
   public String toString() {
     return "IntermediateCodeFlow {" + "\n" +
-            "Basic Blocks {" + "\n" +
-            "    " + basicBlocks + "\n" +
-            '}';
+        "Basic Blocks {" + "\n" +
+        "    " + basicBlocks + "\n" +
+        '}';
   }
 
   /**
    * Translates AST to TACs and BasicBlocks
-   * @deprecated hardcoded way of translating a single instruction to TAC
-   * @param tree AST to be transalted
-   * @param icFlow intermediate code flow that contains a list of intermediate codes and TACs
+   *
+   * @param tree        AST to be transalted
+   * @param icFlow      intermediate code flow that contains a list of intermediate codes and TACs
    * @param symbolTable symbol table
+   * @deprecated hardcoded way of translating a single instruction to TAC
    */
   public static void syntaxTreeToTAC(ASTree tree, IntermediateCodeFlow icFlow, SymbolTable symbolTable) {
     //Empieza en 1 porque empezamos a partir del =
@@ -62,7 +63,6 @@ public class IntermediateCodeFlow {
 
         node = node.getRight();
         tokenNode = node.getToken().getToken();
-
       }
     }
 
@@ -87,18 +87,18 @@ public class IntermediateCodeFlow {
       }
 
       icFlow.addNewIC(new BasicBlock(new IntermediateCode(tac1)));
-
     }
   }
 
   /**
    * Translates AST to TACs and BasicBlocks
-   * @param current current node to be evaluated in the AST. Initial valuee is the AST root node.
+   *
+   * @param current    current node to be evaluated in the AST. Initial valuee is the AST root node.
    * @param basicBlock new basic block to store the intermediate code and TACs
-   * @param tokens list of tokens to be converted into Symbols
+   * @param tokens     list of tokens to be converted into Symbols
    */
   public void syntaxTreeToTAC(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
-    if(current.getRight() != null) {
+    if (current.getRight() != null) {
       syntaxTreeToTAC(current.getLeft(), basicBlock, tokens);
     }
     if (current.getLeft() != null) {
@@ -129,6 +129,7 @@ public class IntermediateCodeFlow {
 
   /**
    * Generates the Three Address Code according to type
+   *
    * @param tokens list of tokens to analyze
    * @return generated TAC
    */
@@ -155,6 +156,7 @@ public class IntermediateCodeFlow {
 
   /**
    * Map TokenInfo object to Symbol object
+   *
    * @param token TokenInfo object that we want to map
    * @return Symbol object
    */
@@ -168,5 +170,4 @@ public class IntermediateCodeFlow {
     symbol.setDataSize(token.getDataSize());
     return symbol;
   }
-  
 }
