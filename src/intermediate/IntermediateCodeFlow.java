@@ -92,6 +92,10 @@ public class IntermediateCodeFlow {
     }
   }
 
+  /**
+   * Translates AST to TACs and BasicBlocks
+   * @param trees una lista de listas de AST
+   */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
     int i = 0;
     int numTrees = trees.size();
@@ -121,11 +125,12 @@ public class IntermediateCodeFlow {
   }
 
   /**
-   * Translates AST to TACs and BasicBlocks
+   * Immersive algorithm for tree traversal to visit every node
    *
    * @param current    current node to be evaluated in the AST. Initial valuee is the AST root node.
    * @param basicBlock new basic block to store the intermediate code and TACs
    * @param tokens     list of tokens to be converted into Symbols
+   * @param blockType  block type which can either be IF, WHILE or null
    */
   private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfoLabels> tokens,
       String blockType) {
@@ -166,6 +171,11 @@ public class IntermediateCodeFlow {
     return intermediateCode.getTac() instanceof ConditionalTAC || intermediateCode.getTac() instanceof WhileLoopTAC;
   }
 
+  /**
+   * Checks if the node is a special label for IF or WHILE
+   * @param node node that contains the label
+   * @return true if the node contains IF or WHILE. If not, false.
+   */
   private boolean isNodeSpecialCase(ASTNode node) {
     return node.getToken().getToken().equals("IF") || node.getToken().getToken().equals("WHILE");
   }
