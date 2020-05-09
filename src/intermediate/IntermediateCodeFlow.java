@@ -2,7 +2,9 @@ package intermediate;
 
 import SymbolTable.SymbolTable;
 import SymbolTable.Symbol;
+
 import java.util.ArrayList;
+
 import lexic_analysis.TokenInfo;
 import syntatic_analysis.ASTNode;
 import syntatic_analysis.ASTree;
@@ -90,6 +92,31 @@ public class IntermediateCodeFlow {
     }
   }
 
+  public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
+    int i = 0;
+    int numTrees = trees.size();
+    while (i < numTrees) {
+      ArrayList<ASTree> blockTrees = trees.get(i);
+        BasicBlock basicBlock = new BasicBlock();
+      for (ASTree tree : blockTrees) {
+          if (isNodeSpecialCase(tree.getRoot())) {
+              // Get the condition for IF and WHILE
+              syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>());
+
+              // Convert the rest of the tree to TACs and add it to the Basic Block
+              syntaxTreeToTAC_I(tree.getRoot().getRight(), basicBlock, new ArrayList<>());
+          } else {
+              // Convert the tree directly to TACs
+              syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>());
+          }
+
+          // Add this new basic block to the intermediate code flow
+          this.basicBlocks.add(basicBlock);
+      }
+      i++;
+    }
+  }
+
   /**
    * Translates AST to TACs and BasicBlocks
    *
@@ -97,12 +124,13 @@ public class IntermediateCodeFlow {
    * @param basicBlock new basic block to store the intermediate code and TACs
    * @param tokens     list of tokens to be converted into Symbols
    */
-  public void syntaxTreeToTAC(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
-    if (current.getRight() != null) {
-      syntaxTreeToTAC(current.getLeft(), basicBlock, tokens);
+  private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfo> tokens) {
+    // Visits each node in postorder
+      if (current.getRight() != null) {
+      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC(current.getRight(), basicBlock, tokens);
+      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens);
     }
 
     // Check if we already have three tokens
@@ -112,7 +140,7 @@ public class IntermediateCodeFlow {
       // Flush token array
       tokens.clear();
 
-      if (isSpecialCase(intermediateCode)) {
+      if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
         this.basicBlocks.add(basicBlock);
       } else {
@@ -123,8 +151,18 @@ public class IntermediateCodeFlow {
     }
   }
 
-  private boolean isSpecialCase(IntermediateCode intermediateCode) {
+  /**
+   * Determines if it's a conditional TAC  or a loop TAC
+   *
+   * @param intermediateCode intermediate code that contains the TAC
+   * @return true if it's a conditional TAC or a loop TAC. If not, false.
+   */
+  private boolean isTACSpecialCase(IntermediateCode intermediateCode) {
     return intermediateCode.getTac() instanceof ConditionalTAC || intermediateCode.getTac() instanceof WhileLoopTAC;
+  }
+
+  private boolean isNodeSpecialCase(ASTNode node) {
+    return node.getToken().getToken().equals("IF") || node.getToken().getToken().equals("WHILE");
   }
 
   /**
