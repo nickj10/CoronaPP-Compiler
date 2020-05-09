@@ -52,6 +52,9 @@ public class CompilerManager {
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
         IntermediateCodeFlow icFlow = new IntermediateCodeFlow();
+        ArrayList<ASTree> tmpSimple = new ArrayList<>();
+        ASTree tree = new ASTree();
+        ArrayList<ASTree> trees = new ArrayList<>();
 
         while (scanner.getNextToken() != null) {
             counter = 0;
@@ -85,11 +88,11 @@ public class CompilerManager {
             } else {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLOSED");
             }
-
-
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if (parser.checkGrammar(tokensInfo)) {
                 ArrayList<TokenInfo> tmpList = new ArrayList<>();
+                ArrayList<TokenInfo> tmpSimpleList = new ArrayList<>();
+
                 boolean flag = false;
                 for (TokenInfo tokenInfo : tokensInfo) {
                     if (!UNWANTED_TOKEN_TYPES.matcher(tokenInfo.getToken()).matches()) {
@@ -100,17 +103,6 @@ public class CompilerManager {
                         tableId = symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(),
                                 tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
                         tokenInfo.setTableId(tableId);
-                    }
-                    //If its dealing with no loops or ifs, just normal expressions
-                    if (!flag) {
-                        if (tokenInfo.getToken().equals("ASSGN_EQ") || tokenInfo.getToken().equals("RLTNL_EQ") || tokenInfo.getToken().equals("RLTNL_NTEQ") ) {
-                            parser.buildTree(tokenInfo);
-                            parser.buildTree(tmp);
-
-                        }
-                        if (parser.validateTreeConstruction(tokenInfo.getToken())) {
-                            parser.buildTree(tokenInfo);
-                        }
                     }
                     //We use this flag to know if we're going to deal with a WHILE/IF block, that's why we're adding the tokens inside of the list
                     if (flag) {
@@ -123,27 +115,38 @@ public class CompilerManager {
                     if (tokenInfo.getToken().equals("COR_CLOSED")) {
                         flag = false;
                         parser.buildWhileIfTree(tmpList);
+                        //This array returns WHILE block in the form of trees
+                        trees = parser.getBuiltWhileIfTree();
+                        if (trees.size() > 0) {
+                            semanticAnalysis.analyze(null, trees, symbolTable, 2);
+                            parser.addToBasicBlock(trees);
+                        }
+                    }
+                    if (!flag && tokenInfo.getToken().equals("DOT_COMA")) {
+                        parser.buildSimpleTree(tmpSimpleList);
+                        //If there's a constructed tree, analyze it
+                        tree = parser.getBuiltTree();
+                        if (tree.getRoot() != null) {
+                            semanticAnalysis.analyze(tree, null, symbolTable, 1);
+                            tmpSimple.add(tree);
+                        }
+                    }
+                    //If its dealing with no loops or ifs, just normal expressions
+                    if (!flag) {
+                        tmpSimpleList.add(tokenInfo);
                     }
 
                     tmp = tokenInfo;
                 }
             }
-            //If there's a constructed tree, analyze it
-            ASTree tree = parser.getBuiltTree();
-            //This array returns WHILE block in the form of trees
-            ArrayList<ASTree> trees = parser.getBuiltWhileIfTree();
-            if (tree.getRoot() != null) {
-                semanticAnalysis.analyze(tree, null, symbolTable, 1);
-            }
-            if (trees.size() > 0) {
-                semanticAnalysis.analyze(null, trees, symbolTable, 2);
-            }
-            //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
-            tree.clear();
-            trees.clear();
             tokensInfo.clear();
         }
+        if (tmpSimple.size() > 0) {
+            parser.addToBasicBlock(tmpSimple);
+        }
+        parser.getBasicBlock();
+
     }
 
 

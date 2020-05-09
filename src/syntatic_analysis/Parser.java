@@ -23,6 +23,7 @@ public class Parser {
     private String dictionaryFile;
     private ASTree asTree;
     private ArrayList<ASTree> asTrees;
+    private ArrayList<ArrayList<ASTree>> basicBlocks;
 
     String[][] table = {
             {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null}
@@ -82,6 +83,7 @@ public class Parser {
         startFirstFollow();
         asTree = new ASTree();
         asTrees = new ArrayList<>();
+        basicBlocks = new ArrayList<>();
     }
 
     public void initGrammar() {
@@ -315,6 +317,14 @@ public class Parser {
         return -1;
     }
 
+    public void addToBasicBlock (ArrayList<ASTree> tree) {
+        this.basicBlocks.add(tree);
+    }
+
+    public ArrayList<ArrayList<ASTree>> getBasicBlock () {
+        return this.basicBlocks;
+    }
+
     private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
         if (table.getSymbol(token.getId()) == null){
@@ -369,6 +379,21 @@ public class Parser {
 
     public void buildTree(TokenInfo token) {
         asTree.insert(token);
+    }
+
+    public void buildSimpleTree(ArrayList<TokenInfo> tokenInfos) {
+        TokenInfo tmp = new TokenInfo();
+        asTree = new ASTree();
+        for (TokenInfo t : tokenInfos) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ") ) {
+                asTree.insert(t);
+                asTree.insert(tmp);
+            }
+            if (validateTreeConstruction(t.getToken())) {
+                asTree.insert(t);
+            }
+            tmp = t;
+        }
     }
 
     public ASTree getBuiltTree() {
