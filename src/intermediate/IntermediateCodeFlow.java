@@ -209,24 +209,26 @@ public class IntermediateCodeFlow {
         tac = new WhileLoopTAC(arg1, arg2, op, label);
       }
     } else {
-      if (op.getToken().equals("ASSGN_EQ")) {
-        if (labelArg2 != null) { // arg2 is already a label
+      if (op.getToken().equals("ASSGN_EQ")) { // arg1 op arg2 || arg1 = arg2
+        if (labelArg2 != null) { // arg2 is already a label || prev = L1
           labelArg1.generateStringLabel();
           labelArg1.setOperand(arg1);
           tac = new CopyTAC(labelArg1, labelArg2, op);
-        } else if (labelArg1 != null) { // result is already a label
+        } else if (labelArg1 != null) { // result is already a label || L1 = prev
+          labelArg2 = Label.generateNewLabel();
           labelArg2.generateStringLabel();
           labelArg2.setOperand(arg1);
           tac = new CopyTAC(labelArg1, labelArg2, op);
-        } else { // None of them are labels
-          label.setOperand(arg2);
+        } else { // None of them are labels || prev = 6
+          label.setOperand(arg2); // Use previously defined label for result
+          labelArg1 = Label.generateNewLabel();
           labelArg1.generateStringLabel();
           labelArg1.setOperand(arg1);
           tac = new CopyTAC(labelArg1, label, op);
         }
-
+      } else { // normal operations || c = a + b
+        tac = new AssignmentTAC(arg1, arg2, op, label);
       }
-      tac = new AssignmentTAC(arg1, arg2, op, label);
     }
 
     return tac;
