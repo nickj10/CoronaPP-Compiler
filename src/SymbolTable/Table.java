@@ -158,13 +158,16 @@ public class Table {
         if(newScope)
             scopeStack.push(s);
 
-        if(currentScopeSymbol == null)
+        if(currentScopeSymbol == null || s.getScope().equals("global"))
             return null;
 
         return currentScopeSymbol.getId();
     }
 
     public Symbol getSymbol(String id, String tableId){
+        if(tableId == null)
+            return getSymbol(id);
+
         if(this.getSymbol(tableId) != null){
             return this.getSymbol(tableId).getChildTable().getSymbol(id);
         }
@@ -204,6 +207,10 @@ public class Table {
             hash = hash*31 + id.charAt(i);
 
         return hash;
+    }
+
+    public Hashtable<Integer, Symbol> getTable() {
+        return table;
     }
 
     @Override

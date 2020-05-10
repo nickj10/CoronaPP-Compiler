@@ -51,7 +51,10 @@ public abstract class ThreeAddrCode {
             node = tree.getRoot();
 
             Label testLabel = Label.generateNewLabel();
-            testLabel.setOperand(node.getLeft().getToken().getId());
+
+            String symbol_id = node.getLeft().getToken().getId();
+            String table_id = node.getLeft().getToken().getTableId();
+            testLabel.setOperand(symbolTable.getSymbol(symbol_id, table_id));
 
             ThreeAddrCode tac1;
 

@@ -76,6 +76,10 @@ public class Symbol {
         this.lexema = lexema;
     }
 
+    public String getToken() {
+        return token;
+    }
+
     public String getType() {
         return type;
     }

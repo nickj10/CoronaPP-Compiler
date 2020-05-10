@@ -83,7 +83,6 @@ public class CompilerManager {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLOSED");
             }
 
-
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
             if(parser.checkGrammar(tokensInfo)){
                 for(TokenInfo tokenInfo : tokensInfo){
