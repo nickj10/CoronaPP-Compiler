@@ -131,7 +131,7 @@ public class Table {
 
     public ArrayList<Table> getChildTables(){
         Set<Integer> keys = table.keySet();
-        ArrayList<Table> childTables = new ArrayList<Table>(null);
+        ArrayList<Table> childTables = new ArrayList<Table>();
         for(Integer key : keys)
             if(table.get(key).hasChildTable())
                 childTables.add( table.get(key).getChildTable() );
