@@ -94,6 +94,7 @@ public class IntermediateCodeFlow {
 
   /**
    * Translates AST to TACs and BasicBlocks
+   *
    * @param trees una lista de listas de AST
    */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
@@ -134,7 +135,7 @@ public class IntermediateCodeFlow {
    */
   private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfoLabels> tokens,
       String blockType) {
-    // Visits each node in postorder
+    // Visits each node in postorder starting from the right side
     if (current.getRight() != null) {
       syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
     }
@@ -173,6 +174,7 @@ public class IntermediateCodeFlow {
 
   /**
    * Checks if the node is a special label for IF or WHILE
+   *
    * @param node node that contains the label
    * @return true if the node contains IF or WHILE. If not, false.
    */
@@ -190,10 +192,14 @@ public class IntermediateCodeFlow {
     ThreeAddrCode tac = null;
 
     // Retrieve all the tokens to be added to TAC
-    Symbol op = tokenInfoToSymbol(tokens.get(0).getTokenInfo());
-    Symbol arg2 = tokenInfoToSymbol(tokens.get(1).getTokenInfo());
-    Symbol arg1 = tokenInfoToSymbol(tokens.get(2).getTokenInfo());
+    Symbol arg2 = tokenInfoToSymbol(tokens.get(0).getTokenInfo());
+    Symbol arg1 = tokenInfoToSymbol(tokens.get(1).getTokenInfo());
+    Symbol op = tokenInfoToSymbol(tokens.get(2).getTokenInfo());
     Label label = Label.generateNewLabel();
+
+    // Retrieve labels
+    Label labelArg1 = tokens.get(0).getLabel();
+    Label labelArg2 = tokens.get(1).getLabel();
 
     // Create TACs depending on its type
     if (blockType != null) {
@@ -203,6 +209,24 @@ public class IntermediateCodeFlow {
         tac = new WhileLoopTAC(arg1, arg2, op, label);
       }
     } else {
+      if (op.getToken().equals("ASSGN_EQ")) {
+        if (labelArg2 != null) { // arg2 is already a label
+          labelArg1.generateStringLabel();
+          labelArg1.setOperand(arg1);
+          tac = new CopyTAC(labelArg1, labelArg2, op);
+        } else if (labelArg1 != null) { // result is already a label
+          labelArg2.generateStringLabel();
+          labelArg2.setOperand(arg1);
+          tac = new CopyTAC(labelArg1, labelArg2, op);
+        } else { // None of them are labels
+          Label result = Label.generateNewLabel();
+          result.setOperand(arg2);
+          labelArg1.generateStringLabel();
+          labelArg1.setOperand(arg1);
+          tac = new CopyTAC(labelArg1, result, op);
+        }
+
+      }
       tac = new AssignmentTAC(arg1, arg2, op, label);
     }
 
