@@ -219,11 +219,10 @@ public class IntermediateCodeFlow {
           labelArg2.setOperand(arg1);
           tac = new CopyTAC(labelArg1, labelArg2, op);
         } else { // None of them are labels
-          Label result = Label.generateNewLabel();
-          result.setOperand(arg2);
+          label.setOperand(arg2);
           labelArg1.generateStringLabel();
           labelArg1.setOperand(arg1);
-          tac = new CopyTAC(labelArg1, result, op);
+          tac = new CopyTAC(labelArg1, label, op);
         }
 
       }
