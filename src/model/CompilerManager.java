@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
 
 public class CompilerManager {
-    private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|OP_LESS_OR_EQ)$");
+    private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private static String sourceFile;
     private static String dictionaryFile;
     private static String grammarFile;

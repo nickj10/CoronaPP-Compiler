@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class SemanticAnalysis {
     private ArrayList<TokenInfo> tokenInfos;
-    private static final Pattern OPERATORS = Pattern.compile("^(ARTMTC_MLT|ARTMTC_MD|ARTMTC_DV|ARTMTC_SM|ARTMTC_RS|ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ)$");
+    private static final Pattern OPERATORS = Pattern.compile("^(ARTMTC_MLT|ARTMTC_MD|ARTMTC_DV|ARTMTC_SM|ARTMTC_RS|ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private SymbolTable symbolTable;
 
     public SemanticAnalysis () {

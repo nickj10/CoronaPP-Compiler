@@ -14,9 +14,11 @@ import model.Word;
 import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Parser {
     private static Boolean DEBUG = true;
+    private static final Pattern OPERATORS = Pattern.compile("^(ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private HashMap<String, Word> dictionary;
     private static Grammar grammar;
     private String grammarFile;
@@ -405,7 +407,7 @@ public class Parser {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
         for (TokenInfo t : tokenInfos) {
-            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ")) {
+            if (OPERATORS.matcher(t.getToken()).matches()) {
                 tree.insert(t);
                 tree.insert(tmp);
             }
