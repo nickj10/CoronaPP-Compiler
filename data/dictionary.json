@@ -81,6 +81,26 @@
       "description": "No igual a."
     },
     {
+      "token": "RLTNL_GT",
+      "lexeme": ">",
+      "description": "Mayor a."
+    },
+    {
+      "token": "RLTNL_LS",
+      "lexeme": "<",
+      "description": "Menor a."
+    },
+    {
+      "token": "RLTNL_GTEQ",
+      "lexeme": ">=",
+      "description": "Mayor o igual a."
+    },
+    {
+      "token": "RLTNL_LSEQ",
+      "lexeme": "<=",
+      "description": "Menor o igual a."
+    },
+    {
       "token": "LGC_AND",
       "lexeme": "&&",
       "description": "Operador condicional AND."
