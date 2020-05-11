@@ -19,7 +19,7 @@ public class IntermediateCodeFlow {
     this.basicBlocks = new ArrayList<BasicBlock>();
   }
 
-  public void addNewIC(BasicBlock bb) {
+  public void addNewBasicBlock(BasicBlock bb) {
     basicBlocks.add(bb);
   }
 
@@ -88,7 +88,7 @@ public class IntermediateCodeFlow {
         tac1 = new AssignmentTAC(arg1, null, op, testLabel);
       }
 
-      icFlow.addNewIC(new BasicBlock(new IntermediateCode(tac1)));
+      icFlow.addNewBasicBlock(new BasicBlock(new IntermediateCode(tac1)));
     }
   }
 
