@@ -51,11 +51,6 @@
       "description": "Operador de multiplicación."
     },
     {
-      "token": "OP_LESS_OR_EQ",
-      "lexeme": "<=",
-      "description": "Operador menor igual que"
-    },
-    {
       "token": "ARTMTC_MD",
       "lexeme": "%",
       "description": "Operador de resto."
