@@ -12,6 +12,7 @@ import model.Dictionary;
 import model.Word;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Parser {
@@ -22,6 +23,7 @@ public class Parser {
     private String dictionaryFile;
     private ASTree asTree;
     private ArrayList<ASTree> asTrees;
+    private ArrayList<ArrayList<ASTree>> basicBlocks;
 
     String[][] table = {
             {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null}
@@ -81,6 +83,7 @@ public class Parser {
         startFirstFollow();
         asTree = new ASTree();
         asTrees = new ArrayList<>();
+        basicBlocks = new ArrayList<>();
     }
 
     public void initGrammar() {
@@ -314,28 +317,83 @@ public class Parser {
         return -1;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+    public void addToBasicBlock (ArrayList<ASTree> tree) {
+        this.basicBlocks.add(tree);
+    }
+
+    public ArrayList<ArrayList<ASTree>> getBasicBlock () {
+        return this.basicBlocks;
+    }
+
+    private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
-        if (table.getSymbol(token.getId()) == null) {
+        if (table.getSymbol(token.getId()) == null){
             if (consultDictionary(token.getId()) == null) {
-                //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-                Token aux = new Token("",token.getId());
-                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                //If it wasn't a terminal, it checks if it's a var and tmp was a terminal, which means it is declared
+                Token aux = new Token ("", token.getId());
+                if (aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT") || aux.token.equals("NUMBER")) {
                     return "INT";
                 }
             }
         }
         else {
+            //If it's in the symbol table, we get its type
             if (token.getToken().equals("IDENTIFIER")) {
                 return table.getSymbol(token.getId()).getType();
             }
         }
-
         return null;
+    }
+
+    private String getTypeOfLocalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        Token aux;
+        if (table.getSymbol(token.getId(), tableId) == null) {
+            if (consultDictionary(token.getId()) == null) {
+                aux = new Token("", token.getId());
+                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                    return "INT";
+                }
+                //When we have two declared global variables in a condition we have to check their types in the general table
+                return getTypeOfGlobalVariable(token, tmp, table);
+            }
+        }
+        else {
+            if (token.getToken().equals("IDENTIFIER"))
+            {
+                return table.getSymbol(token.getId(),tableId).getType();
+            }
+        }
+        return null;
+    }
+
+    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        String type = null;
+        if (tableId == null) {
+            type = getTypeOfGlobalVariable(token, tmp, table);
+        }
+        else {
+            type = getTypeOfLocalVariable(token, tmp, table, tableId);
+        }
+        return type;
     }
 
     public void buildTree(TokenInfo token) {
         asTree.insert(token);
+    }
+
+    public void buildSimpleTree(ArrayList<TokenInfo> tokenInfos) {
+        TokenInfo tmp = new TokenInfo();
+        asTree = new ASTree();
+        for (TokenInfo t : tokenInfos) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ") ) {
+                asTree.insert(t);
+                asTree.insert(tmp);
+            }
+            if (validateTreeConstruction(t.getToken())) {
+                asTree.insert(t);
+            }
+            tmp = t;
+        }
     }
 
     public ASTree getBuiltTree() {
@@ -346,7 +404,7 @@ public class Parser {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
         for (TokenInfo t : tokenInfos) {
-            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ")) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ")) {
                 tree.insert(t);
                 tree.insert(tmp);
             }
@@ -366,7 +424,9 @@ public class Parser {
         }
     }
 
-    public ArrayList<ASTree> getBuiltWhileIfTree () { return asTrees;}
+    public ArrayList<ASTree> getBuiltWhileIfTree () {
+        return asTrees;
+    }
 
     public boolean validateWhileTreeConstruction (String token, ASTree tree) {
         if (tree.getRoot() == null && (token.equals("ASSGN_EQ"))) {

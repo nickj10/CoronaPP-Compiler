@@ -1,4 +1,4 @@
-$$ This code was tested
+$$ This code was tested - not working with a == b
 int x;
 int y;
 int a;

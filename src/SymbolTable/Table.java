@@ -11,7 +11,7 @@ public class Table {
     private transient int framePointer;
     private transient Stack<Symbol> scopeStack;   // Stack to keep control of the scopes (parent and child tables)
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static transient final Pattern EXCLUDE_LEXEMAS = Pattern.compile("(\\+|\\*|\\-|;|\\{|\\}|\\/)");
+    private final Pattern EXCLUDE_LEXEMAS = Pattern.compile("(\\+|\\*|\\(|\\)|\\=|\\==|\\!=|\\-|;|\\{|\\}|\\/)");
 
 
     public Table(Hashtable<Integer, Symbol> table, int framePointer_) {
@@ -131,7 +131,7 @@ public class Table {
 
     public ArrayList<Table> getChildTables(){
         Set<Integer> keys = table.keySet();
-        ArrayList<Table> childTables = new ArrayList<Table>(null);
+        ArrayList<Table> childTables = new ArrayList<Table>();
         for(Integer key : keys)
             if(table.get(key).hasChildTable())
                 childTables.add( table.get(key).getChildTable() );
