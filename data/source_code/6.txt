@@ -1,6 +1,24 @@
-$$ This code was tested
+$$ Comment here
+
+/$
+This is a block
+comment
+$/
 int a;
-int b;
-int echo;
-a = 4 - 3;
-b = a + echo;
+int i;
+int n;
+int m;
+int t;
+a = 8;
+i = 1;
+n = 0;
+m = 1;
+if (a > 0) {
+   i = a;
+}
+while (i < a) {
+    t = m + n;
+    n = m;
+    m = t;
+    i = i + 1;
+}
