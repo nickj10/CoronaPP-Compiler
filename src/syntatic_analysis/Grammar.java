@@ -9,7 +9,7 @@ public class Grammar {
     private static final Pattern VALID_GRAMMAR = Pattern.compile("^(NONTERMINALASSIGNMENT(NONTERMINAL|TERMINAL|PIPE)+)+$");
     public String type;
     public String message;
-    public Statment[] statments = new Statment[100];
+    public Statement[] statements = new Statement[100];
     public Token[] nonTerminals = new Token[100];
 
     // Gramar constructor
@@ -30,10 +30,10 @@ public class Grammar {
                 if (tokens[tokenIndex].type.equals("NONTERMINAL") && tokens[tokenIndex + 1].type.equals("ASSIGNMENT")) {
                     // Increment to next Segment Index
                     statmentIndex++;
-                    // Init Statment
-                    statments[statmentIndex] = new Statment();
+                    // Init Statement
+                    statements[statmentIndex] = new Statement();
                     // Assign NONTERMINAL
-                    statments[statmentIndex].nonTerminal = tokens[tokenIndex];
+                    statements[statmentIndex].nonTerminal = tokens[tokenIndex];
                     // Reset Definition Index on creation of new statment
                     definitionIndex = 0;
                     // Add to nonTerminals Array
@@ -47,17 +47,17 @@ public class Grammar {
                 else if (tokens[tokenIndex].type.equals("PIPE")) {
                     // Increment to next Segment Index
                     statmentIndex++;
-                    // Init Statment
-                    statments[statmentIndex] = new Statment();
+                    // Init Statement
+                    statements[statmentIndex] = new Statement();
                     // Assign NONTERMINAL
-                    statments[statmentIndex].nonTerminal = statments[statmentIndex - 1].nonTerminal;
+                    statements[statmentIndex].nonTerminal = statements[statmentIndex - 1].nonTerminal;
                     // Reset Definition Index on creation of new statment
                     definitionIndex = 0;
                 }
                 // Else is definition
                 else {
-                    // Push Token to Statment Definition
-                    statments[statmentIndex].definitions[definitionIndex] = tokens[tokenIndex];
+                    // Push Token to Statement Definition
+                    statements[statmentIndex].definitions[definitionIndex] = tokens[tokenIndex];
                     // Increment to next Definition Index
                     definitionIndex++;
                 }
@@ -88,10 +88,10 @@ public class Grammar {
     }
 
     protected void nonTerminalCheck() {
-        for (Statment statment : statments) {
-            if (statment != null) {
+        for (Statement statement : statements) {
+            if (statement != null) {
                 // If Devinition nonterminals in in nonTerminals array
-                for (Token definition : statment.definitions) {
+                for (Token definition : statement.definitions) {
                     if (definition != null) {
                         // Is nonTerminal and is in array check
                         if (definition.type == "NONTERMINAL") {
@@ -125,19 +125,19 @@ public class Grammar {
         int setIndex = 0;
         // Init Set Token Array
         Token[] set = new Token[100];
-        // ForEach Statment in grammar
-        for (Statment statment : statments) {
-            if (statment != null) {
+        // ForEach Statement in grammar
+        for (Statement statement : statements) {
+            if (statement != null) {
                 // If is passed nonTerminal
-                if (statment.nonTerminal.token.equals(nonTerminal.token)) {
+                if (statement.nonTerminal.token.equals(nonTerminal.token)) {
                     // If is TERMINAL
-                    if (statment.definitions[0].type == "TERMINAL" && inTokenArray(set, statment.definitions[0]) == -1) {
-                        set[setIndex] = statment.definitions[0];
+                    if (statement.definitions[0].type == "TERMINAL" && inTokenArray(set, statement.definitions[0]) == -1) {
+                        set[setIndex] = statement.definitions[0];
                         setIndex++;
                     }
                     // If is NonTerminal
-                    else if (statment.definitions[0].type == "NONTERMINAL") {
-                        for (Token token : first(statment.definitions[0])) {
+                    else if (statement.definitions[0].type == "NONTERMINAL") {
+                        for (Token token : first(statement.definitions[0])) {
                             if (token != null && inTokenArray(set, token) == -1) {
                                 set[setIndex] = token;
                                 setIndex++;
@@ -157,22 +157,22 @@ public class Grammar {
         int nonTerminalIndex = 0;
         // Init Set Token Array
         Token[] set = new Token[100];
-        // ForEach Statment in grammar
-        for (Statment statment : statments) {
-            if (statment != null) {
-                // ForEach Definition in Statment
-                for (Token definition : statment.definitions) {
+        // ForEach Statement in grammar
+        for (Statement statement : statements) {
+            if (statement != null) {
+                // ForEach Definition in Statement
+                for (Token definition : statement.definitions) {
                     if (definition != null) {
                         // If is passed nonTerminal
                         if (definition.token.equals(nonTerminal.token)) {
                             // If +1 is TERMINAL
-                            if (statment.definitions[definitionIndex + 1] != null && statment.definitions[definitionIndex + 1].type == "TERMINAL" && inTokenArray(set, statment.definitions[definitionIndex + 1]) == -1) {
-                                set[setIndex] = statment.definitions[definitionIndex + 1];
+                            if (statement.definitions[definitionIndex + 1] != null && statement.definitions[definitionIndex + 1].type == "TERMINAL" && inTokenArray(set, statement.definitions[definitionIndex + 1]) == -1) {
+                                set[setIndex] = statement.definitions[definitionIndex + 1];
                                 setIndex++;
                             }
                             // If is NonTerminal
-                            else if (statment.definitions[definitionIndex + 1] != null && statment.definitions[definitionIndex + 1].type == "NONTERMINAL") {
-                                for (Token token : first(statment.definitions[definitionIndex + 1])) {
+                            else if (statement.definitions[definitionIndex + 1] != null && statement.definitions[definitionIndex + 1].type == "NONTERMINAL") {
+                                for (Token token : first(statement.definitions[definitionIndex + 1])) {
                                     if (token != null && inTokenArray(set, token) == -1) {
                                         set[setIndex] = token;
                                         setIndex++;
@@ -191,7 +191,7 @@ public class Grammar {
         // End of String
         if (set[0] == null) {
             set[0] = new Token("$");
-        } else if (statments[0].nonTerminal.token.equals(nonTerminal.token)) {
+        } else if (statements[0].nonTerminal.token.equals(nonTerminal.token)) {
             set[setIndex] = new Token("$");
         }
         return set;
@@ -207,9 +207,9 @@ public class Grammar {
             }
         }
         grammarString += "Grammar: \n";
-        for (Statment statment : statments) {
-            if (statment != null) {
-                grammarString += statment.toString() + "\n";
+        for (Statement statement : statements) {
+            if (statement != null) {
+                grammarString += statement.toString() + "\n";
             }
         }
         return grammarString;

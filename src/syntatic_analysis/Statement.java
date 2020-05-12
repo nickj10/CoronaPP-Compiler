@@ -1,13 +1,13 @@
 package syntatic_analysis;
 
-public class Statment {
+public class Statement {
 
     // Init Vars
     public Token nonTerminal;
     public Token[] definitions = new Token[100];
 
-    // Statment constructor
-    public Statment() {
+    // Statement constructor
+    public Statement() {
 
     }
 
