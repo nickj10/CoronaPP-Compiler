@@ -7,7 +7,6 @@ import intermediate.IntermediateCodeFlow;
 import semantic_analysis.SemanticAnalysis;
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
-import exceptions.SemanticException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
@@ -115,7 +114,7 @@ public class CompilerManager {
                         trees = parser.getBuiltWhileIfTree();
                         if (trees.size() > 0) {
                             semanticAnalysis.analyze(null, trees, symbolTable, 2);
-                            parser.addToBasicBlock(trees);
+                            parser.addToTrees(trees);
                         }
                     }
                     if (!flag && tokenInfo.getToken().equals("DOT_COMA")) {
@@ -135,25 +134,22 @@ public class CompilerManager {
                     tmp = tokenInfo;
                 }
             }
-            ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.analyze(tree);
-            icFlow.syntaxTreeToTAC(tree.getRoot(), new BasicBlock(), new ArrayList<>());
-            System.out.println(icFlow);
-
-            // Iterate over the list of basic blocks -> MIPS
-            for(BasicBlock bb : icFlow.getBasicBlocks()) {
-                //addInstr(bb.getNextInstruction())
-                //endBlock();
-            }
-
             tree.clear();
             tokensInfo.clear();
         }
         if (tmpSimple.size() > 0) {
-            parser.addToBasicBlock(tmpSimple);
+            parser.addToTrees(tmpSimple);
         }
-        parser.getBasicBlock();
 
+        icFlow.syntaxTreeToTAC(parser.getTrees());
+
+        System.out.println(icFlow);
+
+        // Iterate over the list of basic blocks -> MIPS
+        for(BasicBlock bb : icFlow.getBasicBlocks()) {
+            //addInstr(bb.getNextInstruction())
+            //endBlock();
+        }
     }
 
 

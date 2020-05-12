@@ -103,16 +103,18 @@ public class IntermediateCodeFlow {
     while (i < numTrees) {
       ArrayList<ASTree> blockTrees = trees.get(i);
       BasicBlock basicBlock = new BasicBlock();
-      for (ASTree tree : blockTrees) {
+      for (int j = 0; j < blockTrees.size(); j++) {
+        ASTree tree = blockTrees.get(j);
         if (isNodeSpecialCase(tree.getRoot())) {
+          ASTree nextTree = blockTrees.get(++j);
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "IF");
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
-            syntaxTreeToTAC_I(tree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "WHILE");
+            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "WHILE");
           }
           // Convert the rest of the tree to TACs and add it to the Basic Block
-          syntaxTreeToTAC_I(tree.getRoot().getRight(), basicBlock, new ArrayList<>(), null);
+          syntaxTreeToTAC_I(nextTree.getRoot().getRight(), basicBlock, new ArrayList<>(), null);
         } else {
           // Convert the tree directly to TACs
           syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
