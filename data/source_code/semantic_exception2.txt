@@ -1,0 +1,5 @@
+$$ Not working, it won't read char
+int b;
+char echo;
+a = 4 - 3;
+b = a + echo;
