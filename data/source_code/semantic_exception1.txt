@@ -1,0 +1,4 @@
+int b;
+int echo;
+a = 4 - 3;
+b = a + echo;

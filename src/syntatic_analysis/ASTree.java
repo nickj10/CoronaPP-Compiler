@@ -3,8 +3,10 @@ package syntatic_analysis;
 import lexic_analysis.TokenInfo;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class ASTree {
+  private static final Pattern OPERATORS = Pattern.compile("^(ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
   private ASTNode root;
   private ArrayList<TokenInfo> tokensInfo;
 
@@ -18,9 +20,11 @@ public class ASTree {
   }
 
   private ASTNode insertChild (ASTNode root, TokenInfo token) {
-    if (root == null || !root.getToken().getToken().equals("ASSGN_EQ")) {
-      // If token is = then assign it to the root
-      if (token.getToken().equals("ASSGN_EQ") && root != null) {
+    if (root == null || (!root.getToken().getToken().equals("ASSGN_EQ") && !root.getToken().getToken().equals("RLTNL_EQ") && !root.getToken().getToken().equals("RLTNL_NTEQ") && !root.getToken().getToken().equals("RLTNL_GT")
+                        && !root.getToken().getToken().equals("RLTNL_LS") && !root.getToken().getToken().equals("RLTNL_GTEQ") && !root.getToken().getToken().equals("RLTNL_LSEQ"))) {
+    //if (root == null || !OPERATORS.matcher(token.getToken()).matches()) {
+    // If token is = then assign it to the root
+      if ((token.getToken().equals("ASSGN_EQ"))  && root != null) {
         return pushToLeftChild(root, token);
       } else if (root != null) {
         if (root.getLeft() == null) {

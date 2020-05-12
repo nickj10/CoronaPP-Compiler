@@ -1,0 +1,11 @@
+$$ This code was tested - not working with y == a
+
+int y;
+int x;
+int a;
+int b;
+a = y + x;
+while (y == a) {
+    a = 3 + b;
+    x = a + b;
+}
