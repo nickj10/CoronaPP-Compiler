@@ -122,8 +122,6 @@ public class IntermediateCodeFlow {
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
             syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
           }
-          // Convert the rest of the tree to TACs and add it to the Basic Block
-          //syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, null);
         } else {
           // Convert the tree directly to TACs
           syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
