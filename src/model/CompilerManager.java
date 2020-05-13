@@ -144,12 +144,6 @@ public class CompilerManager {
         icFlow.syntaxTreeToTAC(parser.getTrees());
 
         System.out.println(icFlow);
-
-        // Iterate over the list of basic blocks -> MIPS
-        for(BasicBlock bb : icFlow.getBasicBlocks()) {
-            //addInstr(bb.getNextInstruction())
-            //endBlock();
-        }
     }
 
 
