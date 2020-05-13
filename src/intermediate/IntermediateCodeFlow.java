@@ -127,6 +127,7 @@ public class IntermediateCodeFlow {
           syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
         }
       }
+      this.basicBlocks.add(basicBlock);
       i++;
     }
   }
@@ -162,9 +163,9 @@ public class IntermediateCodeFlow {
       tokens.add(new TokenInfoLabels(intermediateCode.getLabel(),
           new TokenInfo(intermediateCode.getLabel().generateStringLabel())));
 
+      // If TAC is a special case, it indicates that it's the first instruction
       if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
-        this.basicBlocks.add(basicBlock);
       } else {
         basicBlock.addInstruction(intermediateCode);
       }
