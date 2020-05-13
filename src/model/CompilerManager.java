@@ -134,7 +134,6 @@ public class CompilerManager {
                     tmp = tokenInfo;
                 }
             }
-            tree.clear();
             tokensInfo.clear();
         }
         if (tmpSimple.size() > 0) {
