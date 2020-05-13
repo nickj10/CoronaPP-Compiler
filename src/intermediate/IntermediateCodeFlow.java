@@ -105,23 +105,29 @@ public class IntermediateCodeFlow {
       BasicBlock basicBlock = new BasicBlock();
       for (int j = 0; j < blockTrees.size(); j++) {
         ASTree tree = blockTrees.get(j);
+
+        // Control null roots. Get next tree.
+        while (tree.getRoot() == null) {
+          tree = blockTrees.get(++j);
+        }
+
+        // Check if it's an IF or WHILE
         if (isNodeSpecialCase(tree.getRoot())) {
           ASTree nextTree = blockTrees.get(++j);
+          ArrayList<TokenInfoLabels> tokens = new ArrayList<>();
+
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, tokens, "IF");
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
-            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, new ArrayList<>(), "WHILE");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
           }
           // Convert the rest of the tree to TACs and add it to the Basic Block
-          syntaxTreeToTAC_I(nextTree.getRoot().getRight(), basicBlock, new ArrayList<>(), null);
+          //syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, null);
         } else {
           // Convert the tree directly to TACs
           syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
         }
-
-        // Add this new basic block to the intermediate code flow
-        this.basicBlocks.add(basicBlock);
       }
       i++;
     }
@@ -139,19 +145,24 @@ public class IntermediateCodeFlow {
       String blockType) {
     // Visits each node in postorder starting from the right side
     if (current.getRight() != null) {
-      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
     }
 
     // Check if we already have three tokens
-    if (tokens.size() == 3) {
+    if (tokens.size() == 2) {
+      // Add the last token
+      tokens.add(new TokenInfoLabels(null, current.getToken()));
+
+      // Create the intermediate code
       IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType));
 
       // Flush token array
       tokens.clear();
-      tokens.add(new TokenInfoLabels(intermediateCode.getLabel(), null));
+      tokens.add(new TokenInfoLabels(intermediateCode.getLabel(),
+          new TokenInfo(intermediateCode.getLabel().generateStringLabel())));
 
       if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
@@ -200,8 +211,8 @@ public class IntermediateCodeFlow {
     Label label = Label.generateNewLabel();
 
     // Retrieve labels
-    Label labelArg1 = tokens.get(0).getLabel();
-    Label labelArg2 = tokens.get(1).getLabel();
+    Label labelArg2 = tokens.get(0).getLabel();
+    Label labelArg1 = tokens.get(1).getLabel();
 
     // Create TACs depending on its type
     if (blockType != null) {
@@ -213,8 +224,9 @@ public class IntermediateCodeFlow {
     } else {
       if (op.getToken().equals("ASSGN_EQ")) { // arg1 op arg2 || arg1 = arg2
         if (labelArg2 != null) { // arg2 is already a label || prev = L1
-          labelArg1.generateStringLabel();
+          labelArg1 = Label.generateNewLabel();
           labelArg1.setOperand(arg1);
+          labelArg2.setOperand(arg2);
           tac = new CopyTAC(labelArg1, labelArg2, op);
         } else if (labelArg1 != null) { // result is already a label || L1 = prev
           labelArg2 = Label.generateNewLabel();

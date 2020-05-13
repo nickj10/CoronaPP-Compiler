@@ -11,10 +11,8 @@ public class TokenInfo {
   private int declaredAtLine;
   private int dataSize;
 
-  public TokenInfo(String scope, String token, int declaredAtLine) {
-    this.scope = scope;
+  public TokenInfo(String token) {
     this.token = token;
-    this.declaredAtLine = declaredAtLine;
   }
 
   public TokenInfo (String id, String token, String type, String scope, int declaredAtLine, int dataSize) {
