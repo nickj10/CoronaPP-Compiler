@@ -20,8 +20,7 @@ public class ASTree {
   }
 
   private ASTNode insertChild (ASTNode root, TokenInfo token) {
-    if (root == null || (!root.getToken().getToken().equals("ASSGN_EQ") && !root.getToken().getToken().equals("RLTNL_EQ") && !root.getToken().getToken().equals("RLTNL_NTEQ") && !root.getToken().getToken().equals("RLTNL_GT")
-                        && !root.getToken().getToken().equals("RLTNL_LS") && !root.getToken().getToken().equals("RLTNL_GTEQ") && !root.getToken().getToken().equals("RLTNL_LSEQ"))) {
+    if (root == null || (!OPERATORS.matcher(root.getToken().getToken()).matches())) {
     //if (root == null || !OPERATORS.matcher(token.getToken()).matches()) {
     // If token is = then assign it to the root
       if ((token.getToken().equals("ASSGN_EQ"))  && root != null) {

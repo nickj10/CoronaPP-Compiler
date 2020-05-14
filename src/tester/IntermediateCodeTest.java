@@ -7,16 +7,15 @@ import intermediate.IntermediateCode;
 import intermediate.IntermediateCodeFlow;
 import intermediate.Label;
 import intermediate.ThreeAddrCode;
-import java.util.prefs.BackingStoreException;
 
 public class IntermediateCodeTest {
   public static void main(String[] args) {
     // Test TACs
     Label testLabel = Label.generateNewLabel();
-    testLabel.setOperand("c");
+    testLabel.setOperand(new Symbol("c"));
     ThreeAddrCode tac1 = new AssignmentTAC(new Symbol("a"), new Symbol("b"), new Symbol("+"), testLabel);
     IntermediateCodeFlow icFlow = new IntermediateCodeFlow();
     BasicBlock basicBlock = new BasicBlock(new IntermediateCode(tac1));
-    icFlow.addNewIC(basicBlock);
+    icFlow.addNewBasicBlock(basicBlock);
   }
 }

@@ -1,9 +1,11 @@
 package intermediate;
 
+import SymbolTable.Symbol;
+
 public class Label {
   private static int counter = 0;
   private int id;
-  private String operand;
+  private Symbol operand;
 
   public Label(int id) {
     this.id = id;
@@ -17,11 +19,11 @@ public class Label {
     return "L" + this.id;
   }
 
-  public String getOperand() {
+  public Symbol getOperand() {
     return operand;
   }
 
-  public void setOperand(String operand) {
+  public void setOperand(Symbol operand) {
     this.operand = operand;
   }
 

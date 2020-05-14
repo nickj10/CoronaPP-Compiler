@@ -24,6 +24,11 @@ public class BasicBlock {
     instructions.add(entry);
   }
 
+  public BasicBlock() {
+    basicBlockId = String.format("BB%d", counter++);
+    instructions = new LinkedList<>();
+  }
+
   public void addInstruction(IntermediateCode intermediateCode) {
     instructions.add(intermediateCode);
   }
@@ -42,6 +47,7 @@ public class BasicBlock {
 
   public void setEntryPoint(IntermediateCode entryPoint) {
     this.entryPoint = entryPoint;
+    this.instructions.add(entryPoint);
   }
 
   public IntermediateCode getExitPoint() {
@@ -58,5 +64,9 @@ public class BasicBlock {
 
   public void setBasicBlockId(String basicBlockId) {
     this.basicBlockId = basicBlockId;
+  }
+
+  public LinkedList<IntermediateCode> getInstructions() {
+    return instructions;
   }
 }
