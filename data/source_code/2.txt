@@ -1,8 +1,9 @@
-$$ Source code 2
+$$ This code was tested
 
 /$
 This is the test 2
 $/
 int a;
-int echo = 123;
+int echo;
+echo = 123;
 a = 3 + echo;

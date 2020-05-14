@@ -1,0 +1,22 @@
+/$
+This is a block
+comment
+$/
+int a;
+int i;
+int n;
+int m;
+int t;
+a = 8;
+i = 1;
+n = 0;
+m = 1;
+if (a == 0) {
+   i = a;
+}
+while (i != a) {
+    t = j + n;
+    n = m;
+    m = y
+    i = i + 1;
+}

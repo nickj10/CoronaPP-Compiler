@@ -15,10 +15,12 @@ import intermediate.ThreeAddrCode;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
 
 public class CompilerManager {
+    private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private static String sourceFile;
     private static String dictionaryFile;
     private static String grammarFile;
@@ -28,7 +30,7 @@ public class CompilerManager {
     private static SemanticAnalysis semanticAnalysis;
 
     // Empty constructor
-    public CompilerManager(){
+    public CompilerManager() {
         symbolTable = SymbolTable.getInstance();
         semanticAnalysis = new SemanticAnalysis();
     }
@@ -45,17 +47,21 @@ public class CompilerManager {
     }
 
     public void compile() throws FirstAndFollowException, GrammarException, SemanticException {
+        String tableId = null;
         TokenInfo tmp = null;
         ArrayList<TokenInfo> tokensInfo = new ArrayList<>();
         int counter;
         IntermediateCodeFlow icFlow = new IntermediateCodeFlow();
+        ArrayList<ASTree> tmpSimple = new ArrayList<>();
+        ASTree tree = new ASTree();
+        ArrayList<ASTree> trees = new ArrayList<>();
 
         while (scanner.getNextToken() != null) {
             counter = 0;
             String lastCharExpression;
             //Prelectura
             tokensInfo.add(scanner.sendNextToken());
-            if (tokensInfo.get(0).getId().equals("if") || tokensInfo.get(0).getId().equals("while")){
+            if (tokensInfo.get(0).getId().equals("if") || tokensInfo.get(0).getId().equals("while")) {
                 lastCharExpression = "}";
             } else {
                 lastCharExpression = ";";
@@ -77,40 +83,70 @@ public class CompilerManager {
             } while (!tokensInfo.get(tokensInfo.size() - 1).getId().equals(lastCharExpression));
 
             //Ponemos el token del ultimo caracter ya que no entra en el bucle
-            if (lastCharExpression.equals(";")){
+            if (lastCharExpression.equals(";")) {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("DOT_COMA");
-            }else {
+            } else {
                 tokensInfo.get(tokensInfo.size() - 1).setToken("COR_CLOSED");
             }
-
             //Si pasa el analisis sintactico se guarda en la tabla de simbolos
-            if(parser.checkGrammar(tokensInfo)){
-                for(TokenInfo tokenInfo : tokensInfo){
-                    String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable);
-                    if (type != null) {
-                        tokenInfo.setType(type);
-                    }
-                    symbolTable.addSymbol(new Symbol(tokenInfo.getId(),tokenInfo.getToken(), tokenInfo.getType(),
-                        tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
-                    //Builds ASTree for the expression, this part only works for 1 expresion - To be modified later if needed
-                    if (tokenInfo.getToken().equals("ASSGN_EQ")) {
-                        parser.buildTree(tokenInfo);
-                        parser.buildTree(tmp);
+            if (parser.checkGrammar(tokensInfo)) {
+                ArrayList<TokenInfo> tmpList = new ArrayList<>();
+                ArrayList<TokenInfo> tmpSimpleList = new ArrayList<>();
 
+                boolean flag = false;
+                for (TokenInfo tokenInfo : tokensInfo) {
+                    if (!UNWANTED_TOKEN_TYPES.matcher(tokenInfo.getToken()).matches()) {
+                        String type = parser.addTypeToVariable(tokenInfo, tmp, symbolTable, tableId);
+                        if (type != null) {
+                            tokenInfo.setType(type);
+                        }
+                        tableId = symbolTable.addSymbol(new Symbol(tokenInfo.getId(), tokenInfo.getToken(), tokenInfo.getType(),
+                                tokenInfo.getScope(), tokenInfo.getDeclaredAtLine(), tokenInfo.getDataSize()));
+                        tokenInfo.setTableId(tableId);
                     }
-                    if (parser.validateTreeConstruction(tokenInfo.getToken())) {
-                        parser.buildTree(tokenInfo);
+                    //We use this flag to know if we're going to deal with a WHILE/IF block, that's why we're adding the tokens inside of the list
+                    if (flag) {
+                        tmpList.add(tokenInfo);
                     }
+                    if (tokenInfo.getToken().equals("WHILE") || tokenInfo.getToken().equals("IF")) {
+                        tmpList.add(tokenInfo);
+                        flag = true;
+                    }
+                    if (tokenInfo.getToken().equals("COR_CLOSED")) {
+                        flag = false;
+                        parser.buildWhileIfTree(tmpList);
+                        //This array returns WHILE block in the form of trees
+                        trees = parser.getBuiltWhileIfTree();
+                        if (trees.size() > 0) {
+                            semanticAnalysis.analyze(null, trees, symbolTable, 2);
+                            parser.addToBasicBlock(trees);
+                        }
+                    }
+                    if (!flag && tokenInfo.getToken().equals("DOT_COMA")) {
+                        parser.buildSimpleTree(tmpSimpleList);
+                        //If there's a constructed tree, analyze it
+                        tree = parser.getBuiltTree();
+                        if (tree.getRoot() != null) {
+                            semanticAnalysis.analyze(tree, null, symbolTable, 1);
+                            tmpSimple.add(tree);
+                        }
+                    }
+                    //If its dealing with no loops or ifs, just normal expressions
+                    if (!flag) {
+                        tmpSimpleList.add(tokenInfo);
+                    }
+
                     tmp = tokenInfo;
                 }
             }
-            ASTree tree = parser.getBuiltTree();
-            semanticAnalysis.analyze(tree);
-            //syntaxTreeToTAC(tree, icFlow, symbolTable);
             System.out.println(icFlow);
-            tree.clear();
             tokensInfo.clear();
         }
+        if (tmpSimple.size() > 0) {
+            parser.addToBasicBlock(tmpSimple);
+        }
+        parser.getBasicBlock();
+
     }
 
 
