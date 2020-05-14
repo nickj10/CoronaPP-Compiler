@@ -3,6 +3,7 @@ package syntatic_analysis;
 import SymbolTable.SymbolTable;
 import com.google.gson.Gson;
 
+import intermediate.BasicBlock;
 import java.util.ArrayList;
 
 import exceptions.FirstAndFollowException;
@@ -13,49 +14,54 @@ import model.Word;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Parser {
     private static Boolean DEBUG = true;
+    private static final Pattern OPERATORS = Pattern.compile("^(ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private HashMap<String, Word> dictionary;
     private static Grammar grammar;
     private String grammarFile;
     private String dictionaryFile;
     private ASTree asTree;
+    private ArrayList<ASTree> asTrees;
+    private ArrayList<ArrayList<ASTree>> trees;
+    private ArrayList<BasicBlock> basicBlocks;
 
     String[][] table = {
-            {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null}
+            {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {"D", "DECLARACION", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"D", "DECLARACION", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, null, null, null, null, "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", null, null, null, null, null, null, null}
+            {null, null, null, null, null, null, null, null, null, "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", "TIPO_SENTENCIA PRNTSS_OPEN CONDITIONAL_EXPRESSION PRNTSS_CLOSED COR_OPEN EXPRESSION COR_CLOSED", null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, "TIPO F C", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {null, "TIPO F C", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, "INT", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {null, "INT", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
 
 
             ,
-            {"IDENTIFIER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"IDENTIFIER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, "NUMBER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {null, null, "NUMBER", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {"F", null, "VALUE", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"F", null, "VALUE", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, "ASSGN_EQ B", null, null, null, null, null, null, null, null, null, null, null, ""}
+            {null, null, null, null, null, "ASSGN_EQ B", null, null, null, null, null, null, null, null, null, null, null, "", null, null, null, null}
             ,
-            {"F ASSGN_EQ G", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"F ASSGN_EQ G", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
 
 
-            {"B OPERATOR B", null, "B OPERATOR B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"B OPERATOR B", null, "B OPERATOR B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, "ARTMTC_SM", "ARTMTC_RS", "ARTMTC_MLT", "ARTMTC_DV", null, null, null, null, null, null, null, null, null}
+            {null, null, null, null, null, "ARTMTC_SM", "ARTMTC_RS", "ARTMTC_MLT", "ARTMTC_DV", null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, null, null, null, null, "IF", "WHILE", null, null, null, null, null, null, null}
+            {null, null, null, null, null, null, null, null, null, "IF", "WHILE", null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {"B RLTNL B", null, "B RLTNL B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
+            {"B RLTNL B", null, "B RLTNL B", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             ,
-            {null, null, null, null, null, null, null, null, null, null, null, "RLTNL_EQ", "RLTNL_NTEQ", null, null, null, null, null}
+            {null, null, null, null, null, null, null, null, null, null, null, "RLTNL_EQ", "RLTNL_NTEQ", null, null, null, null, null, "RLTNL_GT", "RLTNL_LS", "RLTNL_GTEQ", "RLTNL_LSEQ"}
 
 
 
@@ -66,7 +72,8 @@ public class Parser {
             "G", "OPERATOR", "TIPO_SENTENCIA", "CONDITIONAL_EXPRESSION", "RLTNL"};
     String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ", "ARTMTC_SM",
             "ARTMTC_RS","ARTMTC_MLT", "ARTMTC_DV", "IF", "WHILE", "RLTNL_EQ",
-            "RLTNL_NTEQ", "PRNTSS_OPEN", "PRNTSS_CLOSED", "COR_OPEN", "COR_CLOSED" ,"#"};
+            "RLTNL_NTEQ", "PRNTSS_OPEN", "PRNTSS_CLOSED", "COR_OPEN", "COR_CLOSED" ,"#",
+            "RLTNL_GT", "RLTNL_LS", "RLTNL_GTEQ", "RLTNL_LSEQ"};
 
     //Pila
     ArrayList<String> stack = new ArrayList<>();
@@ -79,6 +86,9 @@ public class Parser {
         initGrammar();
         startFirstFollow();
         asTree = new ASTree();
+        asTrees = new ArrayList<>();
+        trees = new ArrayList<>();
+        basicBlocks = new ArrayList<>();
     }
 
     public void initGrammar() {
@@ -312,36 +322,131 @@ public class Parser {
         return -1;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+    public void addToTrees(ArrayList<ASTree> tree) {
+        this.trees.add(tree);
+    }
+
+    public ArrayList<ArrayList<ASTree>> getTrees() {
+        return this.trees;
+    }
+
+    private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
-        if (table.getSymbol(token.getId()) == null) {
+        if (table.getSymbol(token.getId()) == null){
             if (consultDictionary(token.getId()) == null) {
-                //If not a terminal, checks if it's a variable and tmp token was a terminal, meaning it is declared
-                Token aux = new Token("",token.getId());
-                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                //If it wasn't a terminal, it checks if it's a var and tmp was a terminal, which means it is declared
+                Token aux = new Token ("", token.getId());
+                if (aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT") || aux.token.equals("NUMBER")) {
                     return "INT";
                 }
             }
         }
         else {
+            //If it's in the symbol table, we get its type
             if (token.getToken().equals("IDENTIFIER")) {
                 return table.getSymbol(token.getId()).getType();
             }
         }
-
         return null;
+    }
+
+    private String getTypeOfLocalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        Token aux;
+        if (table.getSymbol(token.getId(), tableId) == null) {
+            if (consultDictionary(token.getId()) == null) {
+                aux = new Token("", token.getId());
+                if ((aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT")) || aux.token.equals("NUMBER")) {
+                    return "INT";
+                }
+                //When we have two declared global variables in a condition we have to check their types in the general table
+                return getTypeOfGlobalVariable(token, tmp, table);
+            }
+        }
+        else {
+            if (token.getToken().equals("IDENTIFIER"))
+            {
+                return table.getSymbol(token.getId(),tableId).getType();
+            }
+        }
+        return null;
+    }
+
+    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+        String type = null;
+        if (tableId == null) {
+            type = getTypeOfGlobalVariable(token, tmp, table);
+        }
+        else {
+            type = getTypeOfLocalVariable(token, tmp, table, tableId);
+        }
+        return type;
     }
 
     public void buildTree(TokenInfo token) {
         asTree.insert(token);
     }
 
+    public void buildSimpleTree(ArrayList<TokenInfo> tokenInfos) {
+        TokenInfo tmp = new TokenInfo();
+        asTree = new ASTree();
+        for (TokenInfo t : tokenInfos) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ") ) {
+                asTree.insert(t);
+                asTree.insert(tmp);
+            }
+            if (validateTreeConstruction(t.getToken())) {
+                asTree.insert(t);
+            }
+            tmp = t;
+        }
+    }
+
     public ASTree getBuiltTree() {
         return asTree;
     }
 
+    public void buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
+        TokenInfo tmp = new TokenInfo();
+        ASTree tree = new ASTree();
+        for (TokenInfo t : tokenInfos) {
+            if (OPERATORS.matcher(t.getToken()).matches()) {
+                tree.insert(t);
+                tree.insert(tmp);
+            }
+            if (validateWhileTreeConstruction(t.getToken(), tree)) {
+                tree.insert(t);
+            }
+            if (t.getToken().equals("WHILE") || t.getToken().equals("IF")) {
+                tree.insert(t);
+                asTrees.add(tree);
+                tree = new ASTree();
+            }
+            if (t.getToken().equals("PRNTSS_CLOSED") || t.getToken().equals("DOT_COMA")) {
+                asTrees.add(tree);
+                tree = new ASTree();
+            }
+            tmp = t;
+        }
+    }
+
+    public ArrayList<ASTree> getBuiltWhileIfTree () {
+        return asTrees;
+    }
+
+    public boolean validateWhileTreeConstruction (String token, ASTree tree) {
+        if (tree.getRoot() == null && (token.equals("ASSGN_EQ"))) {
+            return true;
+        }
+        if (tree.getRoot() != null && !token.equals("ASSGN_EQ")) {
+            if (token.equals("IDENTIFIER") || token.equals("NUMBER") || token.contains("ARTMTC")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean validateTreeConstruction(String token) {
-        if (asTree.getRoot() == null && token.equals("ASSGN_EQ")) {
+        if (asTree.getRoot() == null && (token.equals("ASSGN_EQ"))) {
             return true;
         }
         if (asTree.getRoot() != null && !token.equals("ASSGN_EQ")) {
@@ -350,6 +455,14 @@ public class Parser {
             }
         }
         return false;
+    }
+
+    public void addToAsTrees(ASTree tree) {
+        asTrees.add(tree);
+    }
+
+    public ArrayList getAsTrees () {
+        return this.asTrees;
     }
 
     /**
