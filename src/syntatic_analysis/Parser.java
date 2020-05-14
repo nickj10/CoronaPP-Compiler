@@ -3,6 +3,7 @@ package syntatic_analysis;
 import SymbolTable.SymbolTable;
 import com.google.gson.Gson;
 
+import intermediate.BasicBlock;
 import java.util.ArrayList;
 
 import exceptions.FirstAndFollowException;
@@ -12,7 +13,6 @@ import model.Dictionary;
 import model.Word;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -25,7 +25,8 @@ public class Parser {
     private String dictionaryFile;
     private ASTree asTree;
     private ArrayList<ASTree> asTrees;
-    private ArrayList<ArrayList<ASTree>> basicBlocks;
+    private ArrayList<ArrayList<ASTree>> trees;
+    private ArrayList<BasicBlock> basicBlocks;
 
     String[][] table = {
             {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null, null, null, null, null}
@@ -86,6 +87,7 @@ public class Parser {
         startFirstFollow();
         asTree = new ASTree();
         asTrees = new ArrayList<>();
+        trees = new ArrayList<>();
         basicBlocks = new ArrayList<>();
     }
 
@@ -320,12 +322,12 @@ public class Parser {
         return -1;
     }
 
-    public void addToBasicBlock (ArrayList<ASTree> tree) {
-        this.basicBlocks.add(tree);
+    public void addToTrees(ArrayList<ASTree> tree) {
+        this.trees.add(tree);
     }
 
-    public ArrayList<ArrayList<ASTree>> getBasicBlock () {
-        return this.basicBlocks;
+    public ArrayList<ArrayList<ASTree>> getTrees() {
+        return this.trees;
     }
 
     private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {

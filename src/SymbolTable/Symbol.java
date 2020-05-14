@@ -146,6 +146,13 @@ public class Symbol {
 
     public Boolean hasChildTable(){ return this.childTable != null; }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
 
 

@@ -1,23 +1,18 @@
 package model;
 
 import SymbolTable.*;
-import com.google.gson.Gson;
 import exceptions.SemanticException;
+import intermediate.BasicBlock;
 import intermediate.IntermediateCodeFlow;
 import semantic_analysis.SemanticAnalysis;
 import exceptions.FirstAndFollowException;
 import exceptions.GrammarException;
-import exceptions.SemanticException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
-import intermediate.ThreeAddrCode;
 
-import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
-
-import static intermediate.ThreeAddrCode.syntaxTreeToTAC;
 
 public class CompilerManager {
     private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
@@ -119,7 +114,7 @@ public class CompilerManager {
                         trees = parser.getBuiltWhileIfTree();
                         if (trees.size() > 0) {
                             semanticAnalysis.analyze(null, trees, symbolTable, 2);
-                            parser.addToBasicBlock(trees);
+                            parser.addToTrees(trees);
                         }
                     }
                     if (!flag && tokenInfo.getToken().equals("DOT_COMA")) {
@@ -139,14 +134,15 @@ public class CompilerManager {
                     tmp = tokenInfo;
                 }
             }
-            System.out.println(icFlow);
             tokensInfo.clear();
         }
         if (tmpSimple.size() > 0) {
-            parser.addToBasicBlock(tmpSimple);
+            parser.addToTrees(tmpSimple);
         }
-        parser.getBasicBlock();
 
+        icFlow.syntaxTreeToTAC(parser.getTrees());
+
+        System.out.println(icFlow);
     }
 
 
