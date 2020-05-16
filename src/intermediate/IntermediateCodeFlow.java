@@ -38,68 +38,12 @@ public class IntermediateCodeFlow {
   /**
    * Translates AST to TACs and BasicBlocks
    *
-   * @param tree        AST to be transalted
-   * @param icFlow      intermediate code flow that contains a list of intermediate codes and TACs
-   * @param symbolTable symbol table
-   * @deprecated hardcoded way of translating a single instruction to TAC
-   */
-  public static void syntaxTreeToTAC(ASTree tree, IntermediateCodeFlow icFlow, SymbolTable symbolTable) {
-    //Empieza en 1 porque empezamos a partir del =
-    int nAddress = 1;
-    ASTNode node = null;
-
-    if (tree.getRoot() != null) {
-      node = tree.getRoot().getRight();
-    }
-
-    if (node != null) {
-      String tokenNode = node.getToken().getToken();
-      while (tokenNode.equals("ARTMTC_SM") || tokenNode.equals("ARTMTC_RS")) {
-        //Add left address
-        nAddress++;
-        //Add right address only if is the last operation
-        String rightNodeToken = node.getRight().getToken().getToken();
-        if (rightNodeToken.equals("IDENTIFIER") || rightNodeToken.equals("NUMBER")) {
-          nAddress++;
-        }
-
-        node = node.getRight();
-        tokenNode = node.getToken().getToken();
-      }
-    }
-
-    int nTacs = (int) Math.ceil(nAddress / 3);
-    if (tree.getRoot() != null) {
-      node = tree.getRoot();
-
-      Label testLabel = Label.generateNewLabel();
-      testLabel.setOperand(tokenInfoToSymbol(node.getLeft().getToken()));
-
-      ThreeAddrCode tac1;
-
-      String tokenNode = node.getRight().getToken().getToken();
-      node = node.getRight();
-      Symbol arg1 = symbolTable.getSymbol(node.getRight().getToken().getId(), node.getRight().getToken().getTableId());
-      Symbol arg2 = symbolTable.getSymbol(node.getLeft().getToken().getId(), node.getLeft().getToken().getTableId());
-      Symbol op = symbolTable.getSymbol(node.getToken().getId(), node.getToken().getTableId());
-      if (tokenNode.equals("ARTMTC_SM") || tokenNode.equals("ARTMTC_RS")) {
-        tac1 = new AssignmentTAC(arg1, arg2, op, testLabel);
-      } else {
-        tac1 = new AssignmentTAC(arg1, null, op, testLabel);
-      }
-
-      icFlow.addNewBasicBlock(new BasicBlock(new IntermediateCode(tac1)));
-    }
-  }
-
-  /**
-   * Translates AST to TACs and BasicBlocks
-   *
    * @param trees una lista de listas de AST
    */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
     int i = 0;
     int numTrees = trees.size();
+    Label gotoLabel = null;
     while (i < numTrees) {
       ArrayList<ASTree> blockTrees = trees.get(i);
       BasicBlock basicBlock = new BasicBlock();
@@ -118,16 +62,17 @@ public class IntermediateCodeFlow {
 
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, tokens, "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "IF", gotoLabel);
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
-            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE", gotoLabel);
           }
         } else {
           // Convert the tree directly to TACs
-          syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
+          syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null, gotoLabel);
         }
       }
       this.basicBlocks.add(basicBlock);
+      gotoLabel = basicBlock.getEntryPoint().getLabel();
       i++;
     }
   }
@@ -141,13 +86,13 @@ public class IntermediateCodeFlow {
    * @param blockType  block type which can either be IF, WHILE or null
    */
   private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfoLabels> tokens,
-      String blockType) {
+      String blockType, Label gotoLabel) {
     // Visits each node in postorder starting from the right side
     if (current.getRight() != null) {
-      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType, gotoLabel);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType, gotoLabel);
     }
 
     // Check if we already have three tokens
@@ -156,7 +101,7 @@ public class IntermediateCodeFlow {
       tokens.add(new TokenInfoLabels(null, current.getToken()));
 
       // Create the intermediate code
-      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType));
+      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType, gotoLabel));
 
       // Flush token array
       tokens.clear();
@@ -167,6 +112,9 @@ public class IntermediateCodeFlow {
       if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
       } else {
+        if (basicBlock.getEntryPoint() == null) {
+          basicBlock.setEntryPoint(intermediateCode);
+        }
         basicBlock.addInstruction(intermediateCode);
       }
     } else {
@@ -200,7 +148,7 @@ public class IntermediateCodeFlow {
    * @param tokens list of tokens to analyze
    * @return generated TAC
    */
-  private ThreeAddrCode generateTAC(ArrayList<TokenInfoLabels> tokens, String blockType) {
+  private ThreeAddrCode generateTAC(ArrayList<TokenInfoLabels> tokens, String blockType, Label gotoLabel) {
     ThreeAddrCode tac = null;
 
     // Retrieve all the tokens to be added to TAC
@@ -216,9 +164,9 @@ public class IntermediateCodeFlow {
     // Create TACs depending on its type
     if (blockType != null) {
       if (blockType.equals("IF")) {
-        tac = new ConditionalTAC(arg1, arg2, op, label);
+        tac = new ConditionalTAC(arg1, arg2, op, gotoLabel);
       } else if (blockType.equals("WHILE")) {
-        tac = new WhileLoopTAC(arg1, arg2, op, label);
+        tac = new WhileLoopTAC(arg1, arg2, op, gotoLabel);
       }
     } else {
       if (op.getToken().equals("ASSGN_EQ")) { // arg1 op arg2 || arg1 = arg2
