@@ -408,6 +408,7 @@ public class Parser {
     public void buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
+        ArrayList<ASTree> treesAux = new ArrayList<>();
         for (TokenInfo t : tokenInfos) {
             if (OPERATORS.matcher(t.getToken()).matches()) {
                 tree.insert(t);
@@ -418,15 +419,18 @@ public class Parser {
             }
             if (t.getToken().equals("WHILE") || t.getToken().equals("IF")) {
                 tree.insert(t);
-                asTrees.add(tree);
+                //asTrees.add(tree);
+                treesAux.add(tree);
                 tree = new ASTree();
             }
             if (t.getToken().equals("PRNTSS_CLOSED") || t.getToken().equals("DOT_COMA")) {
-                asTrees.add(tree);
+                ///asTrees.add(tree);
+                treesAux.add(tree);
                 tree = new ASTree();
             }
             tmp = t;
         }
+        this.trees.add(treesAux);
     }
 
     public ArrayList<ASTree> getBuiltWhileIfTree () {
