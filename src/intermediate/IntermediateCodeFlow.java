@@ -118,7 +118,7 @@ public class IntermediateCodeFlow {
 
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, tokens, "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "IF");
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
             syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
           }
