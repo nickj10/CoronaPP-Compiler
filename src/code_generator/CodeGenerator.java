@@ -54,7 +54,7 @@ public class CodeGenerator {
         else if(tac instanceof CopyTAC)
             addCopy(arg1, arg2);                    // arg2 = arg1
         else if(tac instanceof ConditionalTAC)
-            addIf(arg1, arg1, op, result);
+            addIf(arg1, arg2, op, result);
         // TODO: Do the other functions (copy, conditional, goto, etc)
     }
 
@@ -118,7 +118,7 @@ public class CodeGenerator {
         regManager.freeReg(reg);
     }
 
-    private void addIf(Symbol arg1, Symbol op, Symbol arg2, Label gotoLabel){
+    private void addIf(Symbol arg1, Symbol arg2, Symbol op, Label gotoLabel){
         String operation = op.getLexema();
         String instr = "";
         String label = gotoLabel.generateStringLabel();
