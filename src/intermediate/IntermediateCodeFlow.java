@@ -74,9 +74,6 @@ public class IntermediateCodeFlow {
       basicBlock.setExitPoint(basicBlock.getInstructions().getLast());
       this.basicBlocks.add(basicBlock);
       if (basicBlock.getEntryPoint().getTac() instanceof  ConditionalTAC || basicBlock.getEntryPoint().getTac() instanceof WhileLoopTAC) {
-        int index = basicBlock.getInstructions().indexOf(basicBlock);
-        gotoLabel = basicBlocks.get(index + 2).getEntryPoint().getLabel();
-      } else {
         gotoLabel = basicBlock.getEntryPoint().getLabel();
       }
       i--;
