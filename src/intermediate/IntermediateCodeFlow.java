@@ -41,10 +41,10 @@ public class IntermediateCodeFlow {
    * @param trees una lista de listas de AST
    */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
-    int i = 0;
     int numTrees = trees.size();
+    int i = numTrees - 1;
     Label gotoLabel = null;
-    while (i < numTrees) {
+    while (i >= 0) {
       ArrayList<ASTree> blockTrees = trees.get(i);
       BasicBlock basicBlock = new BasicBlock();
       for (int j = 0; j < blockTrees.size(); j++) {
@@ -72,8 +72,13 @@ public class IntermediateCodeFlow {
         }
       }
       this.basicBlocks.add(basicBlock);
-      gotoLabel = basicBlock.getEntryPoint().getLabel();
-      i++;
+      if (basicBlock.getEntryPoint().getTac() instanceof  ConditionalTAC || basicBlock.getEntryPoint().getTac() instanceof WhileLoopTAC) {
+        int index = basicBlock.getInstructions().indexOf(basicBlock);
+        gotoLabel = basicBlocks.get(index + 2).getEntryPoint().getLabel();
+      } else {
+        gotoLabel = null;
+      }
+      i--;
     }
   }
 
