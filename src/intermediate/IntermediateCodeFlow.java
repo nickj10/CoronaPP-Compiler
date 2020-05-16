@@ -38,63 +38,6 @@ public class IntermediateCodeFlow {
   /**
    * Translates AST to TACs and BasicBlocks
    *
-   * @param tree        AST to be transalted
-   * @param icFlow      intermediate code flow that contains a list of intermediate codes and TACs
-   * @param symbolTable symbol table
-   * @deprecated hardcoded way of translating a single instruction to TAC
-   */
-  public static void syntaxTreeToTAC(ASTree tree, IntermediateCodeFlow icFlow, SymbolTable symbolTable) {
-    //Empieza en 1 porque empezamos a partir del =
-    int nAddress = 1;
-    ASTNode node = null;
-
-    if (tree.getRoot() != null) {
-      node = tree.getRoot().getRight();
-    }
-
-    if (node != null) {
-      String tokenNode = node.getToken().getToken();
-      while (tokenNode.equals("ARTMTC_SM") || tokenNode.equals("ARTMTC_RS")) {
-        //Add left address
-        nAddress++;
-        //Add right address only if is the last operation
-        String rightNodeToken = node.getRight().getToken().getToken();
-        if (rightNodeToken.equals("IDENTIFIER") || rightNodeToken.equals("NUMBER")) {
-          nAddress++;
-        }
-
-        node = node.getRight();
-        tokenNode = node.getToken().getToken();
-      }
-    }
-
-    int nTacs = (int) Math.ceil(nAddress / 3);
-    if (tree.getRoot() != null) {
-      node = tree.getRoot();
-
-      Label testLabel = Label.generateNewLabel();
-      testLabel.setOperand(tokenInfoToSymbol(node.getLeft().getToken()));
-
-      ThreeAddrCode tac1;
-
-      String tokenNode = node.getRight().getToken().getToken();
-      node = node.getRight();
-      Symbol arg1 = symbolTable.getSymbol(node.getRight().getToken().getId(), node.getRight().getToken().getTableId());
-      Symbol arg2 = symbolTable.getSymbol(node.getLeft().getToken().getId(), node.getLeft().getToken().getTableId());
-      Symbol op = symbolTable.getSymbol(node.getToken().getId(), node.getToken().getTableId());
-      if (tokenNode.equals("ARTMTC_SM") || tokenNode.equals("ARTMTC_RS")) {
-        tac1 = new AssignmentTAC(arg1, arg2, op, testLabel);
-      } else {
-        tac1 = new AssignmentTAC(arg1, null, op, testLabel);
-      }
-
-      icFlow.addNewBasicBlock(new BasicBlock(new IntermediateCode(tac1)));
-    }
-  }
-
-  /**
-   * Translates AST to TACs and BasicBlocks
-   *
    * @param trees una lista de listas de AST
    */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
@@ -118,7 +61,7 @@ public class IntermediateCodeFlow {
 
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(nextTree.getRoot().getLeft(), basicBlock, tokens, "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "IF");
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
             syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
           }
