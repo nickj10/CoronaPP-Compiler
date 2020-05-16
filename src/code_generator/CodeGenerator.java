@@ -2,14 +2,12 @@ package code_generator;
 
 import SymbolTable.Symbol;
 import SymbolTable.Table;
-import intermediate.AssignmentTAC;
-import intermediate.CopyTAC;
-import intermediate.GotoTAC;
-import intermediate.ThreeAddrCode;
+import intermediate.*;
 
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.locks.Condition;
 
 public class CodeGenerator {
     ArrayList<String> main; /* MIPS programs execute  instructions sequentially, where the code under
@@ -49,16 +47,18 @@ public class CodeGenerator {
         Symbol arg1 = tac.getArg1();
         Symbol arg2 = tac.getArg2();
         Symbol op = tac.getOp();
-        Symbol result = tac.getResult().getOperand();
+        Label result = tac.getResult();
 
         if(tac instanceof AssignmentTAC)
             addOperation(arg1, arg2, op, result);   // result = arg1 [op] arg2
-        if(tac instanceof CopyTAC)
+        else if(tac instanceof CopyTAC)
             addCopy(arg1, arg2);                    // arg2 = arg1
+        else if(tac instanceof ConditionalTAC)
+            addIf(arg1, arg1, op, result);
         // TODO: Do the other functions (copy, conditional, goto, etc)
     }
 
-    private void addOperation(Symbol arg1, Symbol arg2, Symbol op, Symbol result){
+    private void addOperation(Symbol arg1, Symbol arg2, Symbol op, Label result){
         // Loading arg1 into a register in regManager
         int reg1 = loadToRegister(arg1);
         // Writing instruction in MIPS to load arg1 (stack) into reg1
@@ -69,8 +69,8 @@ public class CodeGenerator {
         // Writing instruction in MIPS to load arg2 (stack) into reg2
         loadWord(reg2, arg2);
 
-        // Getting a free register to store the result (in reg3)
-        int reg3 = regManager.getFreeReg();
+        // Getting a free register to store the result (a Label)
+        int reg3 = loadToRegister(result.generateStringLabel());
         // TODO: Change the following line to a function to determine the respective operation (instead of just ADD)
         String operation = op.getLexema();
         switch(operation){
@@ -91,29 +91,37 @@ public class CodeGenerator {
         }
 
         // Writing instruction in MIPS to save the word in reg3 into the stack (with its respective position)
-        saveWord(reg3, result);
+        //saveWord(reg3, result);
+
 
     /* TODO: Free registers after usage, maybe by checking if the register is going to be used as result holder or not
         i.e. if reg3 = reg1 + reg2, you can free reg1 and reg2 since these wont be re-used, contrary to reg3 which
         actually holds the result and it hasn't been stored
      */
+        regManager.freeReg(reg1);
+        regManager.freeReg(reg2);
     }
 
     private void addCopy(Symbol arg1, Symbol result){
-        int reg = loadToRegister(arg1);
+        int reg;
+        if(result.getLexema() == null){
+            reg = regManager.getBusyReg();
+        }else {
+            reg = loadToRegister(result);
 
-        if(arg1.getToken().equals("IDENTIFIER"))
-            loadWord(reg, arg1);
-        else if(arg1.getToken().equals("NUMBER"))
-            loadLiteral(reg, arg1.getLexema());
-
-        saveWord(reg, result);
+            if (result.getToken().equals("IDENTIFIER"))
+                loadWord(reg, result);
+            else if (result.getToken().equals("NUMBER"))
+                loadLiteral(reg, result.getLexema());
+        }
+        saveWord(reg, arg1);
+        regManager.freeReg(reg);
     }
 
-    private void addIf(Symbol arg1, Symbol op, Symbol arg2, GotoTAC gotoLabel){
+    private void addIf(Symbol arg1, Symbol op, Symbol arg2, Label gotoLabel){
         String operation = op.getLexema();
         String instr = "";
-        String label = gotoLabel.getResult().generateStringLabel();
+        String label = gotoLabel.generateStringLabel();
         blockStack.push(label);
 
         switch(operation){
@@ -151,6 +159,8 @@ public class CodeGenerator {
     }
 
     public void endBlock(){
+        if(blockStack.empty())
+            return;
         String label = blockStack.pop();
         main.add(label);
     }
@@ -169,7 +179,7 @@ public class CodeGenerator {
     }*/
 
     private void saveWord(int reg, Symbol s){
-        String instr = String.format("SW $t%d, $d($fp)", reg, s.getStackPointer()); // -4
+        String instr = String.format("SW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
         main.add(instr);
     }
 
@@ -224,6 +234,10 @@ public class CodeGenerator {
         main.add(instr);
 
         return result;
+    }
+
+    public ArrayList<String> getMain() {
+        return main;
     }
 
     // Non-used method

@@ -16,7 +16,7 @@ public class MemManager {
         int currSP = this.stackPointer;
         symbol.setStackPointer(currSP);
         currSP -= symbol.getDataSize();
-        this.framePointer = currSP;
+        this.stackPointer = currSP;
 
         return currSP;
     }

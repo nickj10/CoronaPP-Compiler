@@ -254,6 +254,14 @@ public class IntermediateCodeFlow {
    * @return Symbol object
    */
   private static Symbol tokenInfoToSymbol(TokenInfo token) {
+
+    if(SymbolTable.getInstance().checkIfExists(token.getId())) {
+      Symbol symbol = new Symbol();
+      symbol = SymbolTable.getInstance().getSymbol(token.getId());
+      if (symbol.getToken().equals("IDENTIFIER"))
+        return SymbolTable.getInstance().getSymbol(token.getId());
+    }
+
     Symbol symbol = new Symbol();
     symbol.setId(String.format("%s%d", token.getId(), token.getDeclaredAtLine()));
     symbol.setLexema(token.getId());
@@ -262,6 +270,7 @@ public class IntermediateCodeFlow {
     symbol.setScope(token.getScope());
     symbol.setDeclaredAtLine(token.getDeclaredAtLine());
     symbol.setDataSize(token.getDataSize());
+
     return symbol;
   }
 }

@@ -3,6 +3,7 @@ package model;
 import SymbolTable.*;
 import exceptions.SemanticException;
 import intermediate.BasicBlock;
+import intermediate.IntermediateCode;
 import intermediate.IntermediateCodeFlow;
 import semantic_analysis.SemanticAnalysis;
 import exceptions.FirstAndFollowException;
@@ -10,9 +11,12 @@ import exceptions.GrammarException;
 import syntatic_analysis.*;
 import lexic_analysis.Scanner;
 import lexic_analysis.TokenInfo;
-
+import code_generator.CodeGenerator;
+import code_generator.ExporterToFile;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static code_generator.ExporterToFile.generateFile;
 
 public class CompilerManager {
     private static final Pattern UNWANTED_TOKEN_TYPES = Pattern.compile("^(COR_CLOSED|COR_OPEN|PRNTSS_CLOSED|PRNTSS_OPEN|ASSGN_EQ|RLTNL_NTEQ|RLTNL_EQ|ARTMTC_RS|ARTMTC_SM|ARTMTC_DV|ARTMTC_MLT|DOT_COMA|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
@@ -23,11 +27,13 @@ public class CompilerManager {
     private static Parser parser;
     private SymbolTable symbolTable;
     private static SemanticAnalysis semanticAnalysis;
+    private static CodeGenerator codeGenerator;
 
     // Empty constructor
     public CompilerManager() {
         symbolTable = SymbolTable.getInstance();
         semanticAnalysis = new SemanticAnalysis();
+        codeGenerator = new CodeGenerator();
     }
 
 
@@ -39,6 +45,7 @@ public class CompilerManager {
         parser = new Parser(grammarFile, dictionaryFile);
         symbolTable = SymbolTable.getInstance();
         semanticAnalysis = new SemanticAnalysis();
+        codeGenerator = new CodeGenerator();
     }
 
     public void compile() throws FirstAndFollowException, GrammarException, SemanticException {
@@ -142,7 +149,28 @@ public class CompilerManager {
 
         icFlow.syntaxTreeToTAC(parser.getTrees());
 
-        System.out.println(icFlow);
+        // Code generation
+        ArrayList<BasicBlock> basicBlocks = icFlow.getBasicBlocks();
+        codeGenerator.beginBlock(symbolTable);  // Declaring variables
+        for (int j = 0; j < basicBlocks.size(); j++) {
+            LinkedList<IntermediateCode> instructions = basicBlocks.get(j).getInstructions();
+            for(int i = 0; i < instructions.size(); i++) {
+            /*
+            // Si quieres sacar la información de ese TAC, añades getters
+            Symbol arg1 = tac.getArg1();
+            Symbol arg2 = tac.getArg2();
+            Symbol op = tac.getOp();
+            // Aqui haces todo lo que necesitas hacer con el tac o si no usar los getters donde sea para sacar info del tac
+            */
+                System.out.println(instructions.get(i).getTac().toString());
+                codeGenerator.addInstr(instructions.get(i).getTac());
+                codeGenerator.endBlock();
+            }
+        }
+
+        // Building file:
+        generateFile("output.txt", codeGenerator.getMain());
+        //System.out.println(icFlow);
     }
 
 
@@ -188,5 +216,9 @@ public class CompilerManager {
 
     public Table getSymbolTable() {
         return symbolTable;
+    }
+
+    public String getFileName(){
+        return scanner.getFile();
     }
 }

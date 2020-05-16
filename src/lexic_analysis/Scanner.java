@@ -142,4 +142,9 @@ public class Scanner {
   public TokenInfo sendNextToken() {
     return preparedTokens.removeLast();
   }
+
+  public String getFile() {
+    return file;
+  }
+
 }

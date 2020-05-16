@@ -27,6 +27,23 @@ public class RegManager {
         return null;
     }
 
+    public int getIndexByName(String name){
+        for(int i=0; i<registerArray.length; i++){
+            if(registerArray[i].getName().equals(name)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int getBusyReg(){
+        for(int i=0; i<registerArray.length; i++){
+            if(registerArray[i].getInUse())
+                return i;
+        }
+        return -1;
+    }
+
     public int getFreeReg(){
         for(int i=0; i<registerArray.length; i++){
             if(!registerArray[i].getInUse()) {

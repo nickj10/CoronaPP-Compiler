@@ -4,6 +4,6 @@ int y;
 int a;
 int b;
 a = x + y;
-if (a == b) {
+if (a != b) {
     a = x - y;
 }

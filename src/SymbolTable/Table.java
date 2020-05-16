@@ -93,6 +93,8 @@ public class Table {
     }
 
     public Boolean checkIfExists(String s){
+        if(s==null)
+            return false;
         return exists(hashf(s));
     }
 
