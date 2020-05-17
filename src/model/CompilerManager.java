@@ -151,6 +151,7 @@ public class CompilerManager {
 
         // Code generation
         ArrayList<BasicBlock> basicBlocks = icFlow.getBasicBlocks();
+        codeGenerator.startProgram();
         codeGenerator.beginBlock(symbolTable);  // Declaring variables
         // Executing the first block which contains a set of simple instructions (global instructions)
         LinkedList<IntermediateCode> instructions = basicBlocks.get(0).getInstructions();

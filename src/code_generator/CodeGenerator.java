@@ -28,9 +28,13 @@ public class CodeGenerator {
         blockStack = new Stack<>();
     }
 
+    public void startProgram(){
+        main.add(new String("MOVE $fp, $sp"));
+    }
+
     public void declareVar(Symbol s){
         // Creating instruction to allocate memory in stack
-        String instr = String.format("SUB $sp, $sp, %d", s.getDataSize());
+        String instr = String.format("SUB $sp, $sp, %d #Reserve memory for <%s>", s.getDataSize(), s.getLexema());
         main.add(instr);
         // Updating pointer stack
         memManager.pushVar(s);
@@ -135,7 +139,7 @@ public class CodeGenerator {
         String instr = "";
         String label = String.format("L%d", ifCounter++);
 
-        instr += getConditional(arg1, arg2, op, label);
+        instr += getConditional(arg1, arg2, op, label, null);
         main.add(instr);
         blockStack.push(label);
     }
@@ -146,13 +150,12 @@ public class CodeGenerator {
         String endWhileLabel = String.format("end_while%d", whileCounter);
         String beginWhileLabel = String.format("while%d", whileCounter++);
 
-        main.add(beginWhileLabel);
-        instr += getConditional(arg1, arg2, op, endWhileLabel);
+        instr += getConditional(arg1, arg2, op, endWhileLabel, beginWhileLabel);
         main.add(instr);
         blockStack.push(endWhileLabel);
     }
 
-    private String getConditional(Symbol arg1, Symbol arg2, Symbol op, String gotoLabel){
+    private String getConditional(Symbol arg1, Symbol arg2, Symbol op, String gotoLabel, String beginLabel){
         String operation = op.getLexema();
         String instr = "";
 
@@ -167,11 +170,13 @@ public class CodeGenerator {
         int reg2 = loadToRegister(arg2);
         // Writing instruction in MIPS to load arg2 (stack) into reg2
         loadVar(arg2, reg2);
-
+        if(beginLabel != null)
+            main.add(beginLabel);
         instr += String.format(" $t%d, $t%d, %s", reg1, reg2, gotoLabel); // [op] $t[reg1], $t[reg2], [label]
 
         return instr;
     }
+
     private String parseConditional(String operation){
         String instr = "";
 
@@ -246,14 +251,14 @@ public class CodeGenerator {
     private void saveWord(int reg, Symbol s){
         String instr = "";
         instr += getTabsPerBlock();
-        instr += String.format("SW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
+        instr += String.format("SW $t%d, %d($fp) #Save var <%s>", reg, s.getStackPointer(), s.getLexema()); // -4
         main.add(instr);
     }
 
     private void loadWord(int reg, Symbol s){
         String instr = "";
         instr += getTabsPerBlock();
-        instr += String.format("LW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
+        instr += String.format("LW $t%d, %d($fp) #Load var <%s>", reg, s.getStackPointer(), s.getLexema()); // -4
         main.add(instr);
     }
 
