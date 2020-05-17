@@ -116,12 +116,10 @@ public class CompilerManager {
                     }
                     if (tokenInfo.getToken().equals("COR_CLOSED")) {
                         flag = false;
-                        parser.buildWhileIfTree(tmpList);
+                        trees = parser.buildWhileIfTree(tmpList);
                         //This array returns WHILE block in the form of trees
-                        trees = parser.getBuiltWhileIfTree();
                         if (trees.size() > 0) {
                             semanticAnalysis.analyze(null, trees, symbolTable, 2);
-                            parser.addToTrees(trees);
                         }
                     }
                     if (!flag && tokenInfo.getToken().equals("DOT_COMA")) {

@@ -7,6 +7,7 @@ int i;
 int n;
 int m;
 int t;
+int y;
 a = 8;
 i = 1;
 n = 0;
