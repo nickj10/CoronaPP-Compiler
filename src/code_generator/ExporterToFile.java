@@ -9,7 +9,7 @@ public class ExporterToFile {
         FileWriter stringMips;
 
         try {
-            stringMips = new FileWriter("D:\\dev\\ProgrammingLanguages\\ProjectKaye\\grup-3\\data\\asm_code\\"+fileName.replace("txt", "asm"));//declarar el archivo
+            stringMips = new FileWriter("asm_code\\"+fileName.replace("txt", "asm"));//declarar el archivo
             PrintWriter escriu = new PrintWriter(stringMips);//declarar un impresor
 
             for (String s : codeLines) {
