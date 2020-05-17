@@ -117,8 +117,9 @@ public class IntermediateCodeFlow {
       } else {
         if (basicBlock.getEntryPoint() == null) {
           basicBlock.setEntryPoint(intermediateCode);
+        } else {
+          basicBlock.addInstruction(intermediateCode);
         }
-        basicBlock.addInstruction(intermediateCode);
       }
     } else {
       tokens.add(new TokenInfoLabels(null, current.getToken()));
