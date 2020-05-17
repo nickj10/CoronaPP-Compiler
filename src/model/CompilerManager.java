@@ -152,8 +152,23 @@ public class CompilerManager {
         // Code generation
         ArrayList<BasicBlock> basicBlocks = icFlow.getBasicBlocks();
         codeGenerator.beginBlock(symbolTable);  // Declaring variables
-        for (int j = 0; j < basicBlocks.size(); j++) {
-            LinkedList<IntermediateCode> instructions = basicBlocks.get(j).getInstructions();
+        // Executing the first block which contains a set of simple instructions (global instructions)
+        LinkedList<IntermediateCode> instructions = basicBlocks.get(0).getInstructions();
+        for(int i = 0; i < instructions.size(); i++) {
+            /*
+            // Si quieres sacar la información de ese TAC, añades getters
+            Symbol arg1 = tac.getArg1();
+            Symbol arg2 = tac.getArg2();
+            Symbol op = tac.getOp();
+            // Aqui haces todo lo que necesitas hacer con el tac o si no usar los getters donde sea para sacar info del tac
+            */
+            System.out.println(instructions.get(i).getTac().toString());
+            codeGenerator.addInstr(instructions.get(i).getTac());
+        }
+
+        // Executing all the other blocks (ifs, whiles, etc)
+        for (int j = basicBlocks.size()-1; j > 0; j--) {
+            instructions = basicBlocks.get(j).getInstructions();
             for(int i = 0; i < instructions.size(); i++) {
             /*
             // Si quieres sacar la información de ese TAC, añades getters
@@ -164,8 +179,8 @@ public class CompilerManager {
             */
                 System.out.println(instructions.get(i).getTac().toString());
                 codeGenerator.addInstr(instructions.get(i).getTac());
-                codeGenerator.endBlock();
             }
+            codeGenerator.endBlock();
         }
 
         // Building file:

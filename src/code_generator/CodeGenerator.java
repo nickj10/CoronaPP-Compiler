@@ -17,6 +17,8 @@ public class CodeGenerator {
     MemManager memManager;
     RegManager regManager;
     Stack<String> blockStack;
+    private static int ifCounter = 0;
+    private static int whileCounter = 0;
 
     public CodeGenerator() {
         this.main = new ArrayList<String>();
@@ -43,6 +45,19 @@ public class CodeGenerator {
         }
     }
 
+    public String getTabsPerBlock(){
+        String tabs = "";
+        if(blockStack.empty())
+            return "";
+
+        int blockStackSize = blockStack.size();
+
+        for(int i=0; i<blockStackSize; i++)
+            tabs += "   ";
+
+        return tabs;
+    }
+
     public void addInstr(ThreeAddrCode tac){
         Symbol arg1 = tac.getArg1();
         Symbol arg2 = tac.getArg2();
@@ -55,6 +70,8 @@ public class CodeGenerator {
             addCopy(arg1, arg2);                    // arg2 = arg1
         else if(tac instanceof ConditionalTAC)
             addIf(arg1, arg2, op, result);
+        else if(tac instanceof WhileLoopTAC)
+            addWhile(arg1, arg2, op, result);
         // TODO: Do the other functions (copy, conditional, goto, etc)
     }
 
@@ -62,16 +79,16 @@ public class CodeGenerator {
         // Loading arg1 into a register in regManager
         int reg1 = loadToRegister(arg1);
         // Writing instruction in MIPS to load arg1 (stack) into reg1
-        loadWord(reg1, arg1);
+        loadVar(arg1, reg1);
 
         // Loading arg2 into a register in regManager
         int reg2 = loadToRegister(arg2);
         // Writing instruction in MIPS to load arg2 (stack) into reg2
-        loadWord(reg2, arg2);
+        loadVar(arg2, reg2);
 
         // Getting a free register to store the result (a Label)
         int reg3 = loadToRegister(result.generateStringLabel());
-        // TODO: Change the following line to a function to determine the respective operation (instead of just ADD)
+
         String operation = op.getLexema();
         switch(operation){
             case "+":
@@ -93,11 +110,6 @@ public class CodeGenerator {
         // Writing instruction in MIPS to save the word in reg3 into the stack (with its respective position)
         //saveWord(reg3, result);
 
-
-    /* TODO: Free registers after usage, maybe by checking if the register is going to be used as result holder or not
-        i.e. if reg3 = reg1 + reg2, you can free reg1 and reg2 since these wont be re-used, contrary to reg3 which
-        actually holds the result and it hasn't been stored
-     */
         regManager.freeReg(reg1);
         regManager.freeReg(reg2);
     }
@@ -121,8 +133,47 @@ public class CodeGenerator {
     private void addIf(Symbol arg1, Symbol arg2, Symbol op, Label gotoLabel){
         String operation = op.getLexema();
         String instr = "";
-        String label = gotoLabel.generateStringLabel();
+        String label = String.format("L%d", ifCounter++);
+
+        instr += getConditional(arg1, arg2, op, label);
+        main.add(instr);
         blockStack.push(label);
+    }
+
+    private void addWhile(Symbol arg1, Symbol arg2, Symbol op, Label gotoLabel){
+        String operation = op.getLexema();
+        String instr = "";
+        String endWhileLabel = String.format("end_while%d", whileCounter);
+        String beginWhileLabel = String.format("while%d", whileCounter++);
+
+        main.add(beginWhileLabel);
+        instr += getConditional(arg1, arg2, op, endWhileLabel);
+        main.add(instr);
+        blockStack.push(endWhileLabel);
+    }
+
+    private String getConditional(Symbol arg1, Symbol arg2, Symbol op, String gotoLabel){
+        String operation = op.getLexema();
+        String instr = "";
+
+        instr = parseConditional(operation);
+
+        // Loading arg1 into a register in regManager
+        int reg1 = loadToRegister(arg1);
+        // Writing instruction in MIPS to load arg1 (stack) into reg1
+        loadVar(arg1, reg1);
+
+        // Loading arg2 into a register in regManager
+        int reg2 = loadToRegister(arg2);
+        // Writing instruction in MIPS to load arg2 (stack) into reg2
+        loadVar(arg2, reg2);
+
+        instr += String.format(" $t%d, $t%d, %s", reg1, reg2, gotoLabel); // [op] $t[reg1], $t[reg2], [label]
+
+        return instr;
+    }
+    private String parseConditional(String operation){
+        String instr = "";
 
         switch(operation){
             case "==":
@@ -144,25 +195,28 @@ public class CodeGenerator {
                 instr += "blt"; // adds "<"
                 break;
         }
-        // Loading arg1 into a register in regManager
-        int reg1 = loadToRegister(arg1);
-        // Writing instruction in MIPS to load arg1 (stack) into reg1
-        loadWord(reg1, arg1);
 
-        // Loading arg2 into a register in regManager
-        int reg2 = loadToRegister(arg2);
-        // Writing instruction in MIPS to load arg2 (stack) into reg2
-        loadWord(reg2, arg2);
-        instr += String.format(" $t%d, $t%d, %s", reg1, reg2, label); // [op] $t[reg1], $t[reg2], [label]
-
-        main.add(instr);
+        return instr;
     }
 
     public void endBlock(){
         if(blockStack.empty())
             return;
-        String label = blockStack.pop();
+
+        String label = blockStack.peek();
+
+        /* TODO: The following code is horrible! Please refactor it. Current solution use a hacky way to obtain the
+            current block index. You can obtain it by storing it inside the blockStack or something like that.
+            Think about it!
+         */
+        if(label.contains("end_while")){
+            String instr = getTabsPerBlock();
+            instr += "j ";
+            instr += label.substring(4, label.length()-1);
+            main.add(instr);
+        }
         main.add(label);
+        blockStack.pop();
     }
     // These functions works as above but instead of Symbols they used "labels" or literal numbers
     /*
@@ -178,18 +232,35 @@ public class CodeGenerator {
         main.add(instr);
     }*/
 
+    /**
+     * Check whether or not the variable is a literal or a Word (an actual variable)
+     * @param arg: Symbol that holds needed information
+     * @param reg: Register in which this variable is going to be loaded
+     */
+    private void loadVar(Symbol arg, int reg){
+        if(arg.getToken().equals("IDENTIFIER"))
+            loadWord(reg, arg);
+        else if(arg.getToken().equals("NUMBER"))
+            loadLiteral(reg, arg.getLexema());
+    }
     private void saveWord(int reg, Symbol s){
-        String instr = String.format("SW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("SW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
         main.add(instr);
     }
 
     private void loadWord(int reg, Symbol s){
-        String instr = String.format("LW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("LW $t%d, %d($fp)", reg, s.getStackPointer()); // -4
         main.add(instr);
     }
 
     private void loadLiteral(int reg, String l){
-        String instr = String.format("LI $t%d, %s", reg, l);
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("LI $t%d, %s", reg, l);
         main.add(instr);
     }
 
@@ -209,28 +280,36 @@ public class CodeGenerator {
 
     // TODO: Create methods for every possible operation (such as assignation [=], subtraction [-], mult [*],...)
     private int addSum(int reg1, int reg2, int result){
-        String instr =  String.format("ADD $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("ADD $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
         main.add(instr);
 
         return result;
     }
 
     private int addSub(int reg1, int reg2, int result){
-        String instr =  String.format("SUB $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("SUB $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
         main.add(instr);
 
         return result;
     }
 
     private int addMul(int reg1, int reg2, int result){
-        String instr =  String.format("MUL $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("MUL $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
         main.add(instr);
 
         return result;
     }
 
     private int addDiv(int reg1, int reg2, int result){
-        String instr =  String.format("DIV $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
+        String instr = "";
+        instr += getTabsPerBlock();
+        instr += String.format("DIV $t%d, $t%d, $t%d", result, reg1, reg2); // result = reg1 + reg2
         main.add(instr);
 
         return result;
