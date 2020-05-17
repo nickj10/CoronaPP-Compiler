@@ -171,7 +171,7 @@ public class CodeGenerator {
         // Writing instruction in MIPS to load arg2 (stack) into reg2
         loadVar(arg2, reg2);
         if(beginLabel != null)
-            main.add(beginLabel);
+            main.add(beginLabel+":");
         instr += String.format(" $t%d, $t%d, %s", reg1, reg2, gotoLabel); // [op] $t[reg1], $t[reg2], [label]
 
         return instr;
@@ -217,10 +217,10 @@ public class CodeGenerator {
         if(label.contains("end_while")){
             String instr = getTabsPerBlock();
             instr += "j ";
-            instr += label.substring(4, label.length()-1);
+            instr += label.substring(4, label.length());
             main.add(instr);
         }
-        main.add(label);
+        main.add(label+":");
         blockStack.pop();
     }
     // These functions works as above but instead of Symbols they used "labels" or literal numbers
