@@ -37,7 +37,7 @@ public class RegManager {
     }
 
     public int getBusyReg(){
-        for(int i=0; i<registerArray.length; i++){
+        for(int i=registerArray.length-1; i>0; i--){
             if(registerArray[i].getInUse())
                 return i;
         }
@@ -65,7 +65,7 @@ public class RegManager {
 
     public void freeReg(int index){
         getByIndex(index).setInUse(false);
-        getByIndex(index).setName(null);
+        getByIndex(index).setName("");
     }
 
     @Override

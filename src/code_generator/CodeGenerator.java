@@ -141,6 +141,7 @@ public class CodeGenerator {
 
         instr += getConditional(arg1, arg2, op, label, null);
         main.add(instr);
+        main.add("#End condition");
         blockStack.push(label);
     }
 
@@ -152,6 +153,7 @@ public class CodeGenerator {
 
         instr += getConditional(arg1, arg2, op, endWhileLabel, beginWhileLabel);
         main.add(instr);
+        main.add("#End condition");
         blockStack.push(endWhileLabel);
     }
 
@@ -160,6 +162,9 @@ public class CodeGenerator {
         String instr = "";
 
         instr = parseConditional(operation);
+        if(beginLabel != null)
+            main.add(beginLabel+":");
+        main.add("#Begin condition");
 
         // Loading arg1 into a register in regManager
         int reg1 = loadToRegister(arg1);
@@ -170,9 +175,10 @@ public class CodeGenerator {
         int reg2 = loadToRegister(arg2);
         // Writing instruction in MIPS to load arg2 (stack) into reg2
         loadVar(arg2, reg2);
-        if(beginLabel != null)
-            main.add(beginLabel+":");
+
         instr += String.format(" $t%d, $t%d, %s", reg1, reg2, gotoLabel); // [op] $t[reg1], $t[reg2], [label]
+        regManager.freeReg(reg1);
+        regManager.freeReg(reg1);
 
         return instr;
     }
@@ -270,7 +276,10 @@ public class CodeGenerator {
     }
 
     public int loadToRegister(Symbol s){
-        int reg = regManager.getFreeReg();
+        int reg;
+        if((reg = regManager.getIndexByName(s.getLexema())) >= 0)
+            return reg;
+        reg = regManager.getFreeReg();
         regManager.getByIndex(reg).setName(s.getId());
 
         return reg;

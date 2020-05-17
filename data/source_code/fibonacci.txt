@@ -3,7 +3,7 @@ int b;
 int i;
 int count;
 int prev;
-count = 7;
+count = 6;
 a = 0;
 b = 1;
 i = 1;

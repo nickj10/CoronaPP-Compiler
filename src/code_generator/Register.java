@@ -5,7 +5,7 @@ public class Register {
     private Boolean inUse;
 
     public Register() {
-        this.name = null;
+        this.name = "";
         this.inUse = false;
     }
 
