@@ -405,7 +405,7 @@ public class Parser {
         return asTree;
     }
 
-    public void buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
+    public ArrayList<ASTree> buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
         ArrayList<ASTree> treesAux = new ArrayList<>();
@@ -430,7 +430,10 @@ public class Parser {
             }
             tmp = t;
         }
+        //Añadimos el bloque de if o while en el tree
         this.trees.add(treesAux);
+        return treesAux;
+
     }
 
     public ArrayList<ASTree> getBuiltWhileIfTree () {
