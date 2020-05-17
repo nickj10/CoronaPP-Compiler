@@ -41,9 +41,10 @@ public class IntermediateCodeFlow {
    * @param trees una lista de listas de AST
    */
   public void syntaxTreeToTAC(ArrayList<ArrayList<ASTree>> trees) {
-    int i = 0;
     int numTrees = trees.size();
-    while (i < numTrees) {
+    int i = numTrees - 1;
+    Label gotoLabel = null;
+    while (i >= 0) {
       ArrayList<ASTree> blockTrees = trees.get(i);
       BasicBlock basicBlock = new BasicBlock();
       for (int j = 0; j < blockTrees.size(); j++) {
@@ -61,17 +62,21 @@ public class IntermediateCodeFlow {
 
           // Get the condition for IF and WHILE
           if (tree.getRoot().getToken().getToken().equals("IF")) {
-            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "IF");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "IF", gotoLabel);
           } else if (tree.getRoot().getToken().getToken().equals("WHILE")) {
-            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE");
+            syntaxTreeToTAC_I(nextTree.getRoot(), basicBlock, tokens, "WHILE", gotoLabel);
           }
         } else {
           // Convert the tree directly to TACs
-          syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null);
+          syntaxTreeToTAC_I(tree.getRoot(), basicBlock, new ArrayList<>(), null, gotoLabel);
         }
       }
+      basicBlock.setExitPoint(basicBlock.getInstructions().getLast());
       this.basicBlocks.add(basicBlock);
-      i++;
+      if (basicBlock.getEntryPoint().getTac() instanceof  ConditionalTAC || basicBlock.getEntryPoint().getTac() instanceof WhileLoopTAC) {
+        gotoLabel = basicBlock.getEntryPoint().getLabel();
+      }
+      i--;
     }
   }
 
@@ -84,13 +89,13 @@ public class IntermediateCodeFlow {
    * @param blockType  block type which can either be IF, WHILE or null
    */
   private void syntaxTreeToTAC_I(ASTNode current, BasicBlock basicBlock, ArrayList<TokenInfoLabels> tokens,
-      String blockType) {
+      String blockType, Label gotoLabel) {
     // Visits each node in postorder starting from the right side
     if (current.getRight() != null) {
-      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getRight(), basicBlock, tokens, blockType, gotoLabel);
     }
     if (current.getLeft() != null) {
-      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType);
+      syntaxTreeToTAC_I(current.getLeft(), basicBlock, tokens, blockType, gotoLabel);
     }
 
     // Check if we already have three tokens
@@ -99,7 +104,7 @@ public class IntermediateCodeFlow {
       tokens.add(new TokenInfoLabels(null, current.getToken()));
 
       // Create the intermediate code
-      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType));
+      IntermediateCode intermediateCode = new IntermediateCode(generateTAC(tokens, blockType, gotoLabel));
 
       // Flush token array
       tokens.clear();
@@ -110,6 +115,9 @@ public class IntermediateCodeFlow {
       if (isTACSpecialCase(intermediateCode)) {
         basicBlock.setEntryPoint(intermediateCode);
       } else {
+        if (basicBlock.getEntryPoint() == null) {
+          basicBlock.setEntryPoint(intermediateCode);
+        }
         basicBlock.addInstruction(intermediateCode);
       }
     } else {
@@ -143,7 +151,7 @@ public class IntermediateCodeFlow {
    * @param tokens list of tokens to analyze
    * @return generated TAC
    */
-  private ThreeAddrCode generateTAC(ArrayList<TokenInfoLabels> tokens, String blockType) {
+  private ThreeAddrCode generateTAC(ArrayList<TokenInfoLabels> tokens, String blockType, Label gotoLabel) {
     ThreeAddrCode tac = null;
 
     // Retrieve all the tokens to be added to TAC
@@ -159,9 +167,9 @@ public class IntermediateCodeFlow {
     // Create TACs depending on its type
     if (blockType != null) {
       if (blockType.equals("IF")) {
-        tac = new ConditionalTAC(arg1, arg2, op, label);
+        tac = new ConditionalTAC(arg1, arg2, op, gotoLabel);
       } else if (blockType.equals("WHILE")) {
-        tac = new WhileLoopTAC(arg1, arg2, op, label);
+        tac = new WhileLoopTAC(arg1, arg2, op, gotoLabel);
       }
     } else {
       if (op.getToken().equals("ASSGN_EQ")) { // arg1 op arg2 || arg1 = arg2

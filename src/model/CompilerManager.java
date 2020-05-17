@@ -56,7 +56,7 @@ public class CompilerManager {
         IntermediateCodeFlow icFlow = new IntermediateCodeFlow();
         ArrayList<ASTree> tmpSimple = new ArrayList<>();
         ASTree tree = new ASTree();
-        ArrayList<ASTree> trees = new ArrayList<>();
+        ArrayList<ASTree> trees = new ArrayList<ASTree>();
 
         while (scanner.getNextToken() != null) {
             counter = 0;

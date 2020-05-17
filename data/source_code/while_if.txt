@@ -15,7 +15,6 @@ if (a == 0) {
    i = a;
 }
 while (i != a) {
-    t = j + n;
     n = m;
     m = y
     i = i + 1;
