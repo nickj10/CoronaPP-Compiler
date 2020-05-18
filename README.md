@@ -22,6 +22,8 @@ git clone https://atlassian.salle.url.edu:7943/scm/ldp/grup-3.git
 
 El compilador requiere 3 argumentos: el código fuente, la gramática y el diccionario. El código fuente debe estar dentro de la carpeta source_code.
 
+Ejecutamos el TestEnvironment.
+
 Configuramos el working directory con /data ya que todos los ficheros están dentro de esta carpeta. Indicamos las rutas a los ficheros requeridos de la siguiente manera:
 
 ```bash
@@ -30,7 +32,7 @@ Configuramos el working directory con /data ya que todos los ficheros están den
 
 Por ejemplo:
 ```bash
-source_code/fibonacci.txt grammar.txt dictionary.json
+./source_code/fibonacci.txt grammar.txt dictionary.json
 ```
 
 ## Autores
