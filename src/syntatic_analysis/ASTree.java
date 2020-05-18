@@ -3,12 +3,16 @@ package syntatic_analysis;
 import lexic_analysis.TokenInfo;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class ASTree {
   private static final Pattern OPERATORS = Pattern.compile("^(ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
   private ASTNode root;
   private ArrayList<TokenInfo> tokensInfo;
+  private final static Logger LOGGER = Logger.getLogger("syntactic_analysis");
+
 
   public ASTree () {
     root = null;
@@ -60,7 +64,7 @@ public class ASTree {
     //Inorder
     visitAST(node.getRight());
     tokensInfo.add(node.getToken());
-    System.out.println(node.getToken().getId());
+    LOGGER.log(Level.INFO, node.getToken().getId());
     visitAST(node.getLeft());
     return tokensInfo;
   }
