@@ -184,7 +184,6 @@ public class CompilerManager {
 
         // Building file:
         generateFile("output.txt", codeGenerator.getMain());
-        //System.out.println(icFlow);
     }
 
 
