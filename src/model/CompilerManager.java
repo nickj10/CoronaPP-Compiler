@@ -139,8 +139,6 @@ public class CompilerManager {
         }
 
         icFlow.syntaxTreeToTAC(parser.getTrees());
-
-        System.out.println(icFlow);
     }
 
 
