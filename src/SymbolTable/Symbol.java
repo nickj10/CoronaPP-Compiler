@@ -101,7 +101,14 @@ public class Symbol {
     }
 
     public int getDataSize() {
-        return dataSize;
+        if(dataSize>0)
+            return dataSize;
+        if(type.equals("INT"))
+            return 4;
+        if(type.equals("CHAR"))
+            return 1;
+
+        return 0;
     }
 
     public void setDataSize(int dataSize) {
