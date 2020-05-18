@@ -16,7 +16,7 @@ git clone https://atlassian.salle.url.edu:7943/scm/ldp/grup-3.git
 2. Abrir IntelliJ.
 3. File > New > Project from existing sources...
 4. Seleccionar la carpeta donde se ha clonado el proyecto.
-5. Asegurar que mediante el wizard importar los módulos y seleccionar 11 como versión del SDK. Seguir el wizard hasta el final, importando todo el código en un proyecto.
+5. Asegurar que mediante el wizard importar el módulo del proyecto y seleccionar 11 como versión del SDK. Seguir el wizard hasta el final, importando todo el código en un proyecto.
 
 ## Uso
 
