@@ -25,7 +25,7 @@ El compilador requiere 3 argumentos: el código fuente, la gramática y el dicci
 Configuramos el working directory con /data ya que todos los ficheros están dentro de esta carpeta. Indicamos las rutas a los ficheros requeridos de la siguiente manera:
 
 ```bash
-source_code/<código fuente> grammar.txt dictionary.json
+./source_code/<código fuente> grammar.txt dictionary.json
 ```
 
 Por ejemplo:
