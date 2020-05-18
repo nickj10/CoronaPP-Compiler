@@ -1,0 +1,14 @@
+$$ Code tested, it won't work.
+int a;
+int b;
+b = 0;
+a = 0;
+if (a == 0) {
+    a = b + 1;
+}
+if (a != 1) {
+    b = a + 1;
+}
+if (a != 2) {
+    b = a - 1;
+}

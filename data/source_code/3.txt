@@ -1,0 +1,8 @@
+$$ Code not tested, won't work
+
+/$
+This is the test 3
+$/
+int a = 1;
+int b = 2;
+int echo = a + b;

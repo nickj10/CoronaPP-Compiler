@@ -1,0 +1,9 @@
+$$ This code was tested - not working with a == b
+int x;
+int y;
+int a;
+int b;
+a = x + y;
+if (a != b) {
+    a = x - y;
+}

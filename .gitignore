@@ -38,6 +38,7 @@ gradle-app.setting
 ## IntelliJ
 ##############################
 out/
+output/
 .idea/
 .idea_modules/
 *.iml
@@ -76,3 +77,5 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+
+data/asm_code/output.asm
