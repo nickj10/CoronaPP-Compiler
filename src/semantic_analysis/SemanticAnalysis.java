@@ -8,6 +8,8 @@ import syntatic_analysis.ASTree;
 import syntatic_analysis.Token;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class SemanticAnalysis {
@@ -15,70 +17,72 @@ public class SemanticAnalysis {
     private static final Pattern OPERATORS = Pattern.compile("^(ARTMTC_MLT|ARTMTC_MD|ARTMTC_DV|ARTMTC_SM|ARTMTC_RS|ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private SymbolTable symbolTable;
 
-    public SemanticAnalysis () {
+    private final static Logger LOGGER = Logger.getLogger("semantic_analysis");
+
+    public SemanticAnalysis() {
         tokenInfos = new ArrayList<>();
     }
 
-    public void analyze (ASTree tree, ArrayList<ASTree> trees, SymbolTable table, int type) throws SemanticException {
+    public void analyze(ASTree tree, ArrayList<ASTree> trees, SymbolTable table, int type) throws SemanticException {
         this.symbolTable = table;
         boolean declarationCorrect = true;
-        System.out.println("ASTree:");
+        LOGGER.log(Level.INFO, "ASTree:");
         switch (type) {
-             case 1:
-                 //Case for normal expressions
-                 tokenInfos = tree.visitAST(tree.getRoot());
-                 //Check if all the variables were declared before,
-                 for (int i = 0; i < tokenInfos.size(); i++) {
-                     if (isATerminal(tokenInfos.get(i).getToken())) {
-                         if (!isDeclared(tokenInfos.get(i))) {
-                             declarationCorrect = false;
-                             throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
-                         }
-                     }
-                     //Check if expression types are correct.
-                     if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                         checkLeftRightOperandTypes(tokenInfos.get(i-1), tokenInfos.get(i+1));
-                     }
-                 }
-                 tokenInfos.clear();
-                 System.out.println("Semantically Validated");
-                 break;
-                 case 2:
-                     //Case for whiles and ifs
-                    //Iterate the arrayList of ASTree
-                    for (int h = 0; h < trees.size(); h++) {
-                        tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
-                        if (tokenInfos != null) {
-                            for (int i = 0; i < tokenInfos.size(); i++) {
-                                if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
-                                    if (isATerminal(tokenInfos.get(i).getToken())) {
-                                        if (!isDeclared(tokenInfos.get(i))) {
-                                            declarationCorrect = false;
-                                            throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
-                                        }
+            case 1:
+                //Case for normal expressions
+                tokenInfos = tree.visitAST(tree.getRoot());
+                //Check if all the variables were declared before,
+                for (int i = 0; i < tokenInfos.size(); i++) {
+                    if (isATerminal(tokenInfos.get(i).getToken())) {
+                        if (!isDeclared(tokenInfos.get(i))) {
+                            declarationCorrect = false;
+                            throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
+                        }
+                    }
+                    //Check if expression types are correct.
+                    if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
+                        checkLeftRightOperandTypes(tokenInfos.get(i - 1), tokenInfos.get(i + 1));
+                    }
+                }
+                tokenInfos.clear();
+                break;
+            case 2:
+                //Case for whiles and ifs
+                //Iterate the arrayList of ASTree
+                for (int h = 0; h < trees.size(); h++) {
+                    tokenInfos = trees.get(h).visitAST(trees.get(h).getRoot());
+                    if (tokenInfos != null) {
+                        for (int i = 0; i < tokenInfos.size(); i++) {
+                            if (!tokenInfos.get(i).getToken().equals("WHILE") && !tokenInfos.get(i).getToken().equals("IF")) {
+                                if (isATerminal(tokenInfos.get(i).getToken())) {
+                                    if (!isDeclared(tokenInfos.get(i))) {
+                                        declarationCorrect = false;
+                                        throw new SemanticException("Semantic Error:" + "'" + tokenInfos.get(i).getId() + "'" + " was not declared at line " + tokenInfos.get(i).getDeclaredAtLine());
                                     }
-                                    //Check if expression types are correct.
-                                    if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
-                                        checkLeftRightOperandTypes(tokenInfos.get(i-1), tokenInfos.get(i+1));
-                                    }
+                                }
+                                //Check if expression types are correct.
+                                if (OPERATORS.matcher(tokenInfos.get(i).getToken()).matches()) {
+                                    checkLeftRightOperandTypes(tokenInfos.get(i - 1), tokenInfos.get(i + 1));
                                 }
                             }
                         }
-
                     }
-                    tokenInfos.clear();
-                    System.out.println("Semantically Validated");
-                    break;
-            }
+
+                }
+                if (tokenInfos != null)
+                tokenInfos.clear();
+                break;
+        }
     }
 
     /**
      * Checks left operand and right operand type (if they have a type only)
+     *
      * @param tokenLeft
      * @param tokenRight
      * @throws SemanticException
      */
-    private void checkLeftRightOperandTypes (TokenInfo tokenLeft, TokenInfo tokenRight) throws SemanticException {
+    private void checkLeftRightOperandTypes(TokenInfo tokenLeft, TokenInfo tokenRight) throws SemanticException {
         if (!tokenLeft.getType().equals("") && !tokenRight.getType().equals("")) {
             if (!tokenLeft.getType().equals(tokenRight.getType())) {
                 throw new SemanticException("Semantic Error: Variables don't match in types. " + tokenLeft.getId() + " is " + tokenLeft.getType() + " and " + tokenRight.getId() + " is " + tokenRight.getType());
@@ -88,6 +92,7 @@ public class SemanticAnalysis {
 
     /**
      * Checks if a variable was declared in global/local scopes
+     *
      * @param tokenInfo
      * @return true if it was declared
      */
@@ -102,8 +107,7 @@ public class SemanticAnalysis {
             if (symbolTable.getSymbol(tokenInfo.getId(), tokenInfo.getTableId()) != null) {
                 return true;
             }
-        }
-        else {
+        } else {
             if (tokenInfo.getTableId() != null) {
                 if (symbolTable.getSymbol(tokenInfo.getId()) != null) {
                     return true;
@@ -115,10 +119,11 @@ public class SemanticAnalysis {
 
     /**
      * Checks if it's a terminal
+     *
      * @param token
      * @return true if it's a terminal
      */
-    private boolean isATerminal (String token) {
+    private boolean isATerminal(String token) {
         if (token.equals("IDENTIFIER") || token.equals("WHILE") || token.equals("IF")) {
             return true;
         }

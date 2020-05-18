@@ -4,6 +4,7 @@ import SymbolTable.SymbolTable;
 import com.google.gson.Gson;
 
 import intermediate.BasicBlock;
+
 import java.util.ArrayList;
 
 import exceptions.FirstAndFollowException;
@@ -14,10 +15,12 @@ import model.Word;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class Parser {
-    private static Boolean DEBUG = true;
+    private static Boolean DEBUG = false;
     private static final Pattern OPERATORS = Pattern.compile("^(ASSGN_EQ|RLTNL_EQ|RLTNL_NTEQ|RLTNL_GT|RLTNL_LS|RLTNL_GTEQ|RLTNL_LSEQ)$");
     private HashMap<String, Word> dictionary;
     private static Grammar grammar;
@@ -27,6 +30,8 @@ public class Parser {
     private ArrayList<ASTree> asTrees;
     private ArrayList<ArrayList<ASTree>> trees;
     private ArrayList<BasicBlock> basicBlocks;
+    private final static Logger LOGGER = Logger.getLogger("syntactic_analysis");
+
 
     String[][] table = {
             {"EXPRESSION", "EXPRESSION", null, null, null, null, null, null, null, "SENTENCIA", "SENTENCIA", null, null, null, null, null, null, null, null, null, null, null}
@@ -64,15 +69,14 @@ public class Parser {
             {null, null, null, null, null, null, null, null, null, null, null, "RLTNL_EQ", "RLTNL_NTEQ", null, null, null, null, null, "RLTNL_GT", "RLTNL_LS", "RLTNL_GTEQ", "RLTNL_LSEQ"}
 
 
-
     };
 
-    String[] noTerminals = {"S", "EXPRESSION","SENTENCIA", "DECLARACION","TIPO",
+    String[] noTerminals = {"S", "EXPRESSION", "SENTENCIA", "DECLARACION", "TIPO",
             "F", "VALUE", "B", "C", "D",
             "G", "OPERATOR", "TIPO_SENTENCIA", "CONDITIONAL_EXPRESSION", "RLTNL"};
     String[] terminals = {"IDENTIFIER", "INT", "NUMBER", "DOT_COMA", "ASSGN_EQ", "ARTMTC_SM",
-            "ARTMTC_RS","ARTMTC_MLT", "ARTMTC_DV", "IF", "WHILE", "RLTNL_EQ",
-            "RLTNL_NTEQ", "PRNTSS_OPEN", "PRNTSS_CLOSED", "COR_OPEN", "COR_CLOSED" ,"#",
+            "ARTMTC_RS", "ARTMTC_MLT", "ARTMTC_DV", "IF", "WHILE", "RLTNL_EQ",
+            "RLTNL_NTEQ", "PRNTSS_OPEN", "PRNTSS_CLOSED", "COR_OPEN", "COR_CLOSED", "#",
             "RLTNL_GT", "RLTNL_LS", "RLTNL_GTEQ", "RLTNL_LSEQ"};
 
     //Pila
@@ -132,21 +136,21 @@ public class Parser {
 
         // DEBUG Section
         if (DEBUG) {
-            System.out.println("== GRAMMAR ==");
+            // System.out.println("== GRAMMAR ==");
             appendToOutput(grammarFile + ".DEBUG", "== GRAMMAR ==\n");
         }
 
         // Init Grammar Array
         grammar = new Grammar(tokens);
         if (grammar.type == "ERROR") {
-            System.out.println(grammar.message);
+            // System.out.println(grammar.message);
             appendToOutput(grammarFile, grammar.message);
             if (DEBUG) {
                 appendToOutput(grammarFile + ".DEBUG", grammar.message);
             }
             return;
         } else {
-            System.out.print(grammar.toString());
+            // System.out.print(grammar.toString());
             // DEBUG Section
             if (DEBUG) {
                 appendToOutput(grammarFile + ".DEBUG", grammar.toString());
@@ -155,10 +159,9 @@ public class Parser {
     }
 
     public void startFirstFollow() {
-        if (DEBUG) {
-            System.out.println("== FIRST ==");
-            appendToOutput(grammarFile + ".DEBUG", "== FIRST ==\n");
-        }
+        StringBuilder ff = new StringBuilder();
+        appendToOutput(grammarFile + ".DEBUG", "== FIRST ==\n");
+        ff.append("\n\n== FIRST ==\n");
         // First Sets
         for (Token nonTerminal : grammar.nonTerminals) {
             if (nonTerminal != null) {
@@ -174,18 +177,17 @@ public class Parser {
                 // DEBUG Section
                 if (DEBUG) {
                     appendToOutput(grammarFile + ".DEBUG", firstString + "\n");
+                    ff.append(firstString).append("\n");
                 }
                 // Output First Set
-                System.out.println(firstString);
+                // System.out.println(firstString);
                 appendToOutput(grammarFile, firstString + "\n");
+                ff.append(firstString).append("\n");
             }
         }
 
-        // DEBUG Section
-        if (DEBUG) {
-            System.out.println("== FOLLOW ==");
-            appendToOutput(grammarFile + ".DEBUG", "== FOLLOW ==\n");
-        }
+        appendToOutput(grammarFile + ".DEBUG", "== FOLLOW ==\n");
+        ff.append("\n== FOLLOW ==\n");
         // FOLLOW Sets
         for (Token nonTerminal : grammar.nonTerminals) {
             if (nonTerminal != null) {
@@ -201,13 +203,15 @@ public class Parser {
                 // DEBUG Section
                 if (DEBUG) {
                     appendToOutput(grammarFile + ".DEBUG", followString + "\n");
+                    ff.append(followString).append("\n");
                 }
                 // Output First Set
-                System.out.println(followString);
+                // System.out.println(followString);
                 appendToOutput(grammarFile, followString + "\n");
+                ff.append(followString).append("\n");
             }
         }
-
+        LOGGER.log(Level.INFO, ff.append("\n").toString());
     }
 
     public boolean checkGrammar(ArrayList<TokenInfo> tokenInfos) throws FirstAndFollowException, GrammarException {
@@ -251,7 +255,7 @@ public class Parser {
 
                 if (top.equals(token)) {  //Miramos si coincide el terminal analizado con el token del scanner
                     //Coinciden, miramos siguiente token del scanner
-                    System.out.println(token);
+                    // System.out.println(token);
                     inputCounter++;
                     token = String.valueOf(tokenInfos.get(inputCounter).getToken());
                 } else {
@@ -261,7 +265,7 @@ public class Parser {
             } else {
                 //No está en la gramática
                 throw new GrammarException(top);
-                //System.out.println("error, no está contemplado por el parser (no en la gramática)");
+                // System.out.println("error, no está contemplado por el parser (no en la gramática)");
             }
             if (token.equals("DOT_COMA")) { //expresión acabada
                 break; //cerramos el do while
@@ -272,12 +276,11 @@ public class Parser {
         //fin de la expresión
         if (token.equals("DOT_COMA")) {
             //ok expression
-            System.out.println("Syntactically validated expression");
+            // LOGGER.log(Level.INFO, "Expresión sintácticamente correcta");
             return true;
         }
-
         //ko expression
-        System.out.println("Syntactically wrong expression");
+        // LOGGER.log(Level.INFO, "Expresión sintácticamente errónea");
         return false;
 
 
@@ -308,7 +311,7 @@ public class Parser {
                 return i;
             }
         }
-        System.out.println(noTerm + " no es no terminal");
+        // System.out.println(noTerm + " no es no terminal");
         return -1;
     }
 
@@ -318,7 +321,7 @@ public class Parser {
                 return i;
             }
         }
-        System.out.println(term + " no es terminal");
+        // System.out.println(term + " no es terminal");
         return -1;
     }
 
@@ -330,18 +333,17 @@ public class Parser {
         return this.trees;
     }
 
-    private String getTypeOfGlobalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table) {
+    private String getTypeOfGlobalVariable(TokenInfo token, TokenInfo tmp, SymbolTable table) {
         //If it's not in the symbol table
-        if (table.getSymbol(token.getId()) == null){
+        if (table.getSymbol(token.getId()) == null) {
             if (consultDictionary(token.getId()) == null) {
                 //If it wasn't a terminal, it checks if it's a var and tmp was a terminal, which means it is declared
-                Token aux = new Token ("", token.getId());
+                Token aux = new Token("", token.getId());
                 if (aux.token.equals("IDENTIFIER") && tmp.getToken().equals("INT") || aux.token.equals("NUMBER")) {
                     return "INT";
                 }
             }
-        }
-        else {
+        } else {
             //If it's in the symbol table, we get its type
             if (token.getToken().equals("IDENTIFIER")) {
                 return table.getSymbol(token.getId()).getType();
@@ -350,7 +352,7 @@ public class Parser {
         return null;
     }
 
-    private String getTypeOfLocalVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+    private String getTypeOfLocalVariable(TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
         Token aux;
         if (table.getSymbol(token.getId(), tableId) == null) {
             if (consultDictionary(token.getId()) == null) {
@@ -361,22 +363,19 @@ public class Parser {
                 //When we have two declared global variables in a condition we have to check their types in the general table
                 return getTypeOfGlobalVariable(token, tmp, table);
             }
-        }
-        else {
-            if (token.getToken().equals("IDENTIFIER"))
-            {
-                return table.getSymbol(token.getId(),tableId).getType();
+        } else {
+            if (token.getToken().equals("IDENTIFIER")) {
+                return table.getSymbol(token.getId(), tableId).getType();
             }
         }
         return null;
     }
 
-    public String addTypeToVariable (TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
+    public String addTypeToVariable(TokenInfo token, TokenInfo tmp, SymbolTable table, String tableId) {
         String type = null;
         if (tableId == null) {
             type = getTypeOfGlobalVariable(token, tmp, table);
-        }
-        else {
+        } else {
             type = getTypeOfLocalVariable(token, tmp, table, tableId);
         }
         return type;
@@ -390,7 +389,7 @@ public class Parser {
         TokenInfo tmp = new TokenInfo();
         asTree = new ASTree();
         for (TokenInfo t : tokenInfos) {
-            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ") ) {
+            if (t.getToken().equals("ASSGN_EQ") || t.getToken().equals("RLTNL_EQ") || t.getToken().equals("RLTNL_NTEQ")) {
                 asTree.insert(t);
                 asTree.insert(tmp);
             }
@@ -405,7 +404,7 @@ public class Parser {
         return asTree;
     }
 
-    public ArrayList<ASTree> buildWhileIfTree (ArrayList<TokenInfo> tokenInfos) {
+    public ArrayList<ASTree> buildWhileIfTree(ArrayList<TokenInfo> tokenInfos) {
         TokenInfo tmp = new TokenInfo();
         ASTree tree = new ASTree();
         ArrayList<ASTree> treesAux = new ArrayList<>();
@@ -436,11 +435,11 @@ public class Parser {
 
     }
 
-    public ArrayList<ASTree> getBuiltWhileIfTree () {
+    public ArrayList<ASTree> getBuiltWhileIfTree() {
         return asTrees;
     }
 
-    public boolean validateWhileTreeConstruction (String token, ASTree tree) {
+    public boolean validateWhileTreeConstruction(String token, ASTree tree) {
         if (tree.getRoot() == null && (token.equals("ASSGN_EQ"))) {
             return true;
         }
@@ -468,7 +467,7 @@ public class Parser {
         asTrees.add(tree);
     }
 
-    public ArrayList getAsTrees () {
+    public ArrayList getAsTrees() {
         return this.asTrees;
     }
 
@@ -485,7 +484,7 @@ public class Parser {
             Dictionary dictionary = gson.fromJson(br, Dictionary.class);
             return addToDictionary(dictionary);
         } catch (FileNotFoundException e) {
-            System.out.println("\nError, file can't be found.");
+            LOGGER.log(Level.SEVERE, "Dictionary file not found");
             e.printStackTrace();
         } finally {
             if (br != null) {
