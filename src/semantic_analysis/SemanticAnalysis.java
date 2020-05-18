@@ -26,7 +26,7 @@ public class SemanticAnalysis {
     public void analyze(ASTree tree, ArrayList<ASTree> trees, SymbolTable table, int type) throws SemanticException {
         this.symbolTable = table;
         boolean declarationCorrect = true;
-        System.out.println("ASTree:");
+        LOGGER.log(Level.INFO, "ASTree:");
         switch (type) {
             case 1:
                 //Case for normal expressions
