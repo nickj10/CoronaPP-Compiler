@@ -5,5 +5,7 @@ This is the test 2
 $/
 int a;
 int echo;
+int aux;
 echo = 123;
-a = 3 + echo;
+aux = 3;
+a = aux + echo;
